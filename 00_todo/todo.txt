@@ -1,0 +1,18 @@
+ 1 ... screenshot using graphicsview --> render
+ 2 ... Help using QtHelp
+ 3 ... Konturanalyse --> stacked, tabbed, docking
+ 4 ... Undo, redo framework
+ 5 ... Gitter (mesh), topo classes
+ 6 ... Update DOC strings
+ 7 ... unify point and other methods to floating point
+ 8 ... PEP8 style coding check
+ 9 ... Rubberband zoom
+11 ... PyAero project file (e.g. pickling) *.pae
+12 ... List of recently opened files
+13 ... Color mesh by different quality attributes
+14 ... Internationalization / localization
+17 ... Align objects in scene, show/hide grid
+18 ... fix all #FIXMEs
+21 ... Color settings for main parts of gui and graphicsitems
+22 ... Save und save-as dialog umstellen auf custom dialog as in load
+23 ... make magnifyer --> Lupe (gesteuert über Taste nur innerhalb GraphicsView)
