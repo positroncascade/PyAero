@@ -10,7 +10,7 @@
 11 ... PyAero project file (e.g. pickling) *.pae
 12 ... List of recently opened files
 13 ... Color mesh by different quality attributes
-14 ... Internationalization / localization
+16 ... Internationalization / localization
 17 ... Align objects in scene, show/hide grid
 18 ... fix all #FIXMEs
 21 ... Color settings for main parts of gui and graphicsitems
