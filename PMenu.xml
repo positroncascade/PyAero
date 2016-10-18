@@ -1,0 +1,49 @@
+<!--
+   The XML structure in this file allows for a dynamic menu population in PyAero
+   If new menus are added, there need to be written respective handlers (PyQt slots)
+-->
+<PyAero>
+    <Menubar name='File'>
+        <Submenu name='Open' tip='Open airfoil contour file' short='CTRL+o' icon='Documents.png' handler='onOpen'></Submenu>
+        <Submenu name='Save' tip='Save airfoil contour file' short='CTRL+s' icon='Save.png' handler='onSave'></Submenu>
+        <Submenu name='Save as' tip='Save airfoil contour file with different name' short='CTRL+SHIFT+s' icon='Save as.png' handler='onSaveAs'></Submenu>
+        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
+        <Submenu name='Print' tip='Print current view' short='CTRL+p' icon='Print.png' handler='onPrint'></Submenu>
+        <Submenu name='Print preview' tip='Print preview' short='CTRL+SHIFT+p' icon='Print preview.png' handler='onPreview'></Submenu>
+        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
+        <Submenu name='Exit' tip='Shut down PyAero' short='CTRL+x' icon='Exit.png' handler='onExit'></Submenu>
+    </Menubar>
+    <Menubar name='Edit'>
+        <Submenu name='Undo' tip='Undo last action' short='CTRL+z' icon='Undo.png' handler='onUndo'></Submenu>
+        <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
+    </Menubar>
+    <Menubar name='Airfoil'>
+        <Submenu name='Undo' tip='Undo last action' short='CTRL+z' icon='Undo.png' handler='onUndo'></Submenu>
+        <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
+    </Menubar>
+    <Menubar name='Meshing'>
+        <Submenu name='Undo' tip='Undo last action' short='CTRL+z' icon='Undo.png' handler='onUndo'></Submenu>
+        <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
+    </Menubar>
+    <Menubar name='View'>
+        <Submenu name='Fit airfoil in view' tip='Redo last action' short='CTRL+f' icon='' handler='fitAirfoilInView'></Submenu>
+        <Submenu name='Fit all in view' tip='Set view to all items visible' short='CTRL+SHIFT+f' icon='' handler='onViewAll'></Submenu>
+        <Submenu name='Toggle background' tip='Toggle background color' short='CTRL+b' icon='' handler='onBackground'></Submenu>
+    </Menubar>
+    <Menubar name='Tools'>
+        <Submenu name='Calculator' tip='Start the internal calculator' short='CTRL+SHIFT+l' icon='Calculator.png' handler='onCalculator'></Submenu>
+        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
+        <Submenu name='Settings' tip='Customize PyAero' short='CTRL+e' icon='Settings.png' handler='onCalculator'></Submenu>
+    </Menubar>
+    <Menubar name='Test objects'>
+        <Submenu name='Toggle test objects' tip='Start the internal calculator' short='CTRL+t' icon='Full basket.png' handler='toggleObjects'></Submenu>
+        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
+        <Submenu name='Donnerwetter' tip='Donnerwetter' short='CTRL+e' icon='Settings.png' handler='onCalculator'></Submenu>
+    </Menubar>
+    <Menubar name='Help'>
+        <Submenu name='Manual' tip='Open PyAero manual' short='CTRL+h' icon='Help book.png' handler='onHelp'></Submenu>
+        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
+        <Submenu name='About Qt' tip='Show the Qt librarys about box' short='' icon='' handler='QtGui.qApp.aboutQt'></Submenu>
+        <Submenu name='About PyAero' tip='Information about the PyAero and its licensing' short='' icon='About.png' handler='onAbout'></Submenu>
+    </Menubar>
+</PyAero>
