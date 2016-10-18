@@ -1,7 +1,6 @@
 #
 backup2nas.csh
-dist/
-lib/
+lib_AE/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
