@@ -17,7 +17,7 @@
 ## Dependencies
 
  - numpy, scipy, matplotlib
- - lxml,
+ - lxml
  - PyQt4
  - PyVTK
 
