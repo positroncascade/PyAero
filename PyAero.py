@@ -30,12 +30,12 @@ import PLogger as logger
 
 __appname__ = 'PyAero'
 __author__ = 'Andreas Ennemoser'
-__credits__ = 'Stackoverflow and its contributors'
+__credits__ = 'Internet and open source'
 __copyright__ = '2014-' + str(datetime.date.today().strftime("%Y")) + \
                 ' ' + __author__
 __license__ = 'MIT'
-__version__ = '0.5.1'
-__email__ = 'andreas.ennemoser@gmail.com'
+__version__ = '0.5'
+__email__ = 'andreas.ennemoser@aon.at'
 __status__ = 'Prototype'
 
 
