@@ -23,7 +23,9 @@
 
 ## Documentation
 
-The documentation is hosted at [Read the Docs](http://pyaero.readthedocs.io/en/latest) and is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
+The documentation is hosted at [Read the Docs](http://pyaero.readthedocs.io/en/latest).
+
+It is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
 
 ## Release History
 
