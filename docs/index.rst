@@ -13,6 +13,7 @@ The code ist hosted on GitHub: `PyAero source code <https://github.com/chiefenne
 .. _GUI:
 .. figure::  images/gui.png
    :align:   center
+   :target:  _images/gui.png
 
    PyAero user interface at a glance
 
