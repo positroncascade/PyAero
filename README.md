@@ -21,6 +21,10 @@
  - numpy, scipy, matplotlib
  - lxml (will be removed)
 
+## Documentation
+
+The documentation is hosted at [readthedocs](http://pyaero.readthedocs.io/en/latest)
+
 ## Release History
 
 * 0.5
