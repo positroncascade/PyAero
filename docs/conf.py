@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PyAaero'
+project = u'PyAero'
 copyright = u'2016, Andreas Ennemoser'
 author = u'Andreas Ennemoser'
 
