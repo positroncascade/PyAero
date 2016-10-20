@@ -23,7 +23,7 @@
 
 ## Documentation
 
-The documentation is hosted at [readthedocs](http://pyaero.readthedocs.io/en/latest)
+The documentation is hosted at [Read the Docs](http://pyaero.readthedocs.io/en/latest).
 
 ## Release History
 
