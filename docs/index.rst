@@ -32,7 +32,7 @@ Features
 Code repository
 ---------------
 
-The code ist hosted on GitHub: `PyAero source code <https://github.com/chiefenne/PyAero>`_ |br| 
+The code ist hosted on GitHub: `PyAero source code <https://github.com/chiefenne/PyAero>`_
 
 .. toctree::
    :hidden:
