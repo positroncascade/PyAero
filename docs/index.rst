@@ -48,5 +48,6 @@ The code ist hosted on GitHub: `PyAero source code <https://github.com/chiefenne
 
    introduction
    ui_GUI
+   tutorial
    dependencies
    license
