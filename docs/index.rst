@@ -24,13 +24,6 @@ The code ist hosted on GitHub: `PyAero source code <https://github.com/chiefenne
 
    features
    dependencies
+   introduction
    license
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
