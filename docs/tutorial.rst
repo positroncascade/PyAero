@@ -1,5 +1,5 @@
-Tutorial
-========
+Tutorials
+=========
 
 This section collects several tutorials explaing the functionality of `PyAero <index.html>`_.
 
