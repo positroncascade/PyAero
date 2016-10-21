@@ -37,4 +37,3 @@ MAXZOOM = 100
 
 # scale increment
 SCALEINC = 1.2
-

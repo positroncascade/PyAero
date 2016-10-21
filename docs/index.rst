@@ -26,9 +26,10 @@ Features
  - Automatic generation of block-strcuctured meshes for airfoils (C-type)
  - Mesh control (specifically in the boundary layer region) and smoothing
  - Automatic definition of boundary faces
- - Mesh export (AVL FIRE .flm, SU2 .su2)
+ - Mesh export (AVL FIRE .flma, SU2 .su2)
  - Simple aerodynamic analysis, i.e. panel methods
  - Advanced aerodynamic analysis, i.e. linking to open source CFD software
+ - More to come :)
 
 Code repository
 ===============

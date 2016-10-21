@@ -3,6 +3,8 @@ backup2nas.csh
 lib_AE/
 data/SATORI.stl
 OLD_doc/
+PyAero.sublime-project
+PyAero.sublime-workspace
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
