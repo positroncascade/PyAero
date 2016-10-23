@@ -17,6 +17,13 @@ PyAero is open-source and distributed under the MIT license, see `LICENSE <licen
 
    PyAero user interface at a glance
 
+.. figure::  images/RG15_mesh_part.png
+   :align:   center
+   :target:  _images/RG15_mesh_part.png
+   :name: GUI
+
+   Example mesh around RG15 airfoil (only boundary layers are displayed)
+
 Features
 ========
 
