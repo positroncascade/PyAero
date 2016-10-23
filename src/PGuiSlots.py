@@ -6,7 +6,7 @@ import PyAero
 import PAirfoil
 import PGraphicsTest as gt
 import PIconProvider
-from PSettings import *
+from PSettings import DIALOGFILTER
 
 
 class Slots(object):
