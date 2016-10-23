@@ -1,14 +1,20 @@
 import math
 from PyQt4 import QtGui, QtCore
 
-from PSettings import *
+from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM
 
 
 class GraphicsView(QtGui.QGraphicsView):
-    # call constructor of GraphicsView
+    """This is the main window in the GUI where items are drawn upon.
+    The class is derived from QtGui.QGraphicsView.
+    """
 
     def __init__(self, parent=None):
-        # call constructor of QGraphicsView
+        """Construcor of the GraphicsView window
+
+        Args:
+            parent (QMainWindow object, optional): class MainWindow
+        """
         super(GraphicsView, self).__init__(parent)
 
         self.parent = parent
@@ -186,6 +192,14 @@ class GraphicsView(QtGui.QGraphicsView):
 
         menu.addSeparator()
 
+        delitems = menu.addAction('Delete selected')
+        # FIXME
+        # FIXME keyboard shortcut does not work
+        # FIXME
+        # delitems.setShortcut('CTRL+r')
+
+        menu.addSeparator()
+
         togglebg = menu.addAction('Toggle background')
         togglebg.setShortcut('CTRL+b')
 
@@ -197,3 +211,6 @@ class GraphicsView(QtGui.QGraphicsView):
             self.parent.slots.fitAirfoilInView()
         elif action == fitall:
             self.parent.slots.onViewAll()
+        # remove all selected items from the scene
+        elif action == delitems:
+            self.parent.slots.removeGraphicsItem()

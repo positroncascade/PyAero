@@ -2,7 +2,6 @@ from PyQt4 import QtGui, QtCore
 
 
 class GraphicsItem(QtGui.QGraphicsItem):
-
     """
      From the QT docs:
      To write your own graphics item, you first create a subclass
@@ -11,7 +10,6 @@ class GraphicsItem(QtGui.QGraphicsItem):
      of the area painted by the item, and paint(),
      which implements the actual painting.
     """
-    # call constructor of GraphicsItem
 
     def __init__(self, item, parent=None):
         # call constructor of QGraphicsItem

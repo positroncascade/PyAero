@@ -11,7 +11,7 @@ from PyQt4 import QtGui, QtCore
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
-from PSettings import *
+from PSettings import AIRFOILSIZE
 
 # base64 encoded string representation of gzipped airfoil coordinate file
 # MH32 is an airfoil for rc-gliders by Martin Hepperle
@@ -54,11 +54,10 @@ class Airfoil(object):
                                MH32_COMPRESSED)))
         else:
             self.name = fname
-            f = open(fname, 'r')
+            with open(fname, mode='r') as f:
+                lines = f.readlines()
+                data = [line for line in lines if comment not in line]
 
-        # filter comment lines
-        data = filter(lambda row: row[0] != comment, f)
-        f.close()
         # slist is a nested list looking like [['1.0', '0.0'], ['0.9', '0.1'],
         # ...]
         slist = [row.strip('\n').split() for row in data]

@@ -8,9 +8,9 @@
 AIRFOILSIZE = 100
 
 # path to icons
-ICONS = '../icons'
-ICONS_S = ICONS + '/16x16/'
-ICONS_L = ICONS + '/24x24/'
+ICONS = '../icons/'
+ICONS_S = ICONS + '16x16/'
+ICONS_L = ICONS + '24x24/'
 
 # path to data (e.g. airfoil coordinate files)
 # path can be absolute or relative (to position where starting PyAero)

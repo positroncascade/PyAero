@@ -24,7 +24,7 @@ import PContourAnalysis
 import PGuiSlots
 import PVtkView
 import PToolBox
-from PSettings import *
+from PSettings import VIEWSTYLE, ICONS
 import PLogger as logger
 
 

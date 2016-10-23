@@ -10,9 +10,14 @@ from PSettings import DIALOGFILTER
 
 
 class Slots(object):
+    """This class handles all callback/handlers routines for GUI actions"""
 
     def __init__(self, parent=None):
+        """Constructor for Slots class
 
+        Args:
+            parent (QMainWindow object, optional): class MainWindow
+        """
         self.parent = parent
 
     @QtCore.pyqtSlot()
@@ -115,6 +120,7 @@ class Slots(object):
         preview.paintRequested.connect(self.handlePaintRequest)
         preview.exec_()
 
+    # setup printer for print preview
     def handlePaintRequest(self, printer):
         printer.setOrientation(QtGui.QPrinter.Landscape)
         self.parent.view.render(QtGui.QPainter(printer))
@@ -136,6 +142,13 @@ class Slots(object):
         else:
             checkbox = self.centralWidget().tools.cb1
             checkbox.setChecked(not checkbox.isChecked())
+
+    @QtCore.pyqtSlot()
+    def removeGraphicsItem(self):
+        """Remove all selected items from the scene"""
+        items = self.parent.scene.selectedItems()
+        for item in items:
+            self.parent.scene.removeItem(item)
 
     @QtCore.pyqtSlot()
     def onMessage(self, msg):
