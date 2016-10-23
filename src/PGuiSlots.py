@@ -32,7 +32,10 @@ class Slots(object):
             filename = dialog.selectedFiles()[0]
             selfilter = dialog.selectedFilter()
 
-        if not filename:
+        # do nothing if CANCLE button was pressed
+        try:
+            filename
+        except NameError:
             return
 
         if 'stl' in selfilter.toLower():  # method of QString object
