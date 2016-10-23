@@ -32,7 +32,7 @@ class Slots(object):
             filename = dialog.selectedFiles()[0]
             selfilter = dialog.selectedFilter()
 
-        # do nothing if CANCLE button was pressed
+        # do nothing if CANCEL button was pressed
         try:
             filename
         except NameError:
