@@ -15,7 +15,23 @@ from PSettings import CHORDLENGTH, MH32_COMPRESSED
 
 
 class Airfoil(object):
-    # call constructor of Airfoil
+    """Class to read airfoil data from file (or use predefined airfoil)
+
+    The Airfoil object carries several graphics items:
+        e.g. raw data, chord, camber, etc.
+
+    Attributes:
+        brushcolor (QColor): fill color for airfoil
+        chord (QGraphicsItem): Description
+        contour_group (TYPE): Description
+        item (QGraphicsItem): graphics item derived from QPolygonF object
+        markers (QGraphicsItem): color for airoil outline points
+        name (str): airfoil name
+        parent (QMainWindow): MainWindow instance
+        pencolor (QColor): color for airoil outline
+        penwidth (float): thickness of airfoil outline
+        raw_contour (list of QPointF): list of contour points
+    """
 
     def __init__(self, parent):
 
@@ -50,34 +66,56 @@ class Airfoil(object):
         y = [float(l.split()[1]) for l in data]
         points = [(px, py) for px, py in zip(x, y)]
 
+        # store contour points as type QPointF
         for pt in points:
             x = pt[0] * CHORDLENGTH
             y = pt[1] * CHORDLENGTH
             self.raw_contour.append(QtCore.QPointF(x, y))
+
+        # add airfoil points as GraphicsItem to the scene
+        self.addContour()
+        # create a group of items that carries conour, markers, etc.
+        self.createItemsGroup()
+        # add the markers to the group
+        self.addMarkers()
+        # add the chord to the group
+        self.addChord()
 
         fileinfo = QtCore.QFileInfo(self.name)
         name = fileinfo.fileName()
         logger.log.info('Airfoil <b><font color="#2784CB">' + name +
                         '</b> successfully loaded')
 
-        polygon = gc.GraphicsCollection()
-        polygon.pen.setColor(self.pencolor)
-        polygon.pen.setWidth(self.penwidth)
-        polygon.pen.setCosmetic(True)  # no pen thickness change when zoomed
-        polygon.brush.setColor(self.brushcolor)
+    def addContour(self):
+        """Add airfoil points as GraphicsItem to the scene"""
 
-        polygon.Polygon(self.raw_contour)
+        # instantiate a graphics item
+        contour = gc.GraphicsCollection()
+        # make it polygon type and populate its points
+        contour.Polygon(self.raw_contour)
+        # set its properties
+        contour.pen.setColor(self.pencolor)
+        contour.pen.setWidth(self.penwidth)
+        contour.pen.setCosmetic(True)  # no pen thickness change when zoomed
+        contour.brush.setColor(self.brushcolor)
 
-        self.item = self.parent.scene.addGraphicsItem(polygon)
+        # add contour as a GraphicsItem to the scene
+        # these are the objects which are drawn in the GraphicsView
+        self.item = self.parent.scene.addGraphicsItem(contour)
 
-        # add shadow effect to airfoil
-        # shadow = QtGui.QGraphicsDropShadowEffect()
-        # self.item.setGraphicsEffect(shadow)
+    def createItemsGroup(self):
+        """Container that treats a group of items as a single item
+        One item is the contour itself
+        Other items are chord, camber, point markers, etc.
+        """
+        self.contour_group = QtGui.QGraphicsItemGroup(parent=self.item,
+                                                      scene=self.parent.scene)
 
-        # for drawing raw contour points
-        self.raw_contour_group = QtGui. \
-            QGraphicsItemGroup(parent=self.item, scene=self.parent.scene)
+        # This stops the QGraphicsItemGroup trying to handle the event,
+        # and lets the child QGraphicsItems handle them
+        # self.contour_group.setHandlesChildEvents(false)
 
+    def addMarkers(self):
         for point in self.raw_contour:
             x = QtCore.QPointF(point).x()
             y = QtCore.QPointF(point).y()
@@ -88,25 +126,15 @@ class Airfoil(object):
             points.pen.setWidth(1.5)
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
             points.brush.setColor(QtGui.QColor(200, 0, 0, 255))
-
             points.Circle(x, y, 0.3)
-            item = PGraphicsItem.GraphicsItem(points, self.parent.scene)
 
-            self.raw_contour_group.addToGroup(item)
+            self.markers = PGraphicsItem.GraphicsItem(points,
+                                                      self.parent.scene)
+            # self.markers.setFlag(QtGui.QGraphicsItem.
+            #                      ItemIgnoresTransformations, True)
+            self.contour_group.addToGroup(self.markers)
 
-            # This stops the QGraphicsItemGroup trying to handle the event,
-            # and lets the child QGraphicsItems handle them
-            # setHandlesChildEvents(false)
-
-        # create line item for the chord
-        self.makeChord()
-
-    def getCoords(self):
-        x = [QtCore.QPointF(point).x() for point in self.raw_contour]
-        y = [QtCore.QPointF(point).y() for point in self.raw_contour]
-        return x, y
-
-    def makeChord(self):
+    def addChord(self):
         line = gc.GraphicsCollection()
         color = QtGui.QColor(70, 70, 70, 255)
         line.pen.setColor(color)
@@ -116,18 +144,16 @@ class Airfoil(object):
         line.pen.setStyle(QtCore.Qt.CustomDashLine)
         # pattern is 1px dash, 4px space, 7px dash, 4px
         line.pen.setDashPattern([1, 4, 10, 4])
-
         line.Line(0.0, 0.0, CHORDLENGTH, 0.0)
 
         self.chord = PGraphicsItem.GraphicsItem(line, self.parent.scene)
-        self.raw_contour_group.addToGroup(self.chord)
+        self.contour_group.addToGroup(self.chord)
 
     def camber(self):
-        for pt in self.raw_contour:
-            pass
+        pass
 
     def setPenColor(self, r, g, b, a):
         self.pencolor = QtGui.QColor(r, g, b, a)
 
     def setBrushColor(self, r, g, b, a):
-        self.Brushcolor = QtGui.QColor(r, g, b, a)
+        self.brushcolor = QtGui.QColor(r, g, b, a)
