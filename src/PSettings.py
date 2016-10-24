@@ -2,10 +2,8 @@
 # PyAero settings
 # ****************
 
-# scale factor for airfoil (standardized is size 0-1)
-# during saving the chord size specified for the airfoil will be used to get
-# the coordinate range in the specs set by the user
-AIRFOILSIZE = 100
+# airfoil chord length
+CHORDLENGTH = 0.3
 
 # path to icons
 ICONS = '../icons/'

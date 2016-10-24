@@ -11,7 +11,7 @@ from PyQt4 import QtGui, QtCore
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
-from PSettings import AIRFOILSIZE, MH32_COMPRESSED
+from PSettings import CHORDLENGTH, MH32_COMPRESSED
 
 
 class Airfoil(object):
@@ -41,18 +41,15 @@ class Airfoil(object):
                                MH32_COMPRESSED)))
         else:
             self.name = fname
-            with open(fname, mode='r') as f:
-                lines = f.readlines()
-                data = [line for line in lines if comment not in line]
+            f = open(fname, mode='r')
 
-        # slist is a nested list looking like [['1.0', '0.0'], ['0.9', '0.1'],
-        # ...]
-        slist = [row.strip('\n').split() for row in data]
-        points = [(float(pt[0]), float(pt[1])) for pt in slist]
+        lines = f.readlines()
+        data = [l.strip('\n').split() for l in lines if comment not in l]
+        points = [(float(pt[0]), float(pt[1])) for pt in data]
 
         for pt in points:
-            x = pt[0] * AIRFOILSIZE
-            y = pt[1] * AIRFOILSIZE
+            x = pt[0] * CHORDLENGTH
+            y = pt[1] * CHORDLENGTH
             self.raw_contour.append(QtCore.QPointF(x, y))
 
         fileinfo = QtCore.QFileInfo(self.name)
@@ -117,7 +114,7 @@ class Airfoil(object):
         # pattern is 1px dash, 4px space, 7px dash, 4px
         line.pen.setDashPattern([1, 4, 10, 4])
 
-        line.Line(0.0, 0.0, AIRFOILSIZE, 0.0)
+        line.Line(0.0, 0.0, CHORDLENGTH, 0.0)
 
         self.chord = PGraphicsItem.GraphicsItem(line, self.parent.scene)
         self.raw_contour_group.addToGroup(self.chord)
