@@ -1,3 +1,4 @@
+ 0 ... replace xml menus and tools by JSON formatted files
  1 ... screenshot using graphicsview --> render
  2 ... Help using QtHelp
  3 ... Konturanalyse --> stacked, tabbed, docking
