@@ -5,7 +5,7 @@
 <p align="center">PyAero GUI at a glance</p>
 
 ![](docs/images/RG15_mesh_part.png)
-<p align="center">Example mesh as used in the AVL-FIRE CFD code</p>
+<p align="center">Example mesh as used in the AVL-FIRE CFD code. Third mesh dimension in 2D is 1 cell layer.</p>
 
 ## Features
 
