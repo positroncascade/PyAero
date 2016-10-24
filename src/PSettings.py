@@ -3,7 +3,10 @@
 # ****************
 
 # airfoil chord length
-CHORDLENGTH = 0.3
+# FIXME
+# FIXME if e.g. not 100 then zoom etc. in graphicsview is wrong
+# FIXME
+CHORDLENGTH = 100.0
 
 # path to icons
 ICONS = '../icons/'
