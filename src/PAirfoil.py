@@ -39,13 +39,16 @@ class Airfoil(object):
             f = gzip.GzipFile(mode='rb',
                               fileobj=StringIO(base64.b64decode(
                                MH32_COMPRESSED)))
+            lines = f.readlines()
         else:
             self.name = fname
-            f = open(fname, mode='r')
+            with open(fname, mode='r') as f:
+                lines = f.readlines()
 
-        lines = f.readlines()
-        data = [l.strip('\n').split() for l in lines if comment not in l]
-        points = [(float(pt[0]), float(pt[1])) for pt in data]
+        data = [line for line in lines if comment not in line]
+        x = [float(l.split()[0]) for l in data]
+        y = [float(l.split()[1]) for l in data]
+        points = [(px, py) for px, py in zip(x, y)]
 
         for pt in points:
             x = pt[0] * CHORDLENGTH
