@@ -1,17 +1,11 @@
-"""
-Airfoil description and plotting class
-"""
-
-import base64
-from cStringIO import StringIO
-import gzip
+# -*- coding: utf-8 -*-
 
 from PyQt4 import QtGui, QtCore
 
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
-from PSettings import CHORDLENGTH, MH32_COMPRESSED
+from PSettings import CHORDLENGTH
 
 
 class Airfoil(object):
@@ -50,11 +44,7 @@ class Airfoil(object):
     def readContour(self, fname, comment='#'):
 
         if fname == 'predefined':
-            self.name = 'MH32.dat'
-            # decode and unzip
-            f = gzip.GzipFile(mode='rb',
-                              fileobj=StringIO(base64.b64decode(
-                               MH32_COMPRESSED)))
+            self.name = '"D:\Dropbox\PyAero\data\RC_Glider\mh32.dat"'
             lines = f.readlines()
         else:
             self.name = fname

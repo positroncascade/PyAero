@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 
-from PSettings import *
+from PSettings import AIRFOILDATA, FILEFILTER, ICONS_L
 import PLogger as logger
 
 
