@@ -2,7 +2,20 @@ from PyQt4 import QtGui, QtCore
 
 
 class GraphicsCollection(object):
-    def __init__(self, parent=None):
+    """Collection of custom graphics items which can be used to draw
+    QGraphicsItems within a scene.
+
+    The custom items are being made a QGraphicsItem in PGraphicsItem.
+    There each method needs 4 attributes:
+        self.rect ... bounding rectangle of the item (drawn when selected)
+        self.shape ... more accurate results for collision detection
+                       wrt to bounding rect
+        self.method ... draw method of QPainter (e.g. drawEllipse)
+                    see http://pyqt.sourceforge.net/Docs/PyQt4/qpainter.html
+        self.args ... list of arguments to self.method
+    """
+
+    def __init__(self):
 
         pen = QtGui.QPen(QtCore.Qt.SolidLine)
         pen.setColor(QtGui.QColor(0, 0, 0, 255))
@@ -20,7 +33,6 @@ class GraphicsCollection(object):
         self.scale = (1, 1)
         self.tooltip = ''
 
-        # must be method of QPainter
         self.method = ''
         self.args = []
 
@@ -53,10 +65,14 @@ class GraphicsCollection(object):
         self.args = [self.rect]
 
     def Polygon(self, polygon):
+        """Custom polygon graphics item pre-populated for PGraphicsItem
+
+        Args:
+            polygon (QPolygonF): x, y coordinates of points
         """
-        @polygon carries QtGui.QPolygonF() object
-        which consists of QPointF tuples
-        """
+        # FIXME
+        # FIXME check the bounding rect
+        # FIXME seems to be wrong now; affects onViewAll in PGuiSlots
         self.rect = polygon.boundingRect()
         self.shape.addPolygon(polygon)
         self.method = 'drawPolygon'

@@ -2,6 +2,7 @@ import math
 from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM
+import PLogger as logger
 
 
 class GraphicsView(QtGui.QGraphicsView):
@@ -161,6 +162,8 @@ class GraphicsView(QtGui.QGraphicsView):
     def scaleView(self, factor):
         f = self.matrix().scale(factor, factor). \
             mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
+        logger.log.info('Scalefactor %s, f = %s' % (factor, f))
+        logger.log.info('MINZOOM %s, MAXZOOM = %s' % (MINZOOM, MAXZOOM))
         if f < MINZOOM or f > MAXZOOM:
             return
         self.scale(factor, factor)

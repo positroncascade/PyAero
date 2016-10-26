@@ -6,10 +6,7 @@
 PYAEROPATH = '.'
 
 # airfoil chord length
-# FIXME
-# FIXME if e.g. not 100 then zoom etc. in graphicsview is wrong
-# FIXME
-CHORDLENGTH = 100.0
+CHORDLENGTH = 1.
 
 # path to icons
 ICONS = '../icons/'
@@ -35,9 +32,9 @@ SCROLLBARS = False
 # background of graphicsview ('solid', 'gradient')
 VIEWSTYLE = 'gradient'
 
-# zoom limits
-MINZOOM = 0.01
-MAXZOOM = 100
+# set zoom limits so that scene is always in meaningful size
+MINZOOM = 100.0
+MAXZOOM = 10000.
 
 # scale increment
-SCALEINC = 1.2
+SCALEINC = 1.1

@@ -22,8 +22,7 @@
         <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
     </Menubar>
     <Menubar name='Meshing'>
-        <Submenu name='Undo' tip='Undo last action' short='CTRL+z' icon='Undo.png' handler='onUndo'></Submenu>
-        <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
+        <Submenu name='Make Mesh' tip='Create a block-structured mesh' short='CTRL+m' icon='mesh.png' handler='onBlockMesh'></Submenu>
     </Menubar>
     <Menubar name='View'>
         <Submenu name='Fit airfoil in view' tip='Redo last action' short='CTRL+f' icon='' handler='fitAirfoilInView'></Submenu>

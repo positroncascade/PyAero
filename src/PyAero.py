@@ -56,8 +56,16 @@ class MainWindow(QtGui.QMainWindow):
 
         self.bgview = VIEWSTYLE
 
+        # From the PyQt docs:
+        # QGraphicsView can be used to visualize a whole scene, or only parts
+        # of it. The visualized area is by default detected automatically when
+        # the view is displayed for the first time
+        # by calling QGraphicsScene.itemsBoundingRect()
+        # To set the visualized area rectangle yourself, you
+        # can call setSceneRect().
         self.view = PGraphicsView.GraphicsView(self)
         self.scene = PGraphicsScene.GraphicsScene(self)
+        # tell the view on which scene it works on
         self.view.setScene(self.scene)
 
         # prepare additional views for tabs in right splitter window

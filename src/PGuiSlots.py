@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PyQt4 import QtGui, QtCore
@@ -6,11 +7,12 @@ import PyAero
 import PAirfoil
 import PGraphicsTest as gt
 import PIconProvider
-from PSettings import DIALOGFILTER
+from PSettings import DIALOGFILTER, AIRFOILDATA
+import PLogger as logger
 
 
 class Slots(object):
-    """This class handles all callback/handlers routines for GUI actions"""
+    """This class handles all callback routines for GUI actions"""
 
     def __init__(self, parent=None):
         """Constructor for Slots class
@@ -37,9 +39,9 @@ class Slots(object):
             filename = dialog.selectedFiles()[0]
             selfilter = dialog.selectedFilter()
 
-        # do nothing if CANCEL button was pressed
         try:
             filename
+        # do nothing if CANCEL button was pressed
         except NameError:
             return
 
@@ -50,7 +52,8 @@ class Slots(object):
 
     @QtCore.pyqtSlot()
     def onOpenPredefined(self):
-        self.loadAirfoil('predefined', '#')
+        filename = os.path.join(AIRFOILDATA, 'RC_Glider\mh32.dat')
+        self.loadAirfoil(filename, '#')
 
     def loadAirfoil(self, name, comment):
         self.parent.airfoil = PAirfoil.Airfoil(self.parent)
@@ -74,7 +77,14 @@ class Slots(object):
     @QtCore.pyqtSlot()
     def onViewAll(self):
         rect = self.parent.scene.itemsBoundingRect()
+        # FIXME
+        # FIXME itemsBoundingRect()
+        # FIXME
+        # logger.log.info('itemsBoundingRect: %s' % (rect))
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
+
+        # cache view to be able to keep it during resize
+        self.parent.view.getSceneFromView()
 
     @QtCore.pyqtSlot()
     def toggleObjects(self):
@@ -142,6 +152,10 @@ class Slots(object):
         else:
             checkbox = self.centralWidget().tools.cb1
             checkbox.setChecked(not checkbox.isChecked())
+
+    @QtCore.pyqtSlot()
+    def onBlockMesh(self):
+        pass
 
     @QtCore.pyqtSlot()
     def removeGraphicsItem(self):

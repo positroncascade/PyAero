@@ -5,7 +5,6 @@ from PyQt4 import QtGui, QtCore
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
-from PSettings import CHORDLENGTH
 
 
 class Airfoil(object):
@@ -36,20 +35,17 @@ class Airfoil(object):
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
         self.penwidth = 2.5
         self.brushcolor = QtGui.QColor(150, 150, 150, 255)
-        # FIXME
-        # FIXME work with graphicsitem.data to set key:value pairs
-        # FIXME as item information
-        # FIXME
 
-    def readContour(self, fname, comment='#'):
+    def readContour(self, filename, comment='#'):
 
-        if fname == 'predefined':
-            self.name = '"D:\Dropbox\PyAero\data\RC_Glider\mh32.dat"'
-            lines = f.readlines()
-        else:
-            self.name = fname
-            with open(fname, mode='r') as f:
+        self.name = filename
+
+        try:
+            with open(filename, mode='r') as f:
                 lines = f.readlines()
+        except IOError as e:
+            logger.log.info('%s: Unable to open file %s.' % (e, filename))
+            return
 
         data = [line for line in lines if comment not in line]
         x = [float(l.split()[0]) for l in data]
@@ -58,8 +54,8 @@ class Airfoil(object):
 
         # store contour points as type QPointF
         for pt in points:
-            x = pt[0] * CHORDLENGTH
-            y = pt[1] * CHORDLENGTH
+            x = pt[0]
+            y = pt[1]
             self.raw_contour.append(QtCore.QPointF(x, y))
 
         # add airfoil points as GraphicsItem to the scene
@@ -67,7 +63,7 @@ class Airfoil(object):
         # create a group of items that carries conour, markers, etc.
         self.createItemsGroup()
         # add the markers to the group
-        self.addMarkers()
+        self.addMarkers(type='circle')
         # add the chord to the group
         self.addChord()
 
@@ -105,7 +101,11 @@ class Airfoil(object):
         # and lets the child QGraphicsItems handle them
         # self.contour_group.setHandlesChildEvents(false)
 
-    def addMarkers(self):
+    def addMarkers(self, type='circle'):
+        """Create marker for polygon contour"""
+        # FIXME
+        # FIXME make more marker types in PGraphicsCollection
+        # FIXME
         for point in self.raw_contour:
             x = QtCore.QPointF(point).x()
             y = QtCore.QPointF(point).y()
@@ -116,7 +116,9 @@ class Airfoil(object):
             points.pen.setWidth(1.5)
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
             points.brush.setColor(QtGui.QColor(200, 0, 0, 255))
-            points.Circle(x, y, 0.3)
+
+            if type == 'circle':
+                points.Circle(x, y, 0.002)
 
             self.markers = PGraphicsItem.GraphicsItem(points,
                                                       self.parent.scene)
@@ -134,7 +136,7 @@ class Airfoil(object):
         line.pen.setStyle(QtCore.Qt.CustomDashLine)
         # pattern is 1px dash, 4px space, 7px dash, 4px
         line.pen.setDashPattern([1, 4, 10, 4])
-        line.Line(0.0, 0.0, CHORDLENGTH, 0.0)
+        line.Line(0.0, 0.0, 1.0, 0.0)
 
         self.chord = PGraphicsItem.GraphicsItem(line, self.parent.scene)
         self.contour_group.addToGroup(self.chord)
