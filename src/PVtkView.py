@@ -1,10 +1,11 @@
 import vtk
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 import PyAero
 import PLogger as logger
+from PSettings import LOGINFO
 
 
 class VtkWindow(QtGui.QFrame):
@@ -129,8 +130,8 @@ class VtkWindow(QtGui.QFrame):
         self.reader = vtk.vtkSTLReader()
         self.reader.SetFileName(str(name))
 
-        logger.log.info('STL file <b><font color="#2784CB">' + str(name) +
-                        '</b> successfully loaded')
+        logger.log.info('STL file <b><font color=LOGINFO>' + str(name) +
+                        '</b> loaded')
 
         self.mapper = vtk.vtkPolyDataMapper()
         self.mapper.SetInputConnection(self.reader.GetOutputPort())

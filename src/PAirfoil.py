@@ -5,6 +5,7 @@ from PyQt4 import QtGui, QtCore
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
+from PSettings import LOGINFO
 
 
 class Airfoil(object):
@@ -69,8 +70,8 @@ class Airfoil(object):
 
         fileinfo = QtCore.QFileInfo(self.name)
         name = fileinfo.fileName()
-        logger.log.info('Airfoil <b><font color="#2784CB">' + name +
-                        '</b> successfully loaded')
+        logger.log.info('Airfoil <b><font color=LOGINFO>' + name +
+                        '</b> loaded')
 
     def addContour(self):
         """Add airfoil points as GraphicsItem to the scene"""

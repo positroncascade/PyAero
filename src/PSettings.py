@@ -38,3 +38,6 @@ MAXZOOM = 10000.
 
 # scale increment
 SCALEINC = 1.1
+
+# logging color
+LOGINFO = '#2784CB'

@@ -1,5 +1,5 @@
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore
 import logging
 
 
@@ -12,6 +12,15 @@ import PLogger as logger
 logger.log.info('This is a plain log message.')
 logger.log.info(
     'This is a <b><font color="#2784CB">HTML customized</b> message.')
+
+Logging levels:
+
+    logger.log.info
+    logger.log.warning
+    logger.log.error
+    logger.log.critical
+    logger.log.exception
+
 """
 
 
