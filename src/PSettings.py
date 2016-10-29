@@ -40,4 +40,4 @@ MAXZOOM = 10000.
 SCALEINC = 1.1
 
 # logging color
-LOGINFO = '#2784CB'
+LOGCOLOR = '#1763E7'

@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
-from PSettings import LOGINFO
+from PSettings import LOGCOLOR
 
 
 class Airfoil(object):
@@ -61,7 +61,7 @@ class Airfoil(object):
 
         # add airfoil points as GraphicsItem to the scene
         self.addContour()
-        # create a group of items that carries conour, markers, etc.
+        # create a group of items that carries contour, markers, etc.
         self.createItemsGroup()
         # add the markers to the group
         self.addMarkers(type='circle')
@@ -70,7 +70,7 @@ class Airfoil(object):
 
         fileinfo = QtCore.QFileInfo(self.name)
         name = fileinfo.fileName()
-        logger.log.info('Airfoil <b><font color=LOGINFO>' + name +
+        logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
                         '</b> loaded')
 
     def addContour(self):
@@ -106,6 +106,12 @@ class Airfoil(object):
         """Create marker for polygon contour"""
         # FIXME
         # FIXME make more marker types in PGraphicsCollection
+        # FIXME and fix also scaling behaviour of markers
+        # FIXME
+        # FIXME the pen width influences the bounding rect of
+        # FIXME so that zoom home (i.e. fitallinView is affected)
+        # FIXME
+        # FIXME markers should be replaced by images/icons
         # FIXME
         for point in self.raw_contour:
             x = QtCore.QPointF(point).x()
@@ -113,13 +119,14 @@ class Airfoil(object):
 
             # put airfoil contour points as graphicsitem
             points = gc.GraphicsCollection()
+            # be careful with the penwidth as it affects bounding rect
+            points.pen.setWidth(0.0001)
             points.pen.setColor(QtGui.QColor(90, 90, 90, 255))
-            points.pen.setWidth(1.5)
+            points.brush.setColor(QtGui.QColor(255, 0, 0, 255))
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
-            points.brush.setColor(QtGui.QColor(200, 0, 0, 255))
 
             if type == 'circle':
-                points.Circle(x, y, 0.002)
+                points.Circle(x, y, 0.003)
 
             self.markers = PGraphicsItem.GraphicsItem(points,
                                                       self.parent.scene)
@@ -131,7 +138,7 @@ class Airfoil(object):
         line = gc.GraphicsCollection()
         color = QtGui.QColor(70, 70, 70, 255)
         line.pen.setColor(color)
-        line.pen.setWidth(1)
+        line.pen.setWidth(1.)
         line.pen.setCosmetic(True)  # no pen thickness change when zoomed
         line.pen.setJoinStyle(QtCore.Qt.RoundJoin)
         line.pen.setStyle(QtCore.Qt.CustomDashLine)

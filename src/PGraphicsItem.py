@@ -34,12 +34,10 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.font = item.font
         self.shape = item.shape
         self.hoverstyle = QtCore.Qt.SolidLine
-        self.hoverwidth = 1.5
+        self.hoverwidth = 0.01
 
-        self.focusrect = QtCore.QRectF(self.rect.left() - self.penwidth / 2,
-                                       self.rect.top() - self.penwidth / 2,
-                                       self.rect.width() + self.penwidth,
-                                       self.rect.height() + self.penwidth)
+        self.focusrect = QtCore.QRectF(self.rect.left(), self.rect.top(),
+                                       self.rect.width(), self.rect.height())
 
     def mousePressEvent(self, event):
 
@@ -105,7 +103,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.focusbrush = QtGui.QBrush()
         self.focuspen = QtGui.QPen(QtCore.Qt.DotLine)
         self.focuspen.setColor(QtCore.Qt.black)
-        self.focuspen.setWidthF(1.5)
+        self.focuspen.setWidthF(1.)
         self.focuspen.setCosmetic(True)  # no thickness change when zoomed
         painter.setBrush(self.focusbrush)
         painter.setPen(self.focuspen)

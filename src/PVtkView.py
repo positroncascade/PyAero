@@ -5,7 +5,7 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 import PyAero
 import PLogger as logger
-from PSettings import LOGINFO
+from PSettings import LOGCOLOR
 
 
 class VtkWindow(QtGui.QFrame):
@@ -122,6 +122,9 @@ class VtkWindow(QtGui.QFrame):
         elif key == 'g':
             self.setShading('gouraud')
         elif key == 'W':
+            # FIXME
+            # FIXME add dialog for filename
+            # FIXME
             self.writeStl('test_writing_STL.stl')
         elif key == 'h':
             self.makeScreenshot()
@@ -130,8 +133,8 @@ class VtkWindow(QtGui.QFrame):
         self.reader = vtk.vtkSTLReader()
         self.reader.SetFileName(str(name))
 
-        logger.log.info('STL file <b><font color=LOGINFO>' + str(name) +
-                        '</b> loaded')
+        logger.log.info('STL file <b><font color=%s>' % (LOGCOLOR) +
+                        str(name) + '</b> loaded')
 
         self.mapper = vtk.vtkPolyDataMapper()
         self.mapper.SetInputConnection(self.reader.GetOutputPort())

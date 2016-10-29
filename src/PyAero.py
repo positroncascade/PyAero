@@ -106,7 +106,7 @@ class MainWindow(QtGui.QMainWindow):
         gui.createStatusBar()
         gui.createDocks()
 
-        # show the GUI :)
+        # show the GUI
         self.show()
 
     # ********************************

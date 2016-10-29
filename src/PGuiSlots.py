@@ -69,6 +69,8 @@ class Slots(object):
         if self.parent.airfoil:  # fit only when airfoil loaded
             dx = 0.05 * self.parent.airfoil.item.rect.width()
             rect = self.parent.airfoil.item.rect.adjusted(-dx, 0, dx, 0)
+            # logger.log.info('Rect Fit Airfoil: %s' % (rect))
+            # logger.log.info('View rect: %s' % (self.parent.view.rect()))
             self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
 
             # cache view to be able to keep it during resize
@@ -76,11 +78,9 @@ class Slots(object):
 
     @QtCore.pyqtSlot()
     def onViewAll(self):
+        # calculates and returns the bounding rect of all items on the scene
         rect = self.parent.scene.itemsBoundingRect()
-        # FIXME
-        # FIXME itemsBoundingRect()
-        # FIXME
-        # logger.log.info('itemsBoundingRect: %s' % (rect))
+        # logger.log.info('Rect FitAll: %s' % (rect))
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
 
         # cache view to be able to keep it during resize

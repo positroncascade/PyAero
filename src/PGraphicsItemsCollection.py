@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+import PLogger as logger
 
 
 class GraphicsCollection(object):
@@ -37,23 +38,24 @@ class GraphicsCollection(object):
         self.args = []
 
     def Point(self, x, y):
-        # add some pixels to the point rect, so that it can be selected :)
-        eps = 4
-        self.rect = QtCore.QRectF(x-eps/2, y-eps/2, eps, eps)
+        # add some pixels to the point rect, so that it can be selected
+        eps = 0.02
+        self.rect = QtCore.QRectF(x-eps, y-eps, 2.*eps, 2.*eps)
         self.shape.addRect(self.rect)
         self.method = 'drawPoint'
         self.args = [x, y]
 
     def Line(self, x1, y1, x2, y2):
-        p1 = QtCore.QPointF(x1-1, y1-1)
-        p2 = QtCore.QPointF(x2+1, y2+1)
+        eps = 0.01
+        p1 = QtCore.QPointF(x1-eps, y1-eps)
+        p2 = QtCore.QPointF(x2+eps, y2+eps)
         self.rect = QtCore.QRectF(p1, p2)
         self.shape.addRect(self.rect)
         self.method = 'drawLine'
         self.args = [x1, y1, x2, y2]
 
     def Circle(self, x, y, r):
-        self.rect = QtCore.QRectF(x-r, y-r, 2*r, 2*r)
+        self.rect = QtCore.QRectF(x-r, y-r, 2.*r, 2.*r)
         self.shape.addEllipse(self.rect)
         self.method = 'drawEllipse'
         self.args = [self.rect]
@@ -70,9 +72,6 @@ class GraphicsCollection(object):
         Args:
             polygon (QPolygonF): x, y coordinates of points
         """
-        # FIXME
-        # FIXME check the bounding rect
-        # FIXME seems to be wrong now; affects onViewAll in PGuiSlots
         self.rect = polygon.boundingRect()
         self.shape.addPolygon(polygon)
         self.method = 'drawPolygon'
