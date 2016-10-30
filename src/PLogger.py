@@ -2,7 +2,6 @@ import sys
 from PyQt4 import QtCore
 import logging
 
-
 """
 Customized logger module which handles stdout and stderr.
 Log messages are either plain strings or can be in HTML format.

@@ -26,8 +26,3 @@ class GraphicsScene(QtGui.QGraphicsScene):
     def mouseMoveEvent(self, event):
         # handle event
         super(GraphicsScene, self).mouseMoveEvent(event)
-
-    def addGraphicsItem(self, geometry):
-        item = PGraphicsItem.GraphicsItem(geometry, self)
-        self.addItem(item)
-        return item

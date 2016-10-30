@@ -63,7 +63,7 @@ class GraphicsView(QtGui.QGraphicsView):
             QGraphicsView {border-style:solid; border-color: lightgrey; \
             border-width: 1px; background-color: QLinearGradient( \
             x1: 0.0, y1: 0.0, x2: 0.0, y2: 1.0, \
-            stop: 0.3 white, stop: 1.0 blue); } """)
+            stop: 0.4 white, stop: 1.0 blue); } """)
         else:
             style = ("""
             QGraphicsView { border-style:solid; border-color: lightgrey; \

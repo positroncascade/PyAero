@@ -27,15 +27,16 @@ class Airfoil(object):
         raw_contour (list of QPointF): list of contour points
     """
 
-    def __init__(self, parent):
+    def __init__(self, scene):
 
-        self.parent = parent
+        self.scene = scene
         self.name = None
         self.item = None
         self.raw_contour = QtGui.QPolygonF()
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
         self.penwidth = 2.5
         self.brushcolor = QtGui.QColor(150, 150, 150, 255)
+        self.home = None
 
     def readContour(self, filename, comment='#'):
 
@@ -88,7 +89,8 @@ class Airfoil(object):
 
         # add contour as a GraphicsItem to the scene
         # these are the objects which are drawn in the GraphicsView
-        self.item = self.parent.scene.addGraphicsItem(contour)
+        self.item = PGraphicsItem.GraphicsItem(contour, self.scene)
+        self.home = self.item.pos()
 
     def createItemsGroup(self):
         """Container that treats a group of items as a single item
@@ -96,7 +98,7 @@ class Airfoil(object):
         Other items are chord, camber, point markers, etc.
         """
         self.contour_group = QtGui.QGraphicsItemGroup(parent=self.item,
-                                                      scene=self.parent.scene)
+                                                      scene=self.scene)
 
         # This stops the QGraphicsItemGroup trying to handle the event,
         # and lets the child QGraphicsItems handle them
@@ -129,7 +131,7 @@ class Airfoil(object):
                 points.Circle(x, y, 0.003)
 
             self.markers = PGraphicsItem.GraphicsItem(points,
-                                                      self.parent.scene)
+                                                      self.scene)
             # self.markers.setFlag(QtGui.QGraphicsItem.
             #                      ItemIgnoresTransformations, True)
             self.contour_group.addToGroup(self.markers)
@@ -146,7 +148,7 @@ class Airfoil(object):
         line.pen.setDashPattern([1, 4, 10, 4])
         line.Line(0.0, 0.0, 1.0, 0.0)
 
-        self.chord = PGraphicsItem.GraphicsItem(line, self.parent.scene)
+        self.chord = PGraphicsItem.GraphicsItem(line, self.scene)
         self.contour_group.addToGroup(self.chord)
 
     def camber(self):

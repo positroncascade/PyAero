@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 
 import PGraphicsItemsCollection as gc
+import PGraphicsItem
 
 
 def addTestItems(scene):
@@ -59,14 +60,16 @@ def addTestItems(scene):
     polygon1.brush.setColor(QtGui.QColor(0, 0, 255, 150))
     polygon1.Polygon(polygon)
 
-    scene.itemc1 = scene.addGraphicsItem(circle1)
-    scene.itemc2 = scene.addGraphicsItem(circle2)
-    scene.itemc3 = scene.addGraphicsItem(circle3)
-    scene.itemc4 = scene.addGraphicsItem(circle4)
-    scene.itemr1 = scene.addGraphicsItem(rectangle1)
-    # scene.itemt1 = scene.addGraphicsItem(text1)
-    # scene.itemp1 = scene.addGraphicsItem(point1)
-    scene.itempo1 = scene.addGraphicsItem(polygon1)
+    item = PGraphicsItem.GraphicsItem(circle1, scene)
+    scene.itemc1 = scene.addItem(item)
+    item = PGraphicsItem.GraphicsItem(circle2, scene)
+    scene.itemc2 = scene.addItem(item)
+    item = PGraphicsItem.GraphicsItem(circle3, scene)
+    scene.itemc3 = scene.addItem(item)
+    item = PGraphicsItem.GraphicsItem(circle4, scene)
+    scene.itemc4 = scene.addItem(item)
+    item = PGraphicsItem.GraphicsItem(rectangle1, scene)
+    scene.itemr1 = scene.addItem(item)
 
 
 def deleteTestItems(scene):

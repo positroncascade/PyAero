@@ -8,17 +8,19 @@ import PAirfoil
 import PGraphicsTest as gt
 import PIconProvider
 from PSettings import DIALOGFILTER, AIRFOILDATA
-import PLogger as logger
+from PyQt4.Qt import PYQT_VERSION_STR
+from PyQt4.QtCore import QT_VERSION_STR
+from sip import SIP_VERSION_STR
 
 
 class Slots(object):
     """This class handles all callback routines for GUI actions"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         """Constructor for Slots class
 
         Args:
-            parent (QMainWindow object, optional): class MainWindow
+            parent (QMainWindow object): class MainWindow
         """
         self.parent = parent
 
@@ -56,7 +58,7 @@ class Slots(object):
         self.loadAirfoil(filename, '#')
 
     def loadAirfoil(self, name, comment):
-        self.parent.airfoil = PAirfoil.Airfoil(self.parent)
+        self.parent.airfoil = PAirfoil.Airfoil(self.parent.scene)
         self.parent.airfoil.readContour(name, comment)
         self.fitAirfoilInView()
 
@@ -87,7 +89,7 @@ class Slots(object):
         self.parent.view.getSceneFromView()
 
     @QtCore.pyqtSlot()
-    def toggleObjects(self):
+    def toggleTestObjects(self):
         if self.parent.testitems:
             gt.deleteTestItems(self.parent.scene)
         else:
@@ -243,4 +245,8 @@ class Slots(object):
                   "<a href='http://nbviewer.ipython.org/github/" +
                   "barbagroup/AeroPython/blob/master/lessons/" +
                   "11_Lesson11_vortexSourcePanelMethod.ipynb'> \
-                  <b>Aeropython</b></a> in an iPython notebook.")
+                  <b>Aeropython</b></a> in an iPython notebook." + "<br><br>"
+                  + "PyQt version: %s" % (PYQT_VERSION_STR) + "<br>"
+                  + "Qt version: %s" % (QT_VERSION_STR) + "<br>"
+                  + "SIP version: %s" % (SIP_VERSION_STR)
+                  )
