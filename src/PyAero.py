@@ -34,7 +34,7 @@ __credits__ = 'Internet and open source'
 __copyright__ = '2014-' + str(datetime.date.today().strftime("%Y")) + \
                 ' ' + __author__
 __license__ = 'MIT'
-__version__ = '0.5'
+__version__ = '0.6'
 __email__ = 'andreas.ennemoser@aon.at'
 __status__ = 'Prototype'
 
@@ -48,9 +48,14 @@ class MainWindow(QtGui.QMainWindow):
 
         self.parent = parent
 
+        # to get a list of available styles
+        # for style in QtGui.QStyleFactory.keys():
+        #     print style
+
         self.kit = ['Windows', 'WindowsXP', 'WindowsVista', 'Motif',
                     'CDE', 'Plastique', 'Cleanlooks']
-        # QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(self.kit[2]))
+
+        QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(self.kit[6]))
 
         self.airfoil = None
 

@@ -69,7 +69,17 @@ class Slots(object):
 
     @QtCore.pyqtSlot()
     def fitAirfoilInView(self):
-        if self.parent.airfoil:  # fit only when airfoil loaded
+        if self.parent.airfoil:
+
+            # FIXME
+            # FIXME move item back to its origin
+            # FIXME it could have been moved
+            # FIXME because ItemIsMovable in PGraphicsItem does not
+            # FIXME get the events or so
+            # FIXME
+            self.parent.airfoil.item.setX(0.0)
+            self.parent.airfoil.item.setY(0.0)
+
             dx = 0.05 * self.parent.airfoil.item.rect.width()
             rect = self.parent.airfoil.item.rect.adjusted(-dx, 0, dx, 0)
             # logger.log.info('Rect Fit Airfoil: %s' % (rect))

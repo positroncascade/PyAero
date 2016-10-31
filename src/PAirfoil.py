@@ -92,9 +92,6 @@ class Airfoil(object):
         self.item = PGraphicsItem.GraphicsItem(contour, self.scene)
         self.scene.addItem(self.item)
 
-        # store home position of contour
-        self.home = self.item.pos()
-
     def createItemsGroup(self):
         """Container that treats a group of items as a single item
         One item is the contour itself

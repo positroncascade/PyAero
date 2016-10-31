@@ -11,11 +11,11 @@ class GraphicsItem(QtGui.QGraphicsItem):
      which implements the actual painting.
     """
 
-    def __init__(self, item, parent=None):
+    def __init__(self, item, scene=None):
         # call constructor of QGraphicsItem
         super(GraphicsItem, self).__init__()
 
-        self.parent = parent
+        self.scene = scene
 
         # FIXME
         # FIXME This does not work. Possibly because mouse events are already
@@ -52,7 +52,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         # FIXME do this only when an item is clicked
         # FIXME
         # set item as topmost in stack
-        self.setZValue(self.parent.items()[0].zValue() + 1)
+        self.setZValue(self.scene.items()[0].zValue() + 1)
         self.setSelected(True)
 
         # handle event
