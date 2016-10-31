@@ -90,6 +90,9 @@ class Airfoil(object):
         # add contour as a GraphicsItem to the scene
         # these are the objects which are drawn in the GraphicsView
         self.item = PGraphicsItem.GraphicsItem(contour, self.scene)
+        self.scene.addItem(self.item)
+
+        # store home position of contour
         self.home = self.item.pos()
 
     def createItemsGroup(self):

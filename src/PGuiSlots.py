@@ -8,6 +8,7 @@ import PAirfoil
 import PGraphicsTest as gt
 import PIconProvider
 from PSettings import DIALOGFILTER, AIRFOILDATA
+import PLogger as logger
 from PyQt4.Qt import PYQT_VERSION_STR
 from PyQt4.QtCore import QT_VERSION_STR
 from sip import SIP_VERSION_STR
@@ -92,8 +93,10 @@ class Slots(object):
     def toggleTestObjects(self):
         if self.parent.testitems:
             gt.deleteTestItems(self.parent.scene)
+            logger.log.info('Test items for GraphicsView loaded')
         else:
             gt.addTestItems(self.parent.scene)
+            logger.log.info('Test items for GraphicsView removed')
         self.parent.testitems = not self.parent.testitems
 
     @QtCore.pyqtSlot()
@@ -231,22 +234,25 @@ class Slots(object):
                   "</b> is used for "
                   "2D airfoil contour analysis and CFD mesh generation.\
                   <br><br>"
-                  "Version : " + PyAero.__version__ + "<br>"
                   "<b>" + PyAero.__appname__ + "</b> code under " +
                   PyAero.__license__ +
-                  " license (c) " +
+                  " license. (c) " +
                   PyAero.__copyright__ + "<br><br>"
                   "email to: " + PyAero.__email__ + "<br>"
                   "Twitter: <a href='http://twitter.com/chiefenne'>\
                   @chiefenne</a><br><br>"
-                  "<b>Aeropython</b> code under MIT license. \
+                  "Embedded <b>Aeropython</b> code under MIT license. <br> \
                   (c) 2014 Lorena A. Barba, Olivier Mesnard<br>"
                   "Link to " +
                   "<a href='http://nbviewer.ipython.org/github/" +
                   "barbagroup/AeroPython/blob/master/lessons/" +
                   "11_Lesson11_vortexSourcePanelMethod.ipynb'> \
-                  <b>Aeropython</b></a> in an iPython notebook." + "<br><br>"
-                  + "PyQt version: %s" % (PYQT_VERSION_STR) + "<br>"
-                  + "Qt version: %s" % (QT_VERSION_STR) + "<br>"
-                  + "SIP version: %s" % (SIP_VERSION_STR)
+                  <b>Aeropython</b></a> (iPython notebook)." + "<br><br>"
+                  + "<b>VERSIONS:</b>" + "<br>"
+                  + PyAero.__appname__ + ": " + PyAero.__version__ +
+                  "<br>"
+                  + "Python: %s" % (sys.version.split()[0]) + "<br>"
+                  + "PyQt: %s" % (PYQT_VERSION_STR) + "<br>"
+                  + "Qt: %s" % (QT_VERSION_STR) + "<br>"
+                  + "SIP: %s" % (SIP_VERSION_STR)
                   )

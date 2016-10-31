@@ -60,16 +60,16 @@ def addTestItems(scene):
     polygon1.brush.setColor(QtGui.QColor(0, 0, 255, 150))
     polygon1.Polygon(polygon)
 
-    item = PGraphicsItem.GraphicsItem(circle1, scene)
-    scene.itemc1 = scene.addItem(item)
-    item = PGraphicsItem.GraphicsItem(circle2, scene)
-    scene.itemc2 = scene.addItem(item)
-    item = PGraphicsItem.GraphicsItem(circle3, scene)
-    scene.itemc3 = scene.addItem(item)
-    item = PGraphicsItem.GraphicsItem(circle4, scene)
-    scene.itemc4 = scene.addItem(item)
-    item = PGraphicsItem.GraphicsItem(rectangle1, scene)
-    scene.itemr1 = scene.addItem(item)
+    scene.itemc1 = PGraphicsItem.GraphicsItem(circle1, scene)
+    scene.addItem(scene.itemc1)
+    scene.itemc2 = PGraphicsItem.GraphicsItem(circle2, scene)
+    scene.addItem(scene.itemc2)
+    scene.itemc3 = PGraphicsItem.GraphicsItem(circle3, scene)
+    scene.addItem(scene.itemc3)
+    scene.itemc4 = PGraphicsItem.GraphicsItem(circle4, scene)
+    scene.addItem(scene.itemc4)
+    scene.itemr1 = PGraphicsItem.GraphicsItem(rectangle1, scene)
+    scene.addItem(scene.itemr1)
 
 
 def deleteTestItems(scene):
@@ -79,6 +79,3 @@ def deleteTestItems(scene):
     scene.removeItem(scene.itemc3)
     scene.removeItem(scene.itemc4)
     scene.removeItem(scene.itemr1)
-    # scene.removeItem(scene.itemt1)
-    # scene.removeItem(scene.itemp1)
-    scene.removeItem(scene.itempo1)
