@@ -1,6 +1,4 @@
-from PyQt4 import QtGui, QtCore
-
-import PGraphicsItem
+from PyQt4 import QtGui
 
 
 class GraphicsScene(QtGui.QGraphicsScene):
