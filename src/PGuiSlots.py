@@ -63,14 +63,17 @@ class Slots(object):
         filename = os.path.join(AIRFOILDATA, 'RC_Glider\mh32.dat')
         self.loadAirfoil(filename, comment='#')
 
-    def loadAirfoil(self, name, comment='#'):
+    def loadAirfoil(self, filename, comment='#'):
+        # FIXME
+        # FIXME check for multiple loaded airfoils and how to mange them
+        # FIXME
         self.parent.airfoil = PAirfoil.Airfoil(self.parent.scene)
-        loaded = self.parent.airfoil.readContour(name, comment)
+        loaded = self.parent.airfoil.readContour(filename, comment)
         self.parent.airfoil.addToScene()
         self.fitAirfoilInView()
 
         if loaded:
-            fileinfo = QtCore.QFileInfo(self.name)
+            fileinfo = QtCore.QFileInfo(filename)
             name = fileinfo.fileName()
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
                             '</b> loaded')
