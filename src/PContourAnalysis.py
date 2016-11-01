@@ -22,11 +22,13 @@ class ContourAnalysis(QtGui.QFrame):
 
         self.parent = parent
         self.spline_data = None
-        self.curvature = None
+        self.curvature_data = None
 
         # a figure instance to plot on
-        self.figure = plt.figure(figsize=(20, 30))
-        r, g, b = 100./255., 100./255., 255./255.
+        self.figure = plt.figure(figsize=(25, 35))
+
+        # background of figures
+        r, g, b = 150./255., 150./255., 150./255.
         self.figure.patch.set_facecolor(color=(r, g, b))
 
         # this is the Canvas Widget that displays the `figure`
@@ -135,8 +137,8 @@ class ContourAnalysis(QtGui.QFrame):
                     first = False
 
                 if verbose:
-                    logger.log.info('Refining between %s %s %s %s %s %s\n'
-                                    % (i, i + 1, t1, t2, tol, angle))
+                    logger.log.info('Refining between %s %s, Tol=%05.1f Angle=%05.1f\n'
+                                    % (i, i + 1, tol, angle))
 
                 # add points to polygon
                 if i > 0 and not refined[i - 1]:
@@ -202,19 +204,14 @@ class ContourAnalysis(QtGui.QFrame):
         curvature = d / n**(3./2.)
 
         # radius of curvature
-        radius = n**(3./2.) / abs(d)
-
-        print 'coo', len(coo[0])
-        print 'der1', len(der1[0])
-        print 'rad', len(radius)
-        print 'n', len(n)
+        radius = n**(3./2.) / np.abs(d)
 
         # coordinates of curvature-circle center points
         xc = coo[0] - radius * der1[0] / np.sqrt(n)
         yc = coo[1] + radius * der1[1] / np.sqrt(n)
 
-        self.curvature = (gradient, curvature, radius, xc, yc)
-        return (gradient, curvature, radius, xc, yc)
+        self.curvature_data = [gradient, curvature, radius, xc, yc]
+        return self.curvature_data
 
     def analyze(self, tolerance, spline_points):
 
@@ -226,37 +223,68 @@ class ContourAnalysis(QtGui.QFrame):
         self.spline(points=spline_points, degree=2, evaluate=False)
 
         # refine the contour in order to meet the tolerance
-        self.refine(tol=tolerance, verbose=True)
+        self.refine(tol=tolerance, verbose=False)
+
+        # add new information to airfoil
+        self.parent.airfoil.spline_data = self.spline_data
+        self.parent.airfoil.curvature_data = self.curvature_data
 
         # get specific curve properties
         self.getCurvature()
 
+        self.drawContour()
+
     def drawContour(self):
 
         x, y = self.raw_coordinates
-        xr, yr = self.coordinates
+        xr, yr = self.spline_data[0]
+        gradient = self.curvature_data[0]
+        radius = self.curvature_data[2]
 
         # create an axis
-        ax1 = self.figure.add_subplot(211, frame_on=False)
-        # ax2 = self.figure.add_subplot(212, frame_on=False)
-        # ax3 = self.figure.add_subplot(413, frame_on=False)
+        ax1 = self.figure.add_subplot(311, frame_on=False)
+        ax2 = self.figure.add_subplot(312, frame_on=False)
+        ax3 = self.figure.add_subplot(313, frame_on=False)
         # ax4 = self.figure.add_subplot(414, frame_on=False)
 
         # plot data
-        r, g, b = 39./255., 40./255., 34./255.
-        ax1.plot(x, y, ls='o', color=(r, g, b), linewidth=3)
-        ax1.plot(xr, yr, 'yo', zorder=30)  # curvature circle center
-        # ax1.add_patch(circle)
-        ax1.set_title('Contour', fontsize=14)
-        ax1.set_xlim(-10.0, 110.0)
+        r, g, b = 30./255., 30./255., 30./255.
+        ax1.plot(x, y, marker='o', color=(r, g, b), linewidth=2)
+        ax1.set_title('Original Contour', fontsize=14)
+        ax1.set_xlim(-0.05, 1.05)
         # ax1.set_ylim(-10.0, 14.0)
-        r, g, b = 249./255., 38./255., 114./255.
+        r, g, b = 255./255., 100./255., 100./255.
         ax1.fill(x, y, color=(r, g, b))
         ax1.set_aspect('equal')
 
-        # ax2.plot(coo[0], gradient, 'go-', linewidth=3)
-        # ax2.set_title('Gradient', fontsize=14)
-        # ax2.set_xlim(-10.0, 110.0)
+        r, g, b = 30./255., 30./255., 30./255.
+        ax2.plot(xr, yr, marker='o', color=(r, g, b), linewidth=2)
+        ax2.set_title('Refined Contour', fontsize=14)
+        ax2.set_xlim(-0.05, 1.05)
+        # ax2.set_ylim(-10.0, 14.0)
+        r, g, b = 100./255., 255./255., 100./255.
+        ax2.fill(xr, yr, color=(r, g, b))
+        ax2.set_aspect('equal')
+
+        r, g, b = 30./255., 30./255., 30./255.
+        ax3.plot(xr, radius, color=(r, g, b), linewidth=2)
+        ax3.set_title('Radius of Curvature', fontsize=14)
+        ax3.set_xlim(-0.05, 1.05)
+        ax3.set_ylim(-2.0, 40.0)
+        r, g, b = 180./255., 255./255., 180./255.
+        ax3.fill(xr, radius, color=(r, g, b))
+        # ax3.set_aspect('equal')
+
+        # r, g, b = 39./255., 40./255., 34./255.
+        # ax4.plot(xr, gradient, color=(r, g, b), linewidth=3)
+        # ax4.set_title('Gradient of Contour', fontsize=14)
+        # ax4.set_xlim(-0.05, 1.05)
+        # # ax4.set_ylim(-10.0, 14.0)
+        # r, g, b = 249./255., 38./255., 114./255.
+        # ax4.fill(xr, gradient, color=(r, g, b))
+        # ax4.set_aspect('equal')
+
+        plt.tight_layout()
 
         # refresh canvas
         self.canvas.draw()
