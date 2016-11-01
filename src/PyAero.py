@@ -24,7 +24,7 @@ import PContourAnalysis
 import PGuiSlots
 import PVtkView
 import PToolBox
-from PSettings import VIEWSTYLE, ICONS
+from PSettings import VIEWSTYLE, ICONS, LOCALE
 import PLogger as logger
 
 
@@ -74,7 +74,7 @@ class MainWindow(QtGui.QMainWindow):
         self.view.setScene(self.scene)
 
         # prepare additional views for tabs in right splitter window
-        self.contourview = PContourAnalysis.Contour(self)
+        self.contourview = PContourAnalysis.ContourAnalysis(self)
         self.meshingview = PGraphicsView.GraphicsView(self)
         self.postview = PVtkView.VtkWindow(self)
 
@@ -167,6 +167,11 @@ class CentralWidget(QtGui.QWidget):
 def main():
     app = QtGui.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(ICONS+'app_image.png'))
+
+    if LOCALE == 'C':
+        # set default local to C, so that decimal separator is a
+        # dot in spin boxes, etc.
+        QtCore.QLocale.setDefault(QtCore.QLocale.c())
 
     window = MainWindow()
     window.showMaximized()
