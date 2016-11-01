@@ -5,6 +5,11 @@
 # path to PyAero installation
 PYAEROPATH = '.'
 
+# set locale for decimal separators
+# can be either 'C' or ''
+# if string is empty than system default locale is used
+LOCALE = 'C'
+
 # airfoil chord length
 CHORDLENGTH = 1.
 
@@ -23,7 +28,9 @@ DIALOGFILTER = 'Airfoil contour files (*.dat *.txt);;STL files (*.stl)'
 # set the filter for files to be shown in the airfoil browser
 FILEFILTER = ['*.dat', '*.txt', '*.msh']
 
-# set anchor when zooming (mouse pointer 'mouse' or view center 'center')
+# set anchor for zooming
+# 'mouse' means zooming wrt to mouse pointer location
+# 'center' means zooming wrt to the view center
 ZOOMANCHOR = 'mouse'
 
 # visibility of scroolbars in graphicsview (True, False)
