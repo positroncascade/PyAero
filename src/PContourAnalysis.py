@@ -10,24 +10,23 @@ import numpy as np
 import scipy.interpolate as si
 
 from PyQt4 import QtGui
-import PUtils as Utils
+from PUtils import Utils as utils
 
 import PLogger as logger
 
 
-class Contour(QtGui.QFrame):
+class ContourAnalysis(QtGui.QFrame):
 
     def __init__(self, parent=None):
-        super(Contour, self).__init__(parent)
+        super(ContourAnalysis, self).__init__(parent)
 
         self.parent = parent
-        self.raw_coordinates = self.parent.airfoil.raw_coordinates
-        self.coordinates = None
-        self.spline = None
+        self.spline_data = None
+        self.curvature = None
 
         # a figure instance to plot on
         self.figure = plt.figure(figsize=(20, 30))
-        r, g, b = 100./255., 100./255., 100./255.
+        r, g, b = 100./255., 100./255., 255./255.
         self.figure.patch.set_facecolor(color=(r, g, b))
 
         # this is the Canvas Widget that displays the `figure`
@@ -54,8 +53,7 @@ class Contour(QtGui.QFrame):
                                        the coordinates of the knots
         """
 
-        x = self.raw_coordinates[0]
-        y = self.raw_coordinates[1]
+        x, y = self.raw_coordinates
 
         # interpolate B-spline through data points
         # returns knots of control polygon
@@ -81,8 +79,7 @@ class Contour(QtGui.QFrame):
         # evaluate 2nd derivative at given parameters
         der2 = si.splev(t, tck, der=2)
 
-        self.spline = [coo, u, t, der1, der2, tck]
-        self.coordinates = coo
+        self.spline_data = [coo, u, t, der1, der2, tck]
 
         return coo, u, t, der1, der2, tck
 
@@ -93,19 +90,19 @@ class Contour(QtGui.QFrame):
         tol is met.
 
         Args:
-            xo (TYPE): Description
-            yo (TYPE): Description
-            tol (float, optional): Description
-            spline_pts (int, optional): Description
+            tol (float, optional): Angle between two adjacent contour segments
+            recursions (int, optional): NO USER INPUT HERE
+                                        Needed just for level information
+                                        during recursions
+            verbose (bool, optional): Activate logger messages
         """
 
-        xx = self.spline[0][0]
-        yy = self.spline[0][1]
-        t = self.spline[2]
-        tck = self.spline[5]
+        xx, yy = self.spline_data[0]
+        t = self.spline_data[2]
+        tck = self.spline_data[5]
 
         if verbose:
-            print '\nPoints before refining: %s' % (len(xx))
+            logger.log.info('\nPoints before refining: %s \n' % (len(xx)))
 
         xn = copy.deepcopy(xx)
         yn = copy.deepcopy(yy)
@@ -126,19 +123,20 @@ class Contour(QtGui.QFrame):
             t2 = (t[i + 1] + t[i + 2]) / 2.
             p1 = si.splev(t1, tck, der=0)
             p2 = si.splev(t2, tck, der=0)
-            angle = Utils.angle_between(a - b, c - b, degree=True)
+            angle = utils.angle_between(a - b, c - b, degree=True)
             if angle < tol:
                 refined[i] = True
                 refinements += 1
 
                 if first and recursions > 0:
                     if verbose:
-                        print 'Recursion level: ', recursions
+                        logger.log.info('Recursion level: %s \n' %
+                                        (recursions))
                     first = False
 
                 if verbose:
-                    print 'Refining between points', i, i + 1, t1, t2, \
-                        tol, angle
+                    logger.log.info('Refining between %s %s %s %s %s %s\n'
+                                    % (i, i + 1, t1, t2, tol, angle))
 
                 # add points to polygon
                 if i > 0 and not refined[i - 1]:
@@ -152,11 +150,15 @@ class Contour(QtGui.QFrame):
                 j += 1
 
         if verbose:
-            print 'Points after refining: %s' % (len(xn))
+            logger.log.info('Points after refining: %s' % (len(xn)))
 
-        self.spline[0] = (xn, yn)
-        self.spline[2] = tn
-        self.coordinates = (xn, yn)
+        # update coordinate array, including inserted points
+        self.spline_data[0] = (xn, yn)
+        # update parameter array, including parameters of inserted points
+        self.spline_data[2] = tn
+        # update derivatives, including parameters of inserted points
+        self.spline_data[3] = si.splev(tn, tck, der=1)
+        self.spline_data[4] = si.splev(tn, tck, der=2)
 
         # recursive refinement
         if refinements > 0:
@@ -167,30 +169,84 @@ class Contour(QtGui.QFrame):
         else:
 
             if verbose:
-                print 'No more refinements.'
-                print '\nTotal number of recursions: ', recursions - 1
+                logger.log.info('No more refinements.')
+                logger.log.info('\nTotal number of recursions: %s'
+                                % (recursions - 1))
             return
+
+    def getCurvature(self):
+        """Curvature and radius of curvature of a parametric curve
+
+        der1 is dx/dt and dy/dt at each point
+        der2 is d2x/dt2 and d2y/dt2 at each point
+
+        Returns:
+            float: Tuple of numpy arrays carrying gradient of the curve,
+                   the curvature, radiusses of curvature circles and
+                   curvature circle centers for each point of the curve
+        """
+
+        coo = self.spline_data[0]
+        der1 = self.spline_data[3]
+        der2 = self.spline_data[4]
+
+        x2d = der2[0]
+        y2d = der2[1]
+        n = der1[0]**2 + der1[1]**2
+        d = der1[0]*y2d - der1[1]*x2d
+
+        # gradient dy/dx = dy/du / dx/du
+        gradient = der1[1] / der1[0]
+
+        # curvature
+        curvature = d / n**(3./2.)
+
+        # radius of curvature
+        radius = n**(3./2.) / abs(d)
+
+        print 'coo', len(coo[0])
+        print 'der1', len(der1[0])
+        print 'rad', len(radius)
+        print 'n', len(n)
+
+        # coordinates of curvature-circle center points
+        xc = coo[0] - radius * der1[0] / np.sqrt(n)
+        yc = coo[1] + radius * der1[1] / np.sqrt(n)
+
+        self.curvature = (gradient, curvature, radius, xc, yc)
+        return (gradient, curvature, radius, xc, yc)
 
     def analyze(self, tolerance, spline_points):
 
+        # raw coordinates are stored as numpy array
+        # np.array( (x, y) )
+        self.raw_coordinates = self.parent.airfoil.raw_coordinates
+
+        # interpolate a spline through the raw contour points
         self.spline(points=spline_points, degree=2, evaluate=False)
-        self.refine(tol=tolerance, verbose=False)
+
+        # refine the contour in order to meet the tolerance
+        self.refine(tol=tolerance, verbose=True)
+
+        # get specific curve properties
+        self.getCurvature()
 
     def drawContour(self):
 
+        x, y = self.raw_coordinates
+        xr, yr = self.coordinates
+
         # create an axis
         ax1 = self.figure.add_subplot(211, frame_on=False)
-        ax2 = self.figure.add_subplot(212, frame_on=False)
+        # ax2 = self.figure.add_subplot(212, frame_on=False)
         # ax3 = self.figure.add_subplot(413, frame_on=False)
         # ax4 = self.figure.add_subplot(414, frame_on=False)
 
         # plot data
         r, g, b = 39./255., 40./255., 34./255.
         ax1.plot(x, y, ls='o', color=(r, g, b), linewidth=3)
-        ax1.plot(coo[0], coo[1], 'go', zorder=20)  # leading edge
-        ax1.plot(xg, yg, 'mo', zorder=30)  # leading edge
         ax1.plot(xr, yr, 'yo', zorder=30)  # curvature circle center
-        ax1.add_patch(circle)
+        # ax1.add_patch(circle)
         ax1.set_title('Contour', fontsize=14)
         ax1.set_xlim(-10.0, 110.0)
         # ax1.set_ylim(-10.0, 14.0)
@@ -198,9 +254,9 @@ class Contour(QtGui.QFrame):
         ax1.fill(x, y, color=(r, g, b))
         ax1.set_aspect('equal')
 
-        ax2.plot(coo[0], gradient, 'go-', linewidth=3)
-        ax2.set_title('Gradient', fontsize=14)
-        ax2.set_xlim(-10.0, 110.0)
+        # ax2.plot(coo[0], gradient, 'go-', linewidth=3)
+        # ax2.set_title('Gradient', fontsize=14)
+        # ax2.set_xlim(-10.0, 110.0)
 
         # refresh canvas
         self.canvas.draw()
