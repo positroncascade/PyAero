@@ -39,7 +39,7 @@ class Toolbox(object):
         layout.setAlignment(QtCore.Qt.AlignTop)
 
         # ******************************************
-        # toolbox item2
+        # toolbox item2 --> Aeropython settings
         # ******************************************
         form = QtGui.QFormLayout()
 
@@ -74,7 +74,7 @@ class Toolbox(object):
         runbtn.clicked.connect(self.runPanelMethod)
 
         # ******************************************
-        # toolbox item3
+        # toolbox item3 --> Settings for contour analysis
         # ******************************************
         form3 = QtGui.QFormLayout()
 
@@ -82,8 +82,8 @@ class Toolbox(object):
         self.tolerance = QtGui.QDoubleSpinBox()
         self.tolerance.setSingleStep(0.1)
         self.tolerance.setDecimals(1)
-        self.tolerance.setRange(160.0, 175.0)
-        self.tolerance.setValue(169.0)
+        self.tolerance.setRange(165.0, 175.0)
+        self.tolerance.setValue(172.0)
         form3.addRow(label4, self.tolerance)
 
         label5 = QtGui.QLabel('Number points on spline (-)')
@@ -178,11 +178,7 @@ class Toolbox(object):
             self.noairfoilWarning('Can\'t run AeroPython')
             return
 
-        x = list()
-        y = list()
-        for point in self.parent.airfoil.raw_coordinates:
-            x.append(QtCore.QPointF(point).x())
-            y.append(QtCore.QPointF(point).y())
+        x, y = self.parent.airfoil.raw_coordinates
 
         u_inf = self.freestream.value()
         alpha = self.spin.value()
@@ -207,7 +203,7 @@ class Toolbox(object):
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \
             information(self.parent, 'Information',
-                        'No airfoil loaded. Can\'t do %s.' % (action),
+                        'No airfoil loaded. %s.' % (action),
                         QtGui.QMessageBox.Ok, QtGui.QMessageBox.NoButton,
                         QtGui.QMessageBox.NoButton)
         return
