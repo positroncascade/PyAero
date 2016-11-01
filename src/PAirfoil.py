@@ -34,6 +34,7 @@ class Airfoil(object):
         self.scene = scene
         self.name = None
         self.item = None
+        self.type = 'airfoil'
         self.raw_coordinates = None
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
         self.penwidth = 2.5
@@ -75,7 +76,8 @@ class Airfoil(object):
         # instantiate a graphics item
         contour = gc.GraphicsCollection()
         # make it polygon type and populate its points
-        contour.Polygon(self.raw_coordinates)
+        points = [QtCore.QPointF(x, y) for x, y in zip(*self.raw_coordinates)]
+        contour.Polygon(QtGui.QPolygonF(points))
         # set its properties
         contour.pen.setColor(self.pencolor)
         contour.pen.setWidth(self.penwidth)
@@ -108,11 +110,9 @@ class Airfoil(object):
         # FIXME the pen width influences the bounding rect of
         # FIXME so that zoom home (i.e. fitallinView is affected)
         # FIXME
-        # FIXME markers should be replaced by images/icons
+        # FIXME markers could be replaced by images/icons
         # FIXME
-        for point in self.raw_coordinates:
-            x = QtCore.QPointF(point).x()
-            y = QtCore.QPointF(point).y()
+        for x, y in zip(*self.raw_coordinates):
 
             # put airfoil contour points as graphicsitem
             points = gc.GraphicsCollection()
