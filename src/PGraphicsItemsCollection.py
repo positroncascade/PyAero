@@ -1,5 +1,4 @@
 from PyQt4 import QtGui, QtCore
-import PLogger as logger
 
 
 class GraphicsCollection(object):
