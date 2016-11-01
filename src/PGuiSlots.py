@@ -7,7 +7,8 @@ import PyAero
 import PAirfoil
 import PGraphicsTest as gt
 import PIconProvider
-from PSettings import DIALOGFILTER, AIRFOILDATA
+from PSettings import DIALOGFILTER, AIRFOILDATA, LOGCOLOR
+
 import PLogger as logger
 from PyQt4.Qt import PYQT_VERSION_STR
 from PyQt4.QtCore import QT_VERSION_STR
@@ -15,13 +16,17 @@ from sip import SIP_VERSION_STR
 
 
 class Slots(object):
-    """This class handles all callback routines for GUI actions"""
+    """This class handles all callback routines for GUI actions
+
+    PyQt uses signals and slots for GUI events and their respective
+    handlers/callbacks.
+    """
 
     def __init__(self, parent):
         """Constructor for Slots class
 
         Args:
-            parent (QMainWindow object): class MainWindow
+            parent (QMainWindow object): MainWindow which emits signals
         """
         self.parent = parent
 
@@ -51,17 +56,24 @@ class Slots(object):
         if 'stl' in selfilter.toLower():  # method of QString object
             self.parent.postview.readStl(filename)
         else:
-            self.loadAirfoil(filename, '#')
+            self.loadAirfoil(filename, comment='#')
 
     @QtCore.pyqtSlot()
     def onOpenPredefined(self):
         filename = os.path.join(AIRFOILDATA, 'RC_Glider\mh32.dat')
-        self.loadAirfoil(filename, '#')
+        self.loadAirfoil(filename, comment='#')
 
-    def loadAirfoil(self, name, comment):
+    def loadAirfoil(self, name, comment='#'):
         self.parent.airfoil = PAirfoil.Airfoil(self.parent.scene)
-        self.parent.airfoil.readContour(name, comment)
+        loaded = self.parent.airfoil.readContour(name, comment)
+        self.parent.airfoil.addToScene()
         self.fitAirfoilInView()
+
+        if loaded:
+            fileinfo = QtCore.QFileInfo(self.name)
+            name = fileinfo.fileName()
+            logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
+                            '</b> loaded')
 
     @QtCore.pyqtSlot()
     def onPredefinedSTL(self):

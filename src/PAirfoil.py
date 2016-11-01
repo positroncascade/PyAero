@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 from PyQt4 import QtGui, QtCore
 
 import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PLogger as logger
-from PSettings import LOGCOLOR
 
 
 class Airfoil(object):
@@ -17,14 +18,15 @@ class Airfoil(object):
     Attributes:
         brushcolor (QColor): fill color for airfoil
         chord (QGraphicsItem): Description
-        contour_group (TYPE): Description
+        contour_group (QGraphicsItemGroup): Container for all items
+            which belong to the airfoil contour
         item (QGraphicsItem): graphics item derived from QPolygonF object
         markers (QGraphicsItem): color for airoil outline points
         name (str): airfoil name
-        parent (QMainWindow): MainWindow instance
         pencolor (QColor): color for airoil outline
         penwidth (float): thickness of airfoil outline
-        raw_contour (list of QPointF): list of contour points
+        raw_coordinates (numpy array): list of contour points as tuples
+        scene (QGraphicsScene): PyAero graphics scene
     """
 
     def __init__(self, scene):
@@ -32,11 +34,10 @@ class Airfoil(object):
         self.scene = scene
         self.name = None
         self.item = None
-        self.raw_contour = QtGui.QPolygonF()
+        self.raw_coordinates = None
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
         self.penwidth = 2.5
         self.brushcolor = QtGui.QColor(150, 150, 150, 255)
-        self.home = None
 
     def readContour(self, filename, comment='#'):
 
@@ -47,19 +48,18 @@ class Airfoil(object):
                 lines = f.readlines()
         except IOError as e:
             logger.log.info('%s: Unable to open file %s.' % (e, filename))
-            return
+            return False
 
         data = [line for line in lines if comment not in line]
         x = [float(l.split()[0]) for l in data]
         y = [float(l.split()[1]) for l in data]
-        points = [(px, py) for px, py in zip(x, y)]
 
-        # store contour points as type QPointF
-        for pt in points:
-            x = pt[0]
-            y = pt[1]
-            self.raw_contour.append(QtCore.QPointF(x, y))
+        # store airfoil coordinates as list of tuples
+        self.raw_coordinates = np.array((x, y))
 
+        return True
+
+    def addToScene(self):
         # add airfoil points as GraphicsItem to the scene
         self.addContour()
         # create a group of items that carries contour, markers, etc.
@@ -69,18 +69,13 @@ class Airfoil(object):
         # add the chord to the group
         self.addChord()
 
-        fileinfo = QtCore.QFileInfo(self.name)
-        name = fileinfo.fileName()
-        logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
-                        '</b> loaded')
-
     def addContour(self):
         """Add airfoil points as GraphicsItem to the scene"""
 
         # instantiate a graphics item
         contour = gc.GraphicsCollection()
         # make it polygon type and populate its points
-        contour.Polygon(self.raw_contour)
+        contour.Polygon(self.raw_coordinates)
         # set its properties
         contour.pen.setColor(self.pencolor)
         contour.pen.setWidth(self.penwidth)
@@ -115,7 +110,7 @@ class Airfoil(object):
         # FIXME
         # FIXME markers should be replaced by images/icons
         # FIXME
-        for point in self.raw_contour:
+        for point in self.raw_coordinates:
             x = QtCore.QPointF(point).x()
             y = QtCore.QPointF(point).y()
 

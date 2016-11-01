@@ -180,7 +180,7 @@ class Toolbox(object):
 
         x = list()
         y = list()
-        for point in self.parent.airfoil.raw_contour:
+        for point in self.parent.airfoil.raw_coordinates:
             x.append(QtCore.QPointF(point).x())
             y.append(QtCore.QPointF(point).y())
 
