@@ -39,7 +39,7 @@ class Slots(object):
         dialog.setIconProvider(provider)
         dialog.setNameFilter(DIALOGFILTER)
         dialog.setNameFilterDetailsVisible(True)
-        dialog.setDirectory('data')
+        dialog.setDirectory(AIRFOILDATA)
         dialog.setFileMode(QtGui.QFileDialog.ExistingFile)
 
         # open custom file dialog using custom icons
