@@ -88,8 +88,8 @@ class Toolbox(object):
 
         label5 = QtGui.QLabel('Number points on spline (-)')
         self.spline_points = QtGui.QSpinBox()
-        self.spline_points.setRange(30, 1000)
-        self.spline_points.setValue(300)
+        self.spline_points.setRange(50, 500)
+        self.spline_points.setValue(200)
         form3.addRow(label5, self.spline_points)
 
         button1 = QtGui.QPushButton('Contour analysis')
