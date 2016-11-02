@@ -10,7 +10,7 @@ import math
 import numpy
 from scipy import integrate
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore
 
 import PLogger as logger
 
@@ -95,6 +95,7 @@ def define_panels(x, y, N=40):
                 break
             else:
                 I += 1
+
         a = (y[I+1]-y[I])/(x[I+1]-x[I])
         b = y[I+1] - a*x[I+1]
         y_ends[i] = a*x_ends[i] + b
@@ -154,104 +155,107 @@ def source_matrix(panels):
 
 def vortex_array(panels):
     """Builds the vortex array.
-    
+
     Arguments
     ---------
     panels - array of panels.
-    
+
     Returns
     -------
     a -- 1D array (Nx1, N is the number of panels).
     """
     a = numpy.zeros(len(panels), dtype=float)
-    
+
     for i, p_i in enumerate(panels):
         for j, p_j in enumerate(panels):
             if i != j:
                 a[i] -= 0.5/math.pi*integral(p_i.xc, p_i.yc, p_j, +math.sin(p_i.beta), -math.cos(p_i.beta))
-    
+
     return a
 
 
 def kutta_array(panels):
     """Builds the Kutta-condition array.
-    
+
     Arguments
     ---------
     panels -- array of panels.
-    
+
     Returns
     -------
     a -- 1D array (Nx1, N is the number of panels).
     """
     N = len(panels)
     a = numpy.zeros(N+1, dtype=float)
-    
-    a[0] = 0.5/math.pi*integral(panels[N-1].xc, panels[N-1].yc, panels[0], 
+
+    a[0] = 0.5/math.pi*integral(panels[N-1].xc, panels[N-1].yc, panels[0],
                            -math.sin(panels[N-1].beta), +math.cos(panels[N-1].beta))
-    a[N-1] = 0.5/math.pi*integral(panels[0].xc, panels[0].yc, panels[N-1], 
+    a[N-1] = 0.5/math.pi*integral(panels[0].xc, panels[0].yc, panels[N-1],
                              -math.sin(panels[0].beta), +math.cos(panels[0].beta))
-    
+
     for i, panel in enumerate(panels[1:N-1]):
-        a[i] = 0.5/math.pi*(integral(panels[0].xc, panels[0].yc, panel, 
+        a[i] = 0.5/math.pi*(integral(panels[0].xc, panels[0].yc, panel,
                                -math.sin(panels[0].beta), +math.cos(panels[0].beta))
-                     + integral(panels[N-1].xc, panels[N-1].yc, panel, 
+                     + integral(panels[N-1].xc, panels[N-1].yc, panel,
                                -math.sin(panels[N-1].beta), +math.cos(panels[N-1].beta)) )
 
-        a[N] -= 0.5/math.pi*(integral(panels[0].xc, panels[0].yc, panel, 
+        a[N] -= 0.5/math.pi*(integral(panels[0].xc, panels[0].yc, panel,
                                +math.cos(panels[0].beta), +math.sin(panels[0].beta))
-                     + integral(panels[N-1].xc, panels[N-1].yc, panel, 
+                     + integral(panels[N-1].xc, panels[N-1].yc, panel,
                                +math.cos(panels[N-1].beta), +math.sin(panels[N-1].beta)) )
-    
+
     return a
+
 
 def build_matrix(panels):
     """Builds the matrix of the linear system.
-    
+
     Arguments
     ---------
     panels -- array of panels.
-    
+
     Returns
     -------
     A -- (N+1)x(N+1) matrix (N is the number of panels).
     """
     N = len(panels)
     A = numpy.empty((N+1, N+1), dtype=float)
-    
+
     AS = source_matrix(panels)
     av = vortex_array(panels)
     ak = kutta_array(panels)
-    
+
     A[0:N,0:N], A[0:N,N], A[N,:] = AS[:,:], av[:], ak[:]
-    
+
     return A
+
 
 def build_rhs(panels, freestream):
     """Builds the RHS of the linear system.
-    
+
     Arguments
     ---------
     panels -- array of panels.
     freestream -- farfield conditions.
-    
+
     Returns
     -------
     b -- 1D array ((N+1)x1, N is the number of panels).
     """
     N = len(panels)
     b = numpy.empty(N+1,dtype=float)
-    
+
     for i, panel in enumerate(panels):
         b[i] = - freestream.u_inf * math.cos(freestream.alpha - panel.beta)
     b[N] = -freestream.u_inf*( math.sin(freestream.alpha-panels[0].beta)
                               +math.sin(freestream.alpha-panels[N-1].beta) )
-    
+
     return b
+
 
 def get_tangential_velocity(panels, freestream, gamma):
     """Computes the tangential velocity on the surface.
-    
+
     Arguments
     ---------
     panels -- array of panels.
@@ -261,7 +265,7 @@ def get_tangential_velocity(panels, freestream, gamma):
     N = len(panels)
     A = numpy.empty((N, N+1), dtype=float)
     numpy.fill_diagonal(A, 0.0)
-    
+
     for i, p_i in enumerate(panels):
         for j, p_j in enumerate(panels):
             if i != j:
@@ -269,16 +273,17 @@ def get_tangential_velocity(panels, freestream, gamma):
                 A[i,N] -= 0.5/math.pi*integral(p_i.xc, p_i.yc, p_j, +math.cos(p_i.beta), +math.sin(p_i.beta))
 
     b = freestream.u_inf * numpy.sin([freestream.alpha - panel.beta for panel in panels])
-    
+
     var = numpy.append([panel.sigma for panel in panels], gamma)
-    
+
     vt = numpy.dot(A, var) + b
     for i, panel in enumerate(panels):
         panel.vt = vt[i]
 
+
 def get_velocity_field(panels, freestream, X, Y):
     """Returns the velocity field.
-    
+
     Arguments
     ---------
     panels -- array of panels.
@@ -287,20 +292,21 @@ def get_velocity_field(panels, freestream, X, Y):
     """
     Nx, Ny = X.shape
     u, v = numpy.empty((Nx, Ny), dtype=float), numpy.empty((Nx, Ny), dtype=float)
-    
+
     for i in xrange(Nx):
         for j in xrange(Ny):
             u[i,j] = freestream.u_inf*math.cos(freestream.alpha)\
                      + 0.5/math.pi*sum([p.sigma*integral(X[i,j], Y[i,j], p, 1, 0) for p in panels])
             v[i,j] = freestream.u_inf*math.sin(freestream.alpha)\
                      + 0.5/math.pi*sum([p.sigma*integral(X[i,j], Y[i,j], p, 0, 1) for p in panels])
-    
+
     return u, v
 
 
 def get_pressure_field(u, v, freestream):
     cp = 1.0 - (u**2+v**2)/freestream.u_inf**2
     return cp
+
 
 def get_meshgrid(panels, Nx, Ny, val_x, val_y):
     # defines a mesh grid
@@ -315,9 +321,10 @@ def get_meshgrid(panels, Nx, Ny, val_x, val_y):
 
     return X, Y
 
+
 def get_pressure_coefficient(panels, freestream):
     """Computes the surface pressure coefficients.
-    
+
     Arguments
     ---------
     panels -- array of panels.
@@ -326,10 +333,12 @@ def get_pressure_coefficient(panels, freestream):
     for panel in panels:
         panel.cp = 1.0 - (panel.vt/freestream.u_inf)**2
 
+
 def runSVP(x, y, u_inf, alpha, npanel=40):
 
     x = numpy.array(x)
     y = numpy.array(y)
+
     panels = define_panels(x, y, npanel)  # discretizes of the geometry into panels
 
     # plots the geometry and the panels
@@ -380,4 +389,3 @@ def runSVP(x, y, u_inf, alpha, npanel=40):
     cl = gamma*sum(panel.length for panel in panels)/(0.5*freestream.u_inf*(x_max-x_min))
     #print '--> Lift coefficient: Cl = %.3f' % cl
     logger.log.info('<b>Lift coefficient Cl = %.3f [-]</b> @Uinf = %.2f, @AOA = %.1f' % (cl, u_inf, alpha))
-
