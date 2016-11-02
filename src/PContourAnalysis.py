@@ -16,8 +16,18 @@ import PLogger as logger
 
 
 class ContourAnalysis(QtGui.QFrame):
+    """Summary
 
-    def __init__(self, parent=None):
+    Attributes:
+        canvas (TYPE): Description
+        curvature_data (TYPE): Description
+        figure (TYPE): Description
+        parent (QMainWindow object): MainWindow instance
+        raw_coordinates (list): contour points as tuples
+        spline_data (TYPE): Description
+        toolbar (TYPE): Description
+    """
+    def __init__(self, parent):
         super(ContourAnalysis, self).__init__(parent)
 
         self.parent = parent
@@ -45,7 +55,7 @@ class ContourAnalysis(QtGui.QFrame):
         layout.addWidget(self.canvas)
         self.setLayout(layout)
 
-    def spline(self, points=200, degree=2, evaluate=False):
+    def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
 
         Args:
@@ -55,13 +65,11 @@ class ContourAnalysis(QtGui.QFrame):
                                        the coordinates of the knots
         """
 
-        x, y = self.raw_coordinates
-
         # interpolate B-spline through data points
         # returns knots of control polygon
         # tck ... tuple (t,c,k) containing the vector of knots,
         # the B-spline coefficients, and the degree of the spline.
-        # u ... array of the parameters
+        # u ... array of the parameters for each knot
         tck, u = si.splprep([x, y], s=0, k=degree)
 
         # number of points on interpolated B-spline (parameter t)
@@ -83,7 +91,7 @@ class ContourAnalysis(QtGui.QFrame):
 
         self.spline_data = [coo, u, t, der1, der2, tck]
 
-        return coo, u, t, der1, der2, tck
+        return self.spline_data
 
     def refine(self, tol=170.0, recursions=0, verbose=False):
         """Recursive refinement with respect to angle criterion (tol).
@@ -99,6 +107,7 @@ class ContourAnalysis(QtGui.QFrame):
             verbose (bool, optional): Activate logger messages
         """
 
+        # self.spline_data = [coo, u, t, der1, der2, tck]
         xx, yy = self.spline_data[0]
         t = self.spline_data[2]
         tck = self.spline_data[5]
@@ -118,17 +127,35 @@ class ContourAnalysis(QtGui.QFrame):
         for i in range(len(xx) - 2):
             refined[i] = False
 
+            # angle between two contour line segments
             a = np.array([xx[i], yy[i]])
             b = np.array([xx[i + 1], yy[i + 1]])
             c = np.array([xx[i + 2], yy[i + 2]])
-            t1 = (t[i] + t[i + 1]) / 2.
-            t2 = (t[i + 1] + t[i + 2]) / 2.
-            p1 = si.splev(t1, tck, der=0)
-            p2 = si.splev(t2, tck, der=0)
             angle = utils.angle_between(a - b, c - b, degree=True)
+
             if angle < tol:
+
                 refined[i] = True
                 refinements += 1
+
+                # parameters for new points
+                t1 = (t[i] + t[i + 1]) / 2.
+                t2 = (t[i + 1] + t[i + 2]) / 2.
+
+                # coordinates of new points
+                p1 = si.splev(t1, tck, der=0)
+                p2 = si.splev(t2, tck, der=0)
+
+                # insert points and their parameters into arrays
+                if i > 0 and not refined[i - 1]:
+                    xn = np.insert(xn, i + 1 + j, p1[0])
+                    yn = np.insert(yn, i + 1 + j, p1[1])
+                    tn = np.insert(tn, i + 1 + j, t1)
+                    j += 1
+                xn = np.insert(xn, i + 2 + j, p2[0])
+                yn = np.insert(yn, i + 2 + j, p2[1])
+                tn = np.insert(tn, i + 2 + j, t2)
+                j += 1
 
                 if first and recursions > 0:
                     if verbose:
@@ -140,17 +167,6 @@ class ContourAnalysis(QtGui.QFrame):
                     logger.log.info('Refining between %s %s, Tol=%05.1f Angle=%05.1f\n'
                                     % (i, i + 1, tol, angle))
 
-                # add points to polygon
-                if i > 0 and not refined[i - 1]:
-                    xn = np.insert(xn, i + 1 + j, p1[0])
-                    yn = np.insert(yn, i + 1 + j, p1[1])
-                    tn = np.insert(tn, i + 1 + j, t1)
-                    j += 1
-                xn = np.insert(xn, i + 2 + j, p2[0])
-                yn = np.insert(yn, i + 2 + j, p2[1])
-                tn = np.insert(tn, i + 2 + j, t2)
-                j += 1
-
         if verbose:
             logger.log.info('Points after refining: %s' % (len(xn)))
 
@@ -158,9 +174,6 @@ class ContourAnalysis(QtGui.QFrame):
         self.spline_data[0] = (xn, yn)
         # update parameter array, including parameters of inserted points
         self.spline_data[2] = tn
-        # update derivatives, including parameters of inserted points
-        self.spline_data[3] = si.splev(tn, tck, der=1)
-        self.spline_data[4] = si.splev(tn, tck, der=2)
 
         # recursive refinement
         if refinements > 0:
@@ -169,6 +182,10 @@ class ContourAnalysis(QtGui.QFrame):
 
         # stopping from recursion if no refinements done in this recursion
         else:
+
+            # update derivatives, including inserted points
+            self.spline_data[3] = si.splev(tn, tck, der=1)
+            self.spline_data[4] = si.splev(tn, tck, der=2)
 
             if verbose:
                 logger.log.info('No more refinements.')
@@ -192,40 +209,46 @@ class ContourAnalysis(QtGui.QFrame):
         der1 = self.spline_data[3]
         der2 = self.spline_data[4]
 
+        xd = der1[0]
+        yd = der1[1]
         x2d = der2[0]
         y2d = der2[1]
-        n = der1[0]**2 + der1[1]**2
-        d = der1[0]*y2d - der1[1]*x2d
+        n = xd**2 + yd**2
+        d = xd*y2d - yd*x2d
 
         # gradient dy/dx = dy/du / dx/du
         gradient = der1[1] / der1[0]
-
-        # curvature
-        curvature = d / n**(3./2.)
-
         # radius of curvature
-        radius = n**(3./2.) / np.abs(d)
+        R = n**(3./2.) / abs(d)
+        # curvature
+        C = d / n**(3./2.)
 
         # coordinates of curvature-circle center points
-        xc = coo[0] - radius * der1[0] / np.sqrt(n)
-        yc = coo[1] + radius * der1[1] / np.sqrt(n)
+        xc = coo[0] - R * yd / np.sqrt(n)
+        yc = coo[1] + R * xd / np.sqrt(n)
 
-        self.curvature_data = [gradient, curvature, radius, xc, yc]
+        self.curvature_data = [gradient, C, R, xc, yc]
         return self.curvature_data
 
     def analyze(self, tolerance, spline_points):
 
         # raw coordinates are stored as numpy array
         # np.array( (x, y) )
+
         self.raw_coordinates = self.parent.airfoil.raw_coordinates
 
         # interpolate a spline through the raw contour points
-        self.spline(points=spline_points, degree=2, evaluate=False)
+        x, y = self.raw_coordinates
+        self.spline(x, y, points=spline_points, degree=2)
 
         # refine the contour in order to meet the tolerance
         self.refine(tol=tolerance, verbose=False)
 
-        # add new information to airfoil
+        # # update spline
+        # x, y = self.spline_data[0]
+        # self.spline(x, y, points=spline_points, degree=2)
+
+        # add new attributes to airfoil instance
         self.parent.airfoil.spline_data = self.spline_data
         self.parent.airfoil.curvature_data = self.curvature_data
 
@@ -249,20 +272,20 @@ class ContourAnalysis(QtGui.QFrame):
 
         # plot data
         r, g, b = 30./255., 30./255., 30./255.
-        ax1.plot(x, y, marker='o', color=(r, g, b), linewidth=2)
+        ax1.plot(x, y, marker='o', mfc='r', color=(r, g, b), linewidth=2)
         ax1.set_title('Original Contour', fontsize=14)
         ax1.set_xlim(-0.05, 1.05)
         # ax1.set_ylim(-10.0, 14.0)
-        r, g, b = 255./255., 100./255., 100./255.
+        r, g, b = 120./255., 120./255., 120./255.
         ax1.fill(x, y, color=(r, g, b))
         ax1.set_aspect('equal')
 
         r, g, b = 30./255., 30./255., 30./255.
-        ax2.plot(xr, yr, marker='o', color=(r, g, b), linewidth=2)
+        ax2.plot(xr, yr, marker='o', mfc='r', color=(r, g, b), linewidth=2)
         ax2.set_title('Refined Contour', fontsize=14)
         ax2.set_xlim(-0.05, 1.05)
         # ax2.set_ylim(-10.0, 14.0)
-        r, g, b = 100./255., 255./255., 100./255.
+        r, g, b = 90./255., 90./255., 90./255.
         ax2.fill(xr, yr, color=(r, g, b))
         ax2.set_aspect('equal')
 
@@ -271,7 +294,7 @@ class ContourAnalysis(QtGui.QFrame):
         ax3.set_title('Radius of Curvature', fontsize=14)
         ax3.set_xlim(-0.05, 1.05)
         ax3.set_ylim(-2.0, 40.0)
-        r, g, b = 180./255., 255./255., 180./255.
+        r, g, b = 90./255., 90./255., 90./255.
         ax3.fill(xr, radius, color=(r, g, b))
         # ax3.set_aspect('equal')
 
