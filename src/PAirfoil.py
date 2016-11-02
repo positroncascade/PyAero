@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import numpy as np
 
@@ -96,10 +95,8 @@ class Airfoil(object):
         """
         self.contour_group = QtGui.QGraphicsItemGroup(parent=self.item,
                                                       scene=self.scene)
-
-        # This stops the QGraphicsItemGroup trying to handle the event,
-        # and lets the child QGraphicsItems handle them
-        # self.contour_group.setHandlesChildEvents(false)
+        self.markers = QtGui.QGraphicsItemGroup(parent=self.item,
+                                                scene=self.scene)
 
     def addMarkers(self, type='circle'):
         """Create marker for polygon contour"""
@@ -125,11 +122,10 @@ class Airfoil(object):
             if type == 'circle':
                 points.Circle(x, y, 0.003)
 
-            self.markers = PGraphicsItem.GraphicsItem(points,
-                                                      self.scene)
-            # self.markers.setFlag(QtGui.QGraphicsItem.
-            #                      ItemIgnoresTransformations, True)
-            self.contour_group.addToGroup(self.markers)
+            marker = PGraphicsItem.GraphicsItem(points, self.scene)
+            self.markers.addToGroup(marker)
+
+        self.contour_group.addToGroup(self.markers)
 
     def addChord(self):
         line = gc.GraphicsCollection()

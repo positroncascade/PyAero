@@ -3,6 +3,7 @@
 from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
+import PLogger as logger
 
 
 class Toolbox(object):
@@ -89,7 +90,7 @@ class Toolbox(object):
         label5 = QtGui.QLabel('Number points on spline (-)')
         self.spline_points = QtGui.QSpinBox()
         self.spline_points.setRange(50, 500)
-        self.spline_points.setValue(200)
+        self.spline_points.setValue(150)
         form3.addRow(label5, self.spline_points)
 
         button1 = QtGui.QPushButton('Contour analysis')
@@ -116,9 +117,10 @@ class Toolbox(object):
         self.cb1 = QtGui.QCheckBox('Message window')
         self.cb1.setChecked(True)
         self.cb2 = QtGui.QCheckBox('Airfoil points')
-        self.cb2.setChecked(False)
+        self.cb2.setChecked(True)
         self.cb3 = QtGui.QCheckBox('Airfoil spline')
         self.cb3.setChecked(False)
+        self.cb3.setEnabled(False) # fixme: remove when cb3 is implemented
         self.cb4 = QtGui.QCheckBox('Chord')
         self.cb4.setChecked(True)
         layout.addWidget(self.cb1)
@@ -162,7 +164,9 @@ class Toolbox(object):
     @QtCore.pyqtSlot()
     def toggleRawPoints(self):
         """Toggle points from raw airfoil contour (on/off)"""
-        pass
+        if self.parent.airfoil.markers:
+            visible = self.parent.airfoil.markers.isVisible()
+            self.parent.airfoil.markers.setVisible(not visible)
 
     @QtCore.pyqtSlot()
     def toggleChord(self):
@@ -196,9 +200,8 @@ class Toolbox(object):
         # switch tab to contour analysis
         self.parent.centralwidget.tabs.setCurrentIndex(1)
 
-        tolerance = self.tolerance.value()
-        points = self.spline_points.value()
-        self.parent.contourview.analyze(tolerance, points)
+        self.parent.contourview.analyze(self.tolerance.value(),
+                                        self.spline_points.value())
 
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \
