@@ -143,9 +143,7 @@ class CentralWidget(QtGui.QWidget):
         self.tools = PToolBox.Toolbox(self.parent)
         self.splitter.addWidget(self.tools.toolBox)
 
-        # add QGraphicsView widget to the right pane
         self.tabs = QtGui.QTabWidget()
-
         self.tabs.addTab(self.parent.view, 'Airfoil')
         self.tabs.addTab(self.parent.contourview, 'Contour Analysis')
         self.tabs.addTab(self.parent.meshingview, 'Meshing')
@@ -154,6 +152,7 @@ class CentralWidget(QtGui.QWidget):
         # connect tab changed signal to slot
         self.tabs.currentChanged.connect(self.parent.slots.onTabChanged)
 
+        # add Tabs to the right pane of the splitter
         self.splitter.addWidget(self.tabs)
 
         self.splitter.setSizes([100, 400])  # initial hint for splitter spacing

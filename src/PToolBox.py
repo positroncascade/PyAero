@@ -7,7 +7,6 @@ import PLogger as logger
 
 
 class Toolbox(object):
-    # call constructor of toolbox
 
     def __init__(self, parent):
         """Main menus for PyAero functionality.
@@ -136,9 +135,9 @@ class Toolbox(object):
 
         # populate toolbox
         self.tab1 = self.toolBox.addItem(item1, 'Airfoil Database')
-        self.tab2 = self.toolBox.addItem(item2, 'Aerodynamics')
         self.tab3 = self.toolBox.addItem(item3, 'Contour Analysis')
         self.tab4 = self.toolBox.addItem(item4, 'Meshing')
+        self.tab2 = self.toolBox.addItem(item2, 'Aerodynamics')
         self.tab5 = self.toolBox.addItem(item5, 'Viewing options')
 
         self.toolBox.setItemToolTip(0, 'Create a report summarizing \
