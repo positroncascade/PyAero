@@ -230,7 +230,7 @@ class ContourAnalysis(QtGui.QFrame):
         self.curvature_data = [gradient, C, R, xc, yc]
         return self.curvature_data
 
-    def analyze(self, tolerance, spline_points):
+    def analyze(self, tolerance, spline_points, plot):
 
         # interpolate a spline through the raw contour points
         x, y = self.parent.airfoil.raw_coordinates
@@ -238,7 +238,7 @@ class ContourAnalysis(QtGui.QFrame):
 
         # refine the contour in order to meet the tolerance
         self.refine(tol=tolerance, verbose=False)
-        
+
         # redo spline on refined contour
         # spline only evaluated at refined contour points (evaluate=True)
         coo, u, t, der1, der2, tck = self.spline_data
@@ -247,7 +247,7 @@ class ContourAnalysis(QtGui.QFrame):
 
         # get specific curve properties
         curve_data = self.getCurvature()
-        
+
         # add new attributes to airfoil instance
         self.parent.airfoil.spline_data = self.spline_data
         self.parent.airfoil.curvature_data = self.curvature_data
@@ -255,11 +255,11 @@ class ContourAnalysis(QtGui.QFrame):
         # get specific curve properties
         self.getCurvature()
 
-        self.drawContour()
+        self.drawContour(plot)
 
-        return  curve_data, self.spline_data
+        return curve_data, self.spline_data
 
-    def drawContour(self):
+    def drawContour(self, plot):
 
         # curvature_data --> gradient, C, R, xc, yc
 
@@ -294,23 +294,35 @@ class ContourAnalysis(QtGui.QFrame):
         ax2.fill(xr, yr, color=(r, g, b))
         ax2.set_aspect('equal')
 
-        r, g, b = 30./255., 30./255., 30./255.
-        ax3.plot(xr, curvature, marker='o', mfc='r', color=(r, g, b), linewidth=2)
-        ax3.set_title('Curvature', fontsize=14)
-        ax3.set_xlim(-0.05, 1.05)
-        #ax3.set_ylim(-2.0, 40.0)
-        r, g, b = 90./255., 90./255., 90./255.
-        ax3.fill(xr, curvature, color=(r, g, b))
+        if plot == 1:
+            r, g, b = 30./255., 30./255., 30./255.
+            ax3.plot(xr, gradient, marker='o', mfc='r', color=(r, g, b),
+                     linewidth=2)
+            ax3.set_title('Gradient', fontsize=14)
+            ax3.set_xlim(-0.05, 1.05)
+            # ax3.set_ylim(-2.0, 40.0)
+            r, g, b = 90./255., 90./255., 90./255.
+            ax3.fill(xr, gradient, color=(r, g, b))
+        if plot == 2:
+            r, g, b = 30./255., 30./255., 30./255.
+            ax3.plot(xr, curvature, marker='o', mfc='r', color=(r, g, b),
+                     linewidth=2)
+            ax3.set_title('Curvature', fontsize=14)
+            ax3.set_xlim(-0.05, 1.05)
+            # ax3.set_ylim(-2.0, 40.0)
+            r, g, b = 90./255., 90./255., 90./255.
+            ax3.fill(xr, curvature, color=(r, g, b))
+        if plot == 3:
+            r, g, b = 30./255., 30./255., 30./255.
+            ax3.plot(xr, radius, marker='o', mfc='r', color=(r, g, b),
+                     linewidth=2)
+            ax3.set_title('Radius of Curvature', fontsize=14)
+            ax3.set_xlim(-0.05, 1.05)
+            # ax3.set_ylim(-2.0, 40.0)
+            r, g, b = 90./255., 90./255., 90./255.
+            ax3.fill(xr, radius, color=(r, g, b))
 
-        # r, g, b = 39./255., 40./255., 34./255.
-        # ax4.plot(xr, gradient, color=(r, g, b), linewidth=3)
-        # ax4.set_title('Gradient of Contour', fontsize=14)
-        # ax4.set_xlim(-0.05, 1.05)
-        # # ax4.set_ylim(-10.0, 14.0)
-        # r, g, b = 249./255., 38./255., 114./255.
-        # ax4.fill(xr, gradient, color=(r, g, b))
-        # ax4.set_aspect('equal')
-
+        # uses more space in the figure
         plt.tight_layout()
 
         # refresh canvas

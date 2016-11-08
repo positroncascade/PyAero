@@ -3,7 +3,7 @@
 from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
-import PLogger as logger
+from PSettings import ICONS_S, ICONS_L
 
 
 class Toolbox(object):
@@ -82,7 +82,7 @@ class Toolbox(object):
         self.tolerance = QtGui.QDoubleSpinBox()
         self.tolerance.setSingleStep(0.1)
         self.tolerance.setDecimals(1)
-        self.tolerance.setRange(165.0, 175.0)
+        self.tolerance.setRange(140.0, 175.0)
         self.tolerance.setValue(172.0)
         form3.addRow(label4, self.tolerance)
 
@@ -92,11 +92,33 @@ class Toolbox(object):
         self.spline_points.setValue(150)
         form3.addRow(label5, self.spline_points)
 
-        button1 = QtGui.QPushButton('Contour analysis')
+        hlayout = QtGui.QHBoxLayout()
+        gb = QtGui.QGroupBox('Select contour to analyse')
+        self.b1 = QtGui.QRadioButton('Original')
+        self.b2 = QtGui.QRadioButton('Refined')
+        self.b1.setChecked(True)
+        hlayout.addWidget(self.b1)
+        hlayout.addWidget(self.b2)
+        gb.setLayout(hlayout)
+        form3.addRow(gb)
+
+        hlayout = QtGui.QHBoxLayout()
+        cgb = QtGui.QGroupBox('Select plot quantity')
+        self.cpb1 = QtGui.QRadioButton('Gradient')
+        self.cpb2 = QtGui.QRadioButton('Curvature')
+        self.cpb3 = QtGui.QRadioButton('Radius of Curvature')
+        self.cpb1.setChecked(True)
+        hlayout.addWidget(self.cpb1)
+        hlayout.addWidget(self.cpb2)
+        hlayout.addWidget(self.cpb3)
+        cgb.setLayout(hlayout)
+        form3.addRow(cgb)
+
+        button1 = QtGui.QPushButton('Analyze')
         button1.setGeometry(10, 10, 200, 50)
         form3.addRow(button1)
 
-        item3 = QtGui.QGroupBox('Airfoil contour options')
+        item3 = QtGui.QGroupBox('Airfoil contour refinement options')
         item3.setLayout(form3)
 
         button1.clicked.connect(self.analyzeAirfoil)
@@ -119,7 +141,6 @@ class Toolbox(object):
         self.cb2.setChecked(True)
         self.cb3 = QtGui.QCheckBox('Airfoil spline')
         self.cb3.setChecked(False)
-        self.cb3.setEnabled(False) # fixme: remove when cb3 is implemented
         self.cb4 = QtGui.QCheckBox('Chord')
         self.cb4.setChecked(True)
         layout.addWidget(self.cb1)
@@ -133,31 +154,31 @@ class Toolbox(object):
         self.cb2.clicked.connect(self.toggleRawPoints)
         self.cb4.clicked.connect(self.toggleChord)
 
+        # ******************************************
+        # End of toolbox items
+        # ******************************************
+
         # populate toolbox
-        self.tab1 = self.toolBox.addItem(item1, 'Airfoil Database')
-        self.tab3 = self.toolBox.addItem(item3, 'Contour Analysis')
-        self.tab4 = self.toolBox.addItem(item4, 'Meshing')
-        self.tab2 = self.toolBox.addItem(item2, 'Aerodynamics')
-        self.tab5 = self.toolBox.addItem(item5, 'Viewing options')
+        self.tb1 = self.toolBox.addItem(item1, 'Airfoil Database')
+        self.tb2 = self.toolBox.addItem(item3, 'Contour Analysis')
+        self.tb3 = self.toolBox.addItem(item4, 'Meshing')
+        self.tb4 = self.toolBox.addItem(item2, 'Aerodynamics')
+        self.tb5 = self.toolBox.addItem(item5, 'Viewing options')
 
-        self.toolBox.setItemToolTip(0, 'Create a report summarizing \
-                                        available information')
+        self.toolBox.setItemToolTip(0, 'Airfoil database ' +
+                                       '(browse filesystem)')
+        self.toolBox.setItemToolTip(1, 'Analyze the curvature of the ' +
+                                       'selected airfoil')
+        self.toolBox.setItemToolTip(2, 'Generate a 2D mesh around the ' +
+                                       'selected airfoil')
 
-        icon = QtGui.QIcon('icons/16x16/Items.png')
-        self.toolBox.setItemIcon(0, icon)
+        self.toolBox.setItemIcon(0, QtGui.QIcon(ICONS_L + 'airfoil.png'))
+        self.toolBox.setItemIcon(1, QtGui.QIcon(ICONS_L + 'Pixel editor.png'))
+        self.toolBox.setItemIcon(2, QtGui.QIcon(ICONS_L + 'mesh.png'))
+        self.toolBox.setItemIcon(3, QtGui.QIcon(ICONS_L + 'Fast delivery.png'))
+        self.toolBox.setItemIcon(4, QtGui.QIcon(ICONS_L + 'Configuration.png'))
 
-        icon = QtGui.QIcon('icons/24x24/Fast delivery.png')
-        self.toolBox.setItemIcon(1, icon)
-
-        icon = QtGui.QIcon('icons/24x24/Book.png')
-        self.toolBox.setItemIcon(2, icon)
-
-        icon = QtGui.QIcon('icons/24x24/Mesh.png')
-        self.toolBox.setItemIcon(4, icon)
-
-        icon = QtGui.QIcon('icons/24x24/Search.png')
-        self.toolBox.setItemIcon(4, icon)
-
+        # airfoil database box is preselected
         self.toolBox.setCurrentIndex(0)
 
     @QtCore.pyqtSlot()
@@ -191,16 +212,25 @@ class Toolbox(object):
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
-        """Do airfoil contour analysis with respect to geometric features"""
+        """Airfoil contour analysis with respect to geometric features"""
+
         if not self.parent.airfoil:
             self.noairfoilWarning('Can\'t do contour analysis')
             return
 
-        # switch tab to contour analysis
+        # switch tab and toolbox to contour analysis
         self.parent.centralwidget.tabs.setCurrentIndex(1)
+        self.toolBox.setCurrentIndex(1)
 
+        if self.cpb1.isChecked():
+            plot = 1
+        if self.cpb2.isChecked():
+            plot = 2
+        if self.cpb3.isChecked():
+            plot = 3
         self.parent.contourview.analyze(self.tolerance.value(),
-                                        self.spline_points.value())
+                                        self.spline_points.value(),
+                                        plot)
 
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \
