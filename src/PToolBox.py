@@ -228,6 +228,7 @@ class Toolbox(object):
             plot = 2
         if self.cpb3.isChecked():
             plot = 3
+        #
         self.parent.contourview.analyze(self.tolerance.value(),
                                         self.spline_points.value(),
                                         plot)
