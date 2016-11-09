@@ -55,6 +55,10 @@ class ContourAnalysis(QtGui.QFrame):
         layout.addWidget(self.canvas)
         self.setLayout(layout)
 
+    def reset(self):
+        self.spline_data = None
+        self.curvature_data = None
+
     def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
 
@@ -230,9 +234,18 @@ class ContourAnalysis(QtGui.QFrame):
         self.curvature_data = [gradient, C, R, xc, yc]
         return self.curvature_data
 
-    def analyze(self, tolerance, spline_points, plot):
+    def analyze(self, tolerance, spline_points, plot, reset=False):
+
+        if reset:
+            self.reset()
 
         # interpolate a spline through the raw contour points
+
+        # FIXME
+        # FIXME get airfoil coordinates here from scene item
+        # FIXME either selected airfoil or only loaded airfoil if any
+        # FIXME
+
         x, y = self.parent.airfoil.raw_coordinates
         self.spline(x, y, points=spline_points, degree=2)
 
@@ -294,33 +307,18 @@ class ContourAnalysis(QtGui.QFrame):
         ax2.fill(xr, yr, color=(r, g, b))
         ax2.set_aspect('equal')
 
-        if plot == 1:
-            r, g, b = 30./255., 30./255., 30./255.
-            ax3.plot(xr, gradient, marker='o', mfc='r', color=(r, g, b),
-                     linewidth=2)
-            ax3.set_title('Gradient', fontsize=14)
-            ax3.set_xlim(-0.05, 1.05)
-            # ax3.set_ylim(-2.0, 40.0)
-            r, g, b = 90./255., 90./255., 90./255.
-            ax3.fill(xr, gradient, color=(r, g, b))
-        if plot == 2:
-            r, g, b = 30./255., 30./255., 30./255.
-            ax3.plot(xr, curvature, marker='o', mfc='r', color=(r, g, b),
-                     linewidth=2)
-            ax3.set_title('Curvature', fontsize=14)
-            ax3.set_xlim(-0.05, 1.05)
-            # ax3.set_ylim(-2.0, 40.0)
-            r, g, b = 90./255., 90./255., 90./255.
-            ax3.fill(xr, curvature, color=(r, g, b))
-        if plot == 3:
-            r, g, b = 30./255., 30./255., 30./255.
-            ax3.plot(xr, radius, marker='o', mfc='r', color=(r, g, b),
-                     linewidth=2)
-            ax3.set_title('Radius of Curvature', fontsize=14)
-            ax3.set_xlim(-0.05, 1.05)
-            # ax3.set_ylim(-2.0, 40.0)
-            r, g, b = 90./255., 90./255., 90./255.
-            ax3.fill(xr, radius, color=(r, g, b))
+        # select plotting variable for contour analysis
+        plotvar = {1: [gradient, 'Gradient'], 2: [curvature, 'Curvature'],
+                   3: [radius, 'Radius of Curvature']}
+
+        r, g, b = 30./255., 30./255., 30./255.
+        ax3.plot(xr, plotvar[plot][0], marker='o', mfc='r', color=(r, g, b),
+                 linewidth=2)
+        ax3.set_title(plotvar[plot][1], fontsize=14)
+        ax3.set_xlim(-0.05, 1.05)
+        # ax3.set_ylim(-2.0, 40.0)
+        r, g, b = 90./255., 90./255., 90./255.
+        ax3.fill(xr, plotvar[plot][0], color=(r, g, b))
 
         # uses more space in the figure
         plt.tight_layout()

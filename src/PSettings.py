@@ -5,10 +5,17 @@
 # path to PyAero installation
 PYAEROPATH = '.'
 
-# set locale for decimal separators
+# set locale
 # can be either 'C' or ''
 # if string is empty than system default locale is used
+# in case of 'C' decimal separator is a dot in spin boxes, etc.
 LOCALE = 'C'
+
+# Window style. Possible options are the the results of:
+# QtGui.QStyleFactory.keys()
+# 'Windows', 'WindowsXP', 'WindowsVista', 'Motif'
+# 'CDE', 'Plastique', 'Cleanlooks'
+STYLE = 'Windows'
 
 # airfoil chord length
 CHORDLENGTH = 1.
@@ -46,5 +53,5 @@ MAXZOOM = 10000.
 # scale increment
 SCALEINC = 1.1
 
-# logging color
+# Color for emphasized log messages
 LOGCOLOR = '#1763E7'

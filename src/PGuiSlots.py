@@ -239,9 +239,9 @@ class Slots(object):
             vbar.triggerAction(QtGui.QAbstractSlider.SliderToMaximum)
 
     def onTabChanged(self):
+        """Sync tabs and toolboxes """
         tab = self.parent.centralwidget.tabs.currentIndex()
-        if tab == 1:
-            self.parent.centralwidget.tools.toolBox.setCurrentIndex(2)
+        self.parent.centralwidget.tools.toolBox.setCurrentIndex(tab)
 
     @QtCore.pyqtSlot()
     def onRedo(self):

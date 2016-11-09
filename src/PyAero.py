@@ -24,7 +24,7 @@ import PContourAnalysis
 import PGuiSlots
 import PVtkView
 import PToolBox
-from PSettings import VIEWSTYLE, ICONS, LOCALE
+from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE
 import PLogger as logger
 
 
@@ -42,7 +42,7 @@ __status__ = 'Prototype'
 class MainWindow(QtGui.QMainWindow):
     """PyAero's main QT window"""
     # call constructor of MainWindow
-    def __init__(self, parent=None):
+    def __init__(self, style, parent=None):
         # call constructor of QMainWindow
         super(MainWindow, self).__init__(parent)
 
@@ -51,11 +51,9 @@ class MainWindow(QtGui.QMainWindow):
         # to get a list of available styles
         # for style in QtGui.QStyleFactory.keys():
         #     print style
+        self.style = style
 
-        self.kit = ['Windows', 'WindowsXP', 'WindowsVista', 'Motif',
-                    'CDE', 'Plastique', 'Cleanlooks']
-
-        QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(self.kit[6]))
+        QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(style))
 
         self.airfoil = None
 
@@ -172,7 +170,8 @@ def main():
         # dot in spin boxes, etc.
         QtCore.QLocale.setDefault(QtCore.QLocale.c())
 
-    window = MainWindow()
+    # window style set in PSettings
+    window = MainWindow(STYLE)
     window.showMaximized()
     window.show()
 

@@ -141,6 +141,7 @@ class Toolbox(object):
         self.cb2.setChecked(True)
         self.cb3 = QtGui.QCheckBox('Airfoil spline')
         self.cb3.setChecked(False)
+        self.cb3.setDisabled(True)
         self.cb4 = QtGui.QCheckBox('Chord')
         self.cb4.setChecked(True)
         layout.addWidget(self.cb1)
@@ -152,6 +153,7 @@ class Toolbox(object):
         # connect signals to slots
         self.cb1.clicked.connect(self.parent.slots.toggleLogDock)
         self.cb2.clicked.connect(self.toggleRawPoints)
+        # self.cb3.clicked.connect()
         self.cb4.clicked.connect(self.toggleChord)
 
         # ******************************************
@@ -231,7 +233,7 @@ class Toolbox(object):
         #
         self.parent.contourview.analyze(self.tolerance.value(),
                                         self.spline_points.value(),
-                                        plot)
+                                        plot, reset=True)
 
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \
