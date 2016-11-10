@@ -282,11 +282,10 @@ class ContourAnalysis(QtGui.QFrame):
         curvature = self.curvature_data[1]
         radius = self.curvature_data[2]
 
-        # create an axis
+        # create axes
         ax1 = self.figure.add_subplot(311, frame_on=False)
         ax2 = self.figure.add_subplot(312, frame_on=False)
         ax3 = self.figure.add_subplot(313, frame_on=False)
-        # ax4 = self.figure.add_subplot(414, frame_on=False)
 
         # plot data
         r, g, b = 30./255., 30./255., 30./255.
