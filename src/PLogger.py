@@ -83,8 +83,11 @@ def stack(mylogger):
     sl = len(stack)
     for i in range(1, sl):
         j = sl - i
+        # filename
         f = os.path.basename(stack[j][1])
+        # code line
         l = stack[j][2]
+        # method
         m = stack[j][3]
         mylogger.info('Stack %s: %s %s %s' % (i, f, l, m))
 
