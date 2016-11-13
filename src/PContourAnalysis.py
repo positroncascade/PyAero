@@ -58,6 +58,7 @@ class ContourAnalysis(QtGui.QFrame):
     def reset(self):
         self.spline_data = None
         self.curvature_data = None
+
         # clears the current figure
         # necessary so that changing between gradient, radius, etc. works
         plt.clf()
@@ -285,7 +286,7 @@ class ContourAnalysis(QtGui.QFrame):
         ax2 = self.figure.add_subplot(312, frame_on=False)
         ax3 = self.figure.add_subplot(313, frame_on=False)
 
-        # plot data
+        # plot original contour
         r, g, b = 30./255., 30./255., 30./255.
         ax1.plot(x, y, marker='o', mfc='r', color=(r, g, b), linewidth=2)
         ax1.set_title('Original Contour', fontsize=14)
@@ -295,6 +296,7 @@ class ContourAnalysis(QtGui.QFrame):
         ax1.fill(x, y, color=(r, g, b))
         ax1.set_aspect('equal')
 
+        # plot refined contour
         r, g, b = 30./255., 30./255., 30./255.
         ax2.plot(xr, yr, marker='o', mfc='r', color=(r, g, b), linewidth=2)
         ax2.set_title('Refined Contour', fontsize=14)
@@ -308,6 +310,7 @@ class ContourAnalysis(QtGui.QFrame):
         plotvar = {1: [gradient, 'Gradient'], 2: [curvature, 'Curvature'],
                    3: [radius, 'Radius of Curvature']}
 
+        # plot either of three possible analysis results
         r, g, b = 30./255., 30./255., 30./255.
         ax3.plot(xr, plotvar[plot][0], marker='o', mfc='r', color=(r, g, b),
                  linewidth=2)

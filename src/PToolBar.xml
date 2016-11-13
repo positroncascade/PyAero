@@ -9,7 +9,7 @@
         <Tool tip='Save airfoil contour file' icon='Save.png' handler='onSave'></Tool>
         <Tool tip='Save airfoil contour file with different name' icon='Save as.png' handler='onSaveAs'></Tool>
         <Tool tip='' icon='' handler='onPass'></Tool>
-        <Tool tip='Open predefined airfoil contour file (MH32)' icon='profil.png' handler='onOpenPredefined'></Tool>
+        <Tool tip='Open predefined airfoil contour' icon='profil.png' handler='onOpenPredefined'></Tool>
         <Tool tip='Open predefined STL file' icon='Fast delivery.png' handler='onPredefinedSTL'></Tool>
         <Tool tip='' icon='' handler='onPass'></Tool>
         <Tool tip='Print current view' icon='Print.png' handler='onPrint'></Tool>

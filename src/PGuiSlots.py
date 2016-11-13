@@ -7,7 +7,7 @@ import PyAero
 import PAirfoil
 import PGraphicsTest as gt
 import PIconProvider
-from PSettings import DIALOGFILTER, AIRFOILDATA, LOGCOLOR
+from PSettings import DIALOGFILTER, AIRFOILDATA, LOGCOLOR, DEFAULT_CONTOUR
 
 import PLogger as logger
 from PyQt4.Qt import PYQT_VERSION_STR
@@ -60,8 +60,7 @@ class Slots(object):
 
     @QtCore.pyqtSlot()
     def onOpenPredefined(self):
-        filename = os.path.join(AIRFOILDATA, 'RC_Glider\mh32.dat')
-        self.loadAirfoil(filename, comment='#')
+        self.loadAirfoil(DEFAULT_CONTOUR, comment='#')
 
     def loadAirfoil(self, filename, comment='#'):
         # FIXME

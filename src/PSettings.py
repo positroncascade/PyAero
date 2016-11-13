@@ -29,6 +29,9 @@ ICONS_L = ICONS + '24x24/'
 # path can be absolute or relative (to position where starting PyAero)
 AIRFOILDATA = '../data'
 
+# default airfoil for fast loading
+DEFAULT_CONTOUR = AIRFOILDATA + 'RC_Glider\mh32.dat'
+
 # set the filter for files to be shown in dialogs
 DIALOGFILTER = 'Airfoil contour files (*.dat *.txt);;STL files (*.stl)'
 
