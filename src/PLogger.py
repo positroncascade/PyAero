@@ -1,6 +1,10 @@
 import sys
-from PyQt4 import QtCore
+import os
 import logging
+import inspect
+
+from PyQt4 import QtCore
+
 
 """
 Customized logger module which handles stdout and stderr.
@@ -64,6 +68,25 @@ class LogHandler(logging.Handler):
         newline = '<br>'
         if record:
             LogStream.stdout().write('%s%s' % (record, newline))
+
+
+def stack(mylogger):
+    """Prints the call stack to stdout, i.e. message window in PyAero
+    Usage: In the calling routine implement:
+           >>> import Plogger as logger
+           >>> logger.stack(logger.log)
+
+    Args:
+        mylogger (log.info): log instance
+    """
+    stack = inspect.stack()
+    sl = len(stack)
+    for i in range(1, sl):
+        j = sl - i
+        f = os.path.basename(stack[j][1])
+        l = stack[j][2]
+        m = stack[j][3]
+        mylogger.info('Stack %s: %s %s %s' % (i, f, l, m))
 
 
 log = logging.getLogger(__name__)

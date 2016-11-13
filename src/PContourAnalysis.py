@@ -13,6 +13,7 @@ from PyQt4 import QtGui
 from PUtils import Utils as utils
 
 import PLogger as logger
+import os, inspect
 
 
 class ContourAnalysis(QtGui.QFrame):
@@ -237,6 +238,9 @@ class ContourAnalysis(QtGui.QFrame):
     def analyze(self, tolerance, spline_points, plot, reset=False):
 
         if reset:
+            cls_name = self.__class__.__name__
+            logger.log.info('Reset was executed in %s' % (cls_name))
+            logger.stack(logger.log)
             self.reset()
 
         # interpolate a spline through the raw contour points
