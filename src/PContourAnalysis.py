@@ -236,12 +236,10 @@ class ContourAnalysis(QtGui.QFrame):
         self.curvature_data = [gradient, C, R, xc, yc]
         return self.curvature_data
 
-    def analyze(self, tolerance, spline_points, plot, reset=False):
+    def analyze(self, tolerance, spline_points, plot, reset=True):
 
         if reset:
-            cls_name = self.__class__.__name__
-            logger.log.info('Reset was executed in %s' % (cls_name))
-            logger.stack(logger.log)
+            # logger.stack(logger.log)
             self.reset()
 
         # interpolate a spline through the raw contour points
