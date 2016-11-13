@@ -13,7 +13,6 @@ from PyQt4 import QtGui
 from PUtils import Utils as utils
 
 import PLogger as logger
-import os, inspect
 
 
 class ContourAnalysis(QtGui.QFrame):
@@ -59,6 +58,9 @@ class ContourAnalysis(QtGui.QFrame):
     def reset(self):
         self.spline_data = None
         self.curvature_data = None
+        # clears the current figure
+        # necessary so that changing between gradient, radius, etc. works
+        plt.clf()
 
     def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
@@ -180,9 +182,8 @@ class ContourAnalysis(QtGui.QFrame):
         # update parameter array, including parameters of inserted points
         self.spline_data[2] = tn
 
-        # recursive refinement
+        # this is the recursion :)
         if refinements > 0:
-
             self.refine(tol, recursions + 1, verbose)
 
         # stopping from recursion if no refinements done in this recursion
@@ -259,22 +260,17 @@ class ContourAnalysis(QtGui.QFrame):
         # redo spline on refined contour
         # spline only evaluated at refined contour points (evaluate=True)
         coo, u, t, der1, der2, tck = self.spline_data
-        x, y, = coo
+        x, y = coo
         self.spline(x, y, points=spline_points, degree=2, evaluate=True)
 
         # get specific curve properties
-        curve_data = self.getCurvature()
+        self.getCurvature()
 
         # add new attributes to airfoil instance
         self.parent.airfoil.spline_data = self.spline_data
         self.parent.airfoil.curvature_data = self.curvature_data
 
-        # get specific curve properties
-        self.getCurvature()
-
         self.drawContour(plot)
-
-        return curve_data, self.spline_data
 
     def drawContour(self, plot):
 
