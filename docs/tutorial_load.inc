@@ -32,7 +32,7 @@ Loading airfoils can be done in different ways:
 
    Toolbar icon to load a predefined airfoil contour
 
-.. seealso:: See tutorial on customizing `PyAero <index.html>`_ for changing the default airfoil.
+.. seealso:: See tutorial :ref:`tutorial_settings` on how to change the default airfoil.
 
 .. _figure_toolbox_area:
 .. figure::  images/toolbox_area.png
