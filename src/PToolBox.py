@@ -233,7 +233,7 @@ class Toolbox(object):
         #
         self.parent.contourview.analyze(self.tolerance.value(),
                                         self.spline_points.value(),
-                                        plot, reset=True)
+                                        plot)
 
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \
