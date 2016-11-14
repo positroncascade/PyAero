@@ -170,16 +170,12 @@ class Slots(object):
 
         sender = self.parent.sender().metaObject().className()
 
-        if sender == 'QCheckBox':
-            visible = self.parent.messagedock.isVisible()
-            self.parent.messagedock.setVisible(not visible)
-        # FIXME
-        # FIXME: else is never called here, because when closing messagedock
-        # FIXME: with 'X'clicked, no sender signal is emitted; closeEvent
-        # FIXME: has to be overwritten in subclassed QDockWidget instead
-        # FIXME
-        else:
-            checkbox = self.centralWidget().tools.cb1
+        visible = self.parent.messagedock.isVisible()
+        self.parent.messagedock.setVisible(not visible)
+
+        # update the checkbox if toggling is done via keyboard
+        if sender == 'QShortcut':
+            checkbox = self.parent.centralWidget().tools.cb1
             checkbox.setChecked(not checkbox.isChecked())
 
     @QtCore.pyqtSlot()

@@ -81,6 +81,11 @@ class MainWindow(QtGui.QMainWindow):
 
         # set central widget for the application
         self.centralwidget = CentralWidget(self)
+
+        # shortcut for message window toggle
+        QtGui.QShortcut(QtGui.QKeySequence('Alt+m'), self,
+                        self.slots.toggleLogDock)
+
         self.setCentralWidget(self.centralwidget)
 
         # setup user interface and menus
