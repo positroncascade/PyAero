@@ -35,12 +35,12 @@ class ContourAnalysis(QtGui.QFrame):
         self.curvature_data = None
 
         # a figure instance to plot on
-        self.figure_top = plt.figure(figsize=(25, 35))
-        self.figure_center = plt.figure(figsize=(25, 35))
-        self.figure_bottom = plt.figure(figsize=(25, 35))
+        self.figure_top = plt.figure(figsize=(25, 35), tight_layout=True)
+        self.figure_center = plt.figure(figsize=(25, 35), tight_layout=True)
+        self.figure_bottom = plt.figure(figsize=(25, 35), tight_layout=True)
 
         # background of figures
-        r, g, b = 130./255., 130./255., 130./255.
+        r, g, b = 170./255., 170./255., 170./255.
         self.figure_top.patch.set_facecolor(color=(r, g, b))
         self.figure_center.patch.set_facecolor(color=(r, g, b))
         self.figure_bottom.patch.set_facecolor(color=(r, g, b))
@@ -55,7 +55,8 @@ class ContourAnalysis(QtGui.QFrame):
         # it takes the Canvas widget and a parent
         self.toolbar_top = NavigationToolbar(self.canvas_top, self)
         self.toolbar_center = NavigationToolbar(self.canvas_center, self)
-        self.toolbar_bottom = NavigationToolbar(self.canvas_bottom, self)
+        self.toolbar_bottom = NavigationToolbar(self.canvas_bottom, self,
+                                                coordinates=True)
 
         vbox1 = QtGui.QVBoxLayout()
         vbox1.addWidget(self.canvas_top)
@@ -253,8 +254,10 @@ class ContourAnalysis(QtGui.QFrame):
 
         # gradient dy/dx = dy/du / dx/du
         gradient = der1[1] / der1[0]
+
         # radius of curvature
         R = n**(3./2.) / abs(d)
+
         # curvature
         C = d / n**(3./2.)
 
@@ -299,6 +302,22 @@ class ContourAnalysis(QtGui.QFrame):
 
         self.drawContour(plot)
 
+    def getLeRadius(self):
+        """Identify leading edge radius, i.e. smallest radius of
+        parametric curve
+
+        Returns:
+            FLOAT: leading edge radius and its center
+        """
+        radius = self.curvature_data[2]
+        rc = np.min(radius)
+        le_id = np.where(radius == rc)
+        # leading edge curvature circle center
+        xc = self.curvature_data[3][le_id]
+        yc = self.curvature_data[4][le_id]
+
+        return rc, xc, yc
+
     def drawContour(self, plot):
 
         # curvature_data --> gradient, C, R, xc, yc
@@ -308,6 +327,9 @@ class ContourAnalysis(QtGui.QFrame):
         gradient = self.curvature_data[0]
         curvature = self.curvature_data[1]
         radius = self.curvature_data[2]
+
+        # leading edge radius
+        rc, xc, yc = self.getLeRadius()
 
         # create axes
         ax1 = self.figure_top.add_subplot(111, frame_on=False)
@@ -327,6 +349,11 @@ class ContourAnalysis(QtGui.QFrame):
         # plot refined contour
         r, g, b = 30./255., 30./255., 30./255.
         ax2.plot(xr, yr, marker='o', mfc='r', color=(r, g, b), linewidth=2)
+        # leading edge curvature circle
+        circle = patches.Circle((xc, yc), rc, edgecolor='y', facecolor='None',
+                                lw=2, ls='solid', zorder=2)
+        ax2.plot(xc, yc, marker='o', mfc='b', linewidth=2)
+        ax2.add_patch(circle)
         ax2.set_title('Refined Contour', fontsize=14)
         ax2.set_xlim(-0.05, 1.05)
         # ax2.set_ylim(-10.0, 14.0)
@@ -344,12 +371,10 @@ class ContourAnalysis(QtGui.QFrame):
                  linewidth=2)
         ax3.set_title(plotvar[plot][1], fontsize=14)
         ax3.set_xlim(-0.05, 1.05)
-        # ax3.set_ylim(-2.0, 40.0)
+        if plot == 1:
+            ax3.set_ylim(-1.0, 1.0)
         r, g, b = 90./255., 90./255., 90./255.
         ax3.fill(xr, plotvar[plot][0], color=(r, g, b))
-
-        # uses more space in the figure
-        plt.tight_layout()
 
         # refresh canvas
         self.canvas_top.draw()
