@@ -22,7 +22,7 @@ The classical :menuselection:`File --> Open` menu is a standard way to load data
 
 As outlined above there are more ways to load airfoils. A very handy way to browse airfoils is to use the implemented file browser. This browser is restricted in terms of navigation. Only files and folders below a predefined root path are visible. The default root is  the :file:`data` subfolder from the standard installation.
 
-.. seealso:: For more information on configuring the root path to airfoil data see :ref:`tutorial_settings`.
+The file browser is located in the *toolbox* area on the left side of the application. A *toolbox* is a GUI element that displays a column of tabs one above the other, with the current item displayed below the current tab.
 
 .. _figure_toolbox_area:
 .. figure::  images/toolbox_area.png
@@ -30,7 +30,9 @@ As outlined above there are more ways to load airfoils. A very handy way to brow
    :target:  _images/toolbox_area.png
    :name: Toolbar_Open
 
-   File browser integrated in the *Toolbar*
+   File browser integrated in the *Toolbox*.
+
+.. seealso:: For more information on configuring the root path to airfoil data see :ref:`tutorial_settings`.
 
 Another fast way to open the file dialog is to click on the :menuselection:`Open` icon (see image below) in the toolbar. The toolbar consists of a row of icons just below the menu bar. The toolbar can be configured by editing the file :file:`PToolBar.xml`.
 
