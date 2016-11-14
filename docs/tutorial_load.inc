@@ -4,9 +4,9 @@ Loading Airfoils
 Loading airfoils can be done in different ways:
 
  1. Load one or more airfoil(s) via the :menuselection:`File --> Open` menu
- 2. Load one or more airfoil(s) via the :ref:`figure_toolbar_open` in the *Toolbar*
- 3. Load a predefined airfoil using :ref:`figure_toolbar_open_predefined`
- 4. Load one or more airfoil(s) via the inline file browser :ref:`figure_toolbox_area`
+ 2. Load one or more airfoil(s) via the inline file browser :ref:`figure_toolbox_area`
+ 3. Load one or more airfoil(s) via the :ref:`figure_toolbar_open` in the *Toolbar*
+ 4. Load a predefined airfoil using :ref:`figure_toolbar_open_predefined`
 
 The classical :menuselection:`File --> Open` menu is a standard way to load data. The shortcut assigned to this menu is :kbd:`CTRL-o`. Clicking :menuselection:`Open` or applying the respective shortcut provides a dialog that allow users to select files or browse directories.
 
@@ -20,7 +20,21 @@ The classical :menuselection:`File --> Open` menu is a standard way to load data
 
    *Open* menu to load an airfoil contour via the file browser
 
-As outlined above there are more ways to load airfoils. A fast way to open the file dialog is to click on the :menuselection:`Open` icon (see image below) in the toolbar. The toolbar consists of a row of icons just below the menu bar. The toolbar can be configured by editing the :file:`PToolBar.xml`. For more information on configuring the menubar and the toolbar see :ref:`tutorial_settings`.
+As outlined above there are more ways to load airfoils. A very handy way to browse airfoils is to use the implemented file browser. This browser is restricted in terms of navigation. Only files and folders below a predefined root path are visible. The default root is  the :file:`data` subfolder from the standard installation.
+
+.. seealso:: For more information on configuring the root path to airfoil data see :ref:`tutorial_settings`.
+
+.. _figure_toolbox_area:
+.. figure::  images/toolbox_area.png
+   :align:   center
+   :target:  _images/toolbox_area.png
+   :name: Toolbar_Open
+
+   File browser integrated in the *Toolbar*
+
+Another fast way to open the file dialog is to click on the :menuselection:`Open` icon (see image below) in the toolbar. The toolbar consists of a row of icons just below the menu bar. The toolbar can be configured by editing the file :file:`PToolBar.xml`.
+
+.. seealso:: For more information on configuring the menubar and the toolbar see :ref:`tutorial_settings`.
 
 .. _figure_toolbar_open:
 .. figure::  images/toolbar_open.png
@@ -29,6 +43,11 @@ As outlined above there are more ways to load airfoils. A fast way to open the f
    :name: Toolbar_Open
 
    Toolbar icon to load an airfoil contour via the file browser
+
+For testing purposes a predefined airfoil can be loaded without the need of a file dialog. The airfoil which is predefined can be configured.
+
+.. seealso:: For more information on specifying a predefined airfoil see :ref:`tutorial_settings`.
+
 
 .. _figure_toolbar_open_predefined:
 .. figure::  images/toolbar_open_predefined.png
@@ -39,11 +58,3 @@ As outlined above there are more ways to load airfoils. A fast way to open the f
    Toolbar icon to load a predefined airfoil contour
 
 .. seealso:: See tutorial :ref:`tutorial_settings` on how to change the default airfoil.
-
-.. _figure_toolbox_area:
-.. figure::  images/toolbox_area.png
-   :align:   center
-   :target:  _images/toolbox_area.png
-   :name: Toolbar_Open
-
-   File browser integrated in the *Toolbar*
