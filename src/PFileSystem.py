@@ -5,10 +5,8 @@ import PLogger as logger
 
 
 class FileSystem(QtGui.QFileSystemModel):
-    # call constructor of GraphicsScene
 
     def __init__(self,  parent=None):
-        # call constructor of QFileSystemModel
         super(FileSystem, self).__init__(parent)
 
         self.parent = parent
