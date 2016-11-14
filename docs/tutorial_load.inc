@@ -3,14 +3,12 @@ Loading Airfoils
 
 Loading airfoils can be done in different ways:
 
- 1. Load one or more airfoil(s) via the :menuselection:`File --> Open` menus
+ 1. Load one or more airfoil(s) via the :menuselection:`File --> Open` menu
  2. Load one or more airfoil(s) via the :ref:`figure_toolbar_open` in the *Toolbar*
  3. Load a predefined airfoil using :ref:`figure_toolbar_open_predefined`
  4. Load one or more airfoil(s) via the inline file browser :ref:`figure_toolbox_area`
 
-The classical :menuselection:`File --> Open` menu is a standard way to load data. The shortcut assigned to this menu is :kbd:`Control-o`.
-
-:guilabel:`&Cancel`
+The classical :menuselection:`File --> Open` menu is a standard way to load data. The shortcut assigned to this menu is :kbd:`Control-o` or :kbd:`C-o`.
 
 .. _figure_menu_open:
 .. figure::  images/menu_open.png
