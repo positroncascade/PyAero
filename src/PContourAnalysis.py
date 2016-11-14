@@ -9,7 +9,7 @@ import matplotlib.patches as patches
 import numpy as np
 import scipy.interpolate as si
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from PUtils import Utils as utils
 
 import PLogger as logger
@@ -35,24 +35,36 @@ class ContourAnalysis(QtGui.QFrame):
         self.curvature_data = None
 
         # a figure instance to plot on
-        self.figure = plt.figure(figsize=(25, 35))
+        self.figure_top = plt.figure(figsize=(25, 35))
+        self.figure_center = plt.figure(figsize=(25, 35))
+        self.figure_bottom = plt.figure(figsize=(25, 35))
 
         # background of figures
-        r, g, b = 150./255., 150./255., 150./255.
-        self.figure.patch.set_facecolor(color=(r, g, b))
+        r, g, b = 130./255., 130./255., 130./255.
+        self.figure_top.patch.set_facecolor(color=(r, g, b))
+        self.figure_center.patch.set_facecolor(color=(r, g, b))
+        self.figure_bottom.patch.set_facecolor(color=(r, g, b))
 
         # this is the Canvas Widget that displays the `figure`
         # it takes the `figure` instance as a parameter to __init__
-        self.canvas = FigureCanvas(self.figure)
+        self.canvas_top = FigureCanvas(self.figure_top)
+        self.canvas_center = FigureCanvas(self.figure_center)
+        self.canvas_bottom = FigureCanvas(self.figure_bottom)
 
         # this is the Navigation widget
         # it takes the Canvas widget and a parent
-        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.toolbar_top = NavigationToolbar(self.canvas_top, self)
+        self.toolbar_center = NavigationToolbar(self.canvas_center, self)
+        self.toolbar_bottom = NavigationToolbar(self.canvas_bottom, self)
+
+        splitter = QtGui.QSplitter(QtCore.Qt.Vertical)
+        splitter.addWidget(self.canvas_top)
+        splitter.addWidget(self.canvas_center)
+        splitter.addWidget(self.canvas_bottom)
 
         # set the layout
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
+        layout.addWidget(splitter)
         self.setLayout(layout)
 
     def reset(self):
@@ -282,9 +294,9 @@ class ContourAnalysis(QtGui.QFrame):
         radius = self.curvature_data[2]
 
         # create axes
-        ax1 = self.figure.add_subplot(311, frame_on=False)
-        ax2 = self.figure.add_subplot(312, frame_on=False)
-        ax3 = self.figure.add_subplot(313, frame_on=False)
+        ax1 = self.figure_top.add_subplot(111, frame_on=False)
+        ax2 = self.figure_center.add_subplot(111, frame_on=False)
+        ax3 = self.figure_bottom.add_subplot(111, frame_on=False)
 
         # plot original contour
         r, g, b = 30./255., 30./255., 30./255.
@@ -324,4 +336,6 @@ class ContourAnalysis(QtGui.QFrame):
         plt.tight_layout()
 
         # refresh canvas
-        self.canvas.draw()
+        self.canvas_top.draw()
+        self.canvas_center.draw()
+        self.canvas_bottom.draw()
