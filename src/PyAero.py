@@ -26,6 +26,7 @@ import PVtkView
 import PToolBox
 from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE
 import PLogger as logger
+import PShortCuts
 
 
 __appname__ = 'PyAero'
@@ -82,11 +83,11 @@ class MainWindow(QtGui.QMainWindow):
         # set central widget for the application
         self.centralwidget = CentralWidget(self)
 
-        # shortcut for message window toggle
-        QtGui.QShortcut(QtGui.QKeySequence('Alt+m'), self,
-                        self.slots.toggleLogDock)
-
         self.setCentralWidget(self.centralwidget)
+
+        # add a shortcut for toggling the message window
+        sc = PShortCuts.PShortCuts(self)
+        sc.addShortcut('ALT+m', 'toggleLogDock')
 
         # setup user interface and menus
         self.initUI()
