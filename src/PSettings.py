@@ -11,6 +11,9 @@ PYAEROPATH = '.'
 # in case of 'C' decimal separator is a dot in spin boxes, etc.
 LOCALE = 'C'
 
+# application can be exited by preesinf the escape key
+EXITONESCAPE = True
+
 # Window style. Possible options are the the results of:
 # QtGui.QStyleFactory.keys()
 # 'Windows', 'WindowsXP', 'WindowsVista', 'Motif'

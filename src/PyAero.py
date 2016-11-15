@@ -24,7 +24,7 @@ import PContourAnalysis
 import PGuiSlots
 import PVtkView
 import PToolBox
-from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE
+from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE
 import PLogger as logger
 import PShortCuts
 
@@ -123,12 +123,17 @@ class MainWindow(QtGui.QMainWindow):
     # ********************************
 
     def keyPressEvent(self, event):
+        """Catch keypress events in main window
+
+        Args:
+            event (QEvent): Description
+        """
         key = event.key()
 
-        if key == QtCore.Qt.Key_Escape:
+        if key == QtCore.Qt.Key_Escape and EXITONESCAPE:
             sys.exit(QtGui.qApp.quit())
         else:
-            # handle event
+            # progress event
             super(MainWindow, self).keyPressEvent(event)
 
 
