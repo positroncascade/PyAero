@@ -266,7 +266,7 @@ class ContourAnalysis(QtGui.QFrame):
         yc = coo[1] + R * xd / np.sqrt(n)
 
         self.curvature_data = [gradient, C, R, xc, yc]
-        return self.curvature_data
+        return  
 
     def analyze(self, tolerance, spline_points, plot, reset=True):
 
@@ -364,6 +364,8 @@ class ContourAnalysis(QtGui.QFrame):
         # select plotting variable for contour analysis
         plotvar = {1: [gradient, 'Gradient'], 2: [curvature, 'Curvature'],
                    3: [radius, 'Radius of Curvature']}
+
+        ax3.cla()
 
         # plot either of three possible analysis results
         r, g, b = 30./255., 30./255., 30./255.

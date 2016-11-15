@@ -225,17 +225,21 @@ class Toolbox(object):
         self.parent.centralwidget.tabs.setCurrentIndex(1)
         self.toolBox.setCurrentIndex(1)
 
-        if self.cpb1.isChecked():
-            plot = 1
-        if self.cpb2.isChecked():
-            plot = 2
-        if self.cpb3.isChecked():
-            plot = 3
-        #
+        # enable radio buttons for plotting when analysis starts
         self.cgb.setEnabled(True)
+
+        # select plot variable based on radio button state
+        plot = 1*self.cpb1.isChecked() + 2*self.cpb2.isChecked() + \
+               3*self.cpb3.isChecked()
+        # analyse contour
         self.parent.contourview.analyze(self.tolerance.value(),
                                         self.spline_points.value(),
                                         plot)
+
+        # connect signals to slots
+        self.cpb1.clicked.connect(lambda: self.parent.contourview.drawContour(1))
+        self.cpb2.clicked.connect(lambda: self.parent.contourview.drawContour(2))
+        self.cpb3.clicked.connect(lambda: self.parent.contourview.drawContour(3))
 
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \
