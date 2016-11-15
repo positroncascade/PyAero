@@ -74,7 +74,7 @@ class Toolbox(object):
         runbtn.clicked.connect(self.runPanelMethod)
 
         # ******************************************
-        # toolbox item3 --> Settings for contour analysis
+        # toolbox item3 --> contour analysis
         # ******************************************
         form3 = QtGui.QFormLayout()
 
@@ -103,7 +103,7 @@ class Toolbox(object):
         form3.addRow(gb)
 
         hlayout = QtGui.QHBoxLayout()
-        cgb = QtGui.QGroupBox('Select plot quantity')
+        self.cgb = QtGui.QGroupBox('Select plot quantity')
         self.cpb1 = QtGui.QRadioButton('Gradient')
         self.cpb2 = QtGui.QRadioButton('Curvature')
         self.cpb3 = QtGui.QRadioButton('Radius of Curvature')
@@ -111,8 +111,9 @@ class Toolbox(object):
         hlayout.addWidget(self.cpb1)
         hlayout.addWidget(self.cpb2)
         hlayout.addWidget(self.cpb3)
-        cgb.setLayout(hlayout)
-        form3.addRow(cgb)
+        self.cgb.setLayout(hlayout)
+        self.cgb.setEnabled(False)
+        form3.addRow(self.cgb)
 
         button1 = QtGui.QPushButton('Analyze')
         button1.setGeometry(10, 10, 200, 50)
@@ -231,6 +232,7 @@ class Toolbox(object):
         if self.cpb3.isChecked():
             plot = 3
         #
+        self.cgb.setEnabled(True)
         self.parent.contourview.analyze(self.tolerance.value(),
                                         self.spline_points.value(),
                                         plot)
