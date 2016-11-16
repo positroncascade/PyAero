@@ -11,6 +11,7 @@ import scipy.interpolate as si
 
 from PyQt4 import QtGui, QtCore
 from PUtils import Utils as utils
+from PSettings import ICONS_S
 
 import PLogger as logger
 
@@ -78,11 +79,31 @@ class ContourAnalysis(QtGui.QFrame):
         splitter.addWidget(widget1)
         splitter.addWidget(widget2)
         splitter.addWidget(widget3)
+        splitter.setSizes([400, 400, 800])
+        splitter.setHandleWidth(6)
 
         # set the layout
         layout = QtGui.QVBoxLayout()
         layout.addWidget(splitter)
         self.setLayout(layout)
+
+        # make handle of splitter visible
+        handle = splitter.handle(1)
+        layout = QtGui.QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        button = QtGui.QToolButton(handle)
+        button.setArrowType(QtCore.Qt.NoArrow)
+        layout.addWidget(button)
+        layout.setAlignment(button, QtCore.Qt.AlignCenter)
+        handle.setLayout(layout)
+        handle = splitter.handle(2)
+        layout = QtGui.QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        button = QtGui.QToolButton(handle)
+        button.setArrowType(QtCore.Qt.NoArrow)
+        layout.addWidget(button)
+        layout.setAlignment(button, QtCore.Qt.AlignCenter)
+        handle.setLayout(layout)
 
     def reset(self):
         self.spline_data = None
@@ -266,7 +287,7 @@ class ContourAnalysis(QtGui.QFrame):
         yc = coo[1] + R * xd / np.sqrt(n)
 
         self.curvature_data = [gradient, C, R, xc, yc]
-        return  
+        return
 
     def analyze(self, tolerance, spline_points, plot, reset=True):
 

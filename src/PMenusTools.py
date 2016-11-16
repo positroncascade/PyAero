@@ -2,7 +2,7 @@ from lxml import etree
 
 from PyQt4 import QtGui, QtCore
 
-from PSettings import *
+from PSettings import ICONS_S, ICONS_L
 
 
 class MenusTools(object):
@@ -16,9 +16,9 @@ class MenusTools(object):
         # create a status bar
         self.statusbar = self.parent.statusBar()
         self.statusbar.setFixedHeight(22)
-        self.statusbarstyle = (""" QStatusBar {background-color:rgb(232,232,232); \
+        style = (""" QStatusBar {background-color:rgb(232,232,232); \
                 border: 1px solid grey;}""")
-        self.statusbar.setStyleSheet(self.statusbarstyle)
+        self.statusbar.setStyleSheet(style)
         self.statusbar.setSizeGripEnabled(False)
 
         self.statustip = QtGui.QLabel(self.statusbar.showMessage(

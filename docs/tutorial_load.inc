@@ -36,8 +36,6 @@ The file browser is located in the *toolbox* area on the left side of the applic
 
 Another fast way to open the file dialog is to click on the :menuselection:`Open` icon (see image below) in the toolbar. The toolbar consists of a row of icons just below the menu bar. The toolbar can be configured by editing the file :file:`PToolBar.xml`.
 
-.. seealso:: For more information on configuring the menubar and the toolbar see :ref:`tutorial_settings`.
-
 .. _figure_toolbar_open:
 .. figure::  images/toolbar_open.png
    :align:   center
@@ -46,10 +44,9 @@ Another fast way to open the file dialog is to click on the :menuselection:`Open
 
    Toolbar icon to load an airfoil contour via the file browser
 
+.. seealso:: For more information on configuring the menubar and the toolbar see :ref:`tutorial_settings`.
+
 For testing purposes a predefined airfoil can be loaded without the need of a file dialog. The airfoil which is predefined can be configured.
-
-.. seealso:: For more information on specifying a predefined airfoil see :ref:`tutorial_settings`.
-
 
 .. _figure_toolbar_open_predefined:
 .. figure::  images/toolbar_open_predefined.png

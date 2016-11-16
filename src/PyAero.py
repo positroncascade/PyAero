@@ -126,7 +126,8 @@ class MainWindow(QtGui.QMainWindow):
         """Catch keypress events in main window
 
         Args:
-            event (QEvent): Description
+            event (QKeyEvent): key event sent to the widget with
+            keyboard input focus
         """
         key = event.key()
 
