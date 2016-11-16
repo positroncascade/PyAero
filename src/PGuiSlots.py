@@ -185,8 +185,10 @@ class Slots(object):
     def removeGraphicsItem(self):
         """Remove all selected items from the scene"""
         items = self.parent.scene.selectedItems()
+        logger.log.info('Items selected: %s' % (items))
         for item in items:
             self.parent.scene.removeItem(item)
+            logger.log.info('Removed: %s' % (item.name))
 
     @QtCore.pyqtSlot()
     def onMessage(self, msg):

@@ -53,6 +53,9 @@ class FileSystem(QtGui.QFileSystemModel):
 
     @QtCore.pyqtSlot(QtCore.QModelIndex)
     def onFileSelected(self, index):
+
+        return
+
         fileInfo = self.getFileInfo(index)[4]
         if fileInfo.isDir():
             return
