@@ -2,6 +2,7 @@ import math
 from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM
+import PLogger as logger
 
 
 class GraphicsView(QtGui.QGraphicsView):

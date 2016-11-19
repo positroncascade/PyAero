@@ -186,7 +186,6 @@ class Slots(object):
         """Remove all selected items from the scene"""
         items = self.parent.scene.selectedItems()
         for item in items:
-            print item, eval(item)
             self.parent.scene.removeItem(item)
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
                             self.parent.airfoil.name + '</b> removed')
