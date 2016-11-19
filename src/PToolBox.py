@@ -230,16 +230,19 @@ class Toolbox(object):
 
         # select plot variable based on radio button state
         plot = 1*self.cpb1.isChecked() + 2*self.cpb2.isChecked() + \
-               3*self.cpb3.isChecked()
+            3*self.cpb3.isChecked()
         # analyse contour
         self.parent.contourview.analyze(self.tolerance.value(),
                                         self.spline_points.value(),
                                         plot)
 
         # connect signals to slots
-        self.cpb1.clicked.connect(lambda: self.parent.contourview.drawContour(1))
-        self.cpb2.clicked.connect(lambda: self.parent.contourview.drawContour(2))
-        self.cpb3.clicked.connect(lambda: self.parent.contourview.drawContour(3))
+        self.cpb1.clicked.connect(lambda:
+                                  self.parent.contourview.drawContour(1))
+        self.cpb2.clicked.connect(lambda:
+                                  self.parent.contourview.drawContour(2))
+        self.cpb3.clicked.connect(lambda:
+                                  self.parent.contourview.drawContour(3))
 
     def noairfoilWarning(self, action):
         QtGui.QMessageBox. \

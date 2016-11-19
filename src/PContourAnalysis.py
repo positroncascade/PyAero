@@ -11,7 +11,6 @@ import scipy.interpolate as si
 
 from PyQt4 import QtGui, QtCore
 from PUtils import Utils as utils
-from PSettings import ICONS_S
 
 import PLogger as logger
 
