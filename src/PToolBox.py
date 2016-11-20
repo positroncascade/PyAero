@@ -21,6 +21,10 @@ class Toolbox(object):
         # create toolbox widget for left side of splitter
         self.toolBox = QtGui.QToolBox()
 
+        # set the style
+        style = (""" QToolBox::tab:selected {font: bold; } """)
+        self.toolBox.setStyleSheet(style)
+
         # ******************************************
         # toolbox item1 --> treeview in PFileSystem
         # ******************************************
@@ -76,21 +80,7 @@ class Toolbox(object):
         # ******************************************
         # toolbox item3 --> contour analysis
         # ******************************************
-        form3 = QtGui.QFormLayout()
-
-        label4 = QtGui.QLabel(u'Refinement tolerance (°)')
-        self.tolerance = QtGui.QDoubleSpinBox()
-        self.tolerance.setSingleStep(0.1)
-        self.tolerance.setDecimals(1)
-        self.tolerance.setRange(140.0, 175.0)
-        self.tolerance.setValue(172.0)
-        form3.addRow(label4, self.tolerance)
-
-        label5 = QtGui.QLabel('Number points on spline (-)')
-        self.spline_points = QtGui.QSpinBox()
-        self.spline_points.setRange(50, 500)
-        self.spline_points.setValue(150)
-        form3.addRow(label5, self.spline_points)
+        box = QtGui.QVBoxLayout()
 
         hlayout = QtGui.QHBoxLayout()
         gb = QtGui.QGroupBox('Select contour to analyse')
@@ -100,7 +90,7 @@ class Toolbox(object):
         hlayout.addWidget(self.b1)
         hlayout.addWidget(self.b2)
         gb.setLayout(hlayout)
-        form3.addRow(gb)
+        box.addWidget(gb)
 
         hlayout = QtGui.QHBoxLayout()
         self.cgb = QtGui.QGroupBox('Select plot quantity')
@@ -113,14 +103,16 @@ class Toolbox(object):
         hlayout.addWidget(self.cpb3)
         self.cgb.setLayout(hlayout)
         self.cgb.setEnabled(False)
-        form3.addRow(self.cgb)
+        box.addWidget(self.cgb)
 
         button1 = QtGui.QPushButton('Analyze')
         button1.setGeometry(10, 10, 200, 50)
-        form3.addRow(button1)
+        box.addWidget(button1)
 
-        item3 = QtGui.QGroupBox('Airfoil contour refinement options')
-        item3.setLayout(form3)
+        box.addStretch(1)
+
+        item3 = QtGui.QWidget()
+        item3.setLayout(box)
 
         button1.clicked.connect(self.analyzeAirfoil)
 
@@ -158,30 +150,113 @@ class Toolbox(object):
         self.cb4.clicked.connect(self.toggleChord)
 
         # ******************************************
+        # toolbox item6 --> contour modification
+        # ******************************************
+        form = QtGui.QFormLayout()
+
+        label = QtGui.QLabel(u'Refinement tolerance (°)')
+        self.tolerance = QtGui.QDoubleSpinBox()
+        self.tolerance.setSingleStep(0.1)
+        self.tolerance.setDecimals(1)
+        self.tolerance.setRange(140.0, 175.0)
+        self.tolerance.setValue(172.0)
+        form.addRow(label, self.tolerance)
+
+        label = QtGui.QLabel('Number points on spline (-)')
+        self.spline_points = QtGui.QSpinBox()
+        self.spline_points.setRange(50, 500)
+        self.spline_points.setValue(150)
+        form.addRow(label, self.spline_points)
+
+        button = QtGui.QPushButton('Spline and Refine')
+        hbl = QtGui.QHBoxLayout()
+        hbl.addStretch(stretch=1)
+        hbl.addWidget(button, stretch=4)
+        hbl.addStretch(stretch=1)
+
+        box = QtGui.QGroupBox('Airfoil contour refinement settings')
+        box.setLayout(form)
+
+        form1 = QtGui.QFormLayout()
+
+        label = QtGui.QLabel(u'Blending length relative to chord (%)')
+        self.blending = QtGui.QDoubleSpinBox()
+        self.blending.setSingleStep(0.01)
+        self.blending.setDecimals(2)
+        self.blending.setRange(0.0, 1.0)
+        self.blending.setValue(0.3)
+        form1.addRow(label, self.blending)
+
+        label = QtGui.QLabel(u'Blending polynomial exponent (-)')
+        self.exponent = QtGui.QDoubleSpinBox()
+        self.exponent.setSingleStep(0.1)
+        self.exponent.setDecimals(1)
+        self.exponent.setRange(1.0, 5.0)
+        self.exponent.setValue(3.0)
+        form1.addRow(label, self.exponent)
+
+        label = QtGui.QLabel(u'Trailing edge thickness relative to chord (%)')
+        self.thickness = QtGui.QDoubleSpinBox()
+        self.thickness.setSingleStep(0.05)
+        self.thickness.setDecimals(2)
+        self.thickness.setRange(0.0, 5.0)
+        self.thickness.setValue(0.6)
+        form1.addRow(label, self.thickness)
+
+        box1 = QtGui.QGroupBox('Airfoil trailing edge settings')
+        box1.setLayout(form1)
+
+        button1 = QtGui.QPushButton('Add Trailing Edge')
+        hbl1 = QtGui.QHBoxLayout()
+        hbl1.addStretch(stretch=1)
+        hbl1.addWidget(button1, stretch=4)
+        hbl1.addStretch(stretch=1)
+
+        vbl = QtGui.QVBoxLayout()
+        vbl.addStretch(1)
+        vbl.addWidget(box)
+        vbl.addLayout(hbl)
+        vbl.addStretch(1)
+        vbl.addWidget(box1)
+        vbl.addLayout(hbl1)
+        vbl.addStretch(10)
+
+        item6 = QtGui.QWidget()
+        item6.setLayout(vbl)
+
+        button.clicked.connect(self.modifyAirfoil)
+
+        # ******************************************
         # End of toolbox items
         # ******************************************
 
         # populate toolbox
         self.tb1 = self.toolBox.addItem(item1, 'Airfoil Database')
-        self.tb2 = self.toolBox.addItem(item3, 'Contour Analysis')
-        self.tb3 = self.toolBox.addItem(item4, 'Meshing')
-        self.tb4 = self.toolBox.addItem(item2, 'Aerodynamics')
-        self.tb5 = self.toolBox.addItem(item5, 'Viewing options')
+        self.tb2 = self.toolBox.addItem(item6, 'Contour Modification')
+        self.tb3 = self.toolBox.addItem(item3, 'Contour Analysis')
+        self.tb4 = self.toolBox.addItem(item4, 'Meshing')
+        self.tb5 = self.toolBox.addItem(item2, 'Aerodynamics')
+        self.tb6 = self.toolBox.addItem(item5, 'Viewing options')
 
         self.toolBox.setItemToolTip(0, 'Airfoil database ' +
                                        '(browse filesystem)')
         self.toolBox.setItemToolTip(1, 'Analyze the curvature of the ' +
                                        'selected airfoil')
-        self.toolBox.setItemToolTip(2, 'Generate a 2D mesh around the ' +
+        self.toolBox.setItemToolTip(2, 'Analyze the curvature of the ' +
                                        'selected airfoil')
+        self.toolBox.setItemToolTip(3, 'Generate a 2D mesh around the ' +
+                                       'selected airfoil')
+        self.toolBox.setItemToolTip(4, 'Compute panel based aerodynamic ' +
+                                    'coefficients')
 
         self.toolBox.setItemIcon(0, QtGui.QIcon(ICONS_L + 'airfoil.png'))
         self.toolBox.setItemIcon(1, QtGui.QIcon(ICONS_L + 'Pixel editor.png'))
-        self.toolBox.setItemIcon(2, QtGui.QIcon(ICONS_L + 'mesh.png'))
-        self.toolBox.setItemIcon(3, QtGui.QIcon(ICONS_L + 'Fast delivery.png'))
-        self.toolBox.setItemIcon(4, QtGui.QIcon(ICONS_L + 'Configuration.png'))
+        self.toolBox.setItemIcon(2, QtGui.QIcon(ICONS_L + 'Pixel editor.png'))
+        self.toolBox.setItemIcon(3, QtGui.QIcon(ICONS_L + 'mesh.png'))
+        self.toolBox.setItemIcon(4, QtGui.QIcon(ICONS_L + 'Fast delivery.png'))
+        self.toolBox.setItemIcon(5, QtGui.QIcon(ICONS_L + 'Configuration.png'))
 
-        # airfoil database box is preselected
+        # preselect airfoil database box
         self.toolBox.setCurrentIndex(0)
 
     @QtCore.pyqtSlot()
@@ -212,6 +287,10 @@ class Toolbox(object):
         npanel = self.panels.value()
 
         PSvpMethod.runSVP(x, y, u_inf, alpha, npanel)
+
+    @QtCore.pyqtSlot()
+    def modifyAirfoil(self):
+        pass
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):

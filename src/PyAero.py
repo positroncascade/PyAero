@@ -13,6 +13,7 @@ accurate input to the subsequent meshing process.
 """
 
 import sys
+import os
 import datetime
 
 from PyQt4 import QtGui, QtCore
@@ -24,9 +25,29 @@ import PContourAnalysis
 import PGuiSlots
 import PVtkView
 import PToolBox
-from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE
+from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
+                      STYLESPECIAL
 import PLogger as logger
 import PShortCuts
+
+# qt darkstylesheet
+# https://github.com/ColinDuquesnoy/QDarkStyleSheet
+# installed via: pip install qdarkstyle
+try:
+    import qdarkstyle
+    darkstyle = True
+except:
+    darkstyle = False
+
+# qt aqua styleshhet
+# http://www.poketcode.com/pyqt4_demos.html
+# installed via manually copying the download content to
+# site-packages
+try:
+    from qaquastyle.qsshelper import QSSHelper
+    aquastyle = True
+except:
+    aquastyle = False
 
 
 __appname__ = 'PyAero'
@@ -176,6 +197,15 @@ class CentralWidget(QtGui.QWidget):
 def main():
     app = QtGui.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(ICONS+'app_image.png'))
+
+    # setup stylesheet
+    if darkstyle and STYLESPECIAL == 'Dark':
+        app.setStyleSheet(qdarkstyle.load_stylesheet(pyside=False))
+    elif aquastyle and STYLESPECIAL == 'Aqua':
+        # loads and sets the Qt stylesheet
+        site = 'c:/Python27/lib/site-packages/qaquastyle/'
+        qss = QSSHelper.open_qss(os.path.join(site, 'aqua.qss'))
+        app.setStyleSheet(qss)
 
     if LOCALE == 'C':
         # set default local to C, so that decimal separator is a

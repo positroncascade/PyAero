@@ -217,3 +217,6 @@ class GraphicsView(QtGui.QGraphicsView):
         # remove all selected items from the scene
         elif action == delitems:
             self.parent.slots.removeGraphicsItem()
+
+        # handle event
+        super(GraphicsView, self).contextMenuEvent(event)
