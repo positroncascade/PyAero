@@ -76,18 +76,18 @@ class GraphicsView(QtGui.QGraphicsView):
         # within resize event otherwise strange recursion can occur
         self.fitInView(self.sceneview, mode=QtCore.Qt.KeepAspectRatio)
 
-        # handle event
+        # continue handling events
         super(GraphicsView, self).resizeEvent(event)
 
     def mousePressEvent(self, event):
         # keep track of click position
         self.lastPoint = event.pos()
 
-        # handle event
+        # continue handling events
         super(GraphicsView, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
-        # handle event
+        # continue handling events
         super(GraphicsView, self).mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event):
@@ -108,7 +108,7 @@ class GraphicsView(QtGui.QGraphicsView):
             if self.parent.airfoil.item.isSelected():
                 self.parent.airfoil.item.setPos(QtCore.QPointF(x, y))
 
-        # handle event
+        # continue handling other mouse move events
         super(GraphicsView, self).mouseMoveEvent(event)
 
     def keyPressEvent(self, event):
@@ -134,7 +134,7 @@ class GraphicsView(QtGui.QGraphicsView):
             self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
             self.setInteractive(False)
 
-        # handle event
+        # continue handling other key press events
         super(GraphicsView, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
@@ -156,7 +156,8 @@ class GraphicsView(QtGui.QGraphicsView):
         if math.copysign(1, event.delta()) > 0:
             f = 1.0 / SCALEINC
         self.scaleView(f)
-        # DO NOT HANDLE EVENT HERE !!! destroys mouse anchor
+        # DO NOT CONTINUE HANDLING EVENTS HERE!!!
+        # this would destroy the mouse anchor
         # super(GraphicsView, self).wheelEvent(event)
 
     def scaleView(self, factor):
@@ -218,5 +219,5 @@ class GraphicsView(QtGui.QGraphicsView):
         elif action == delitems:
             self.parent.slots.removeAirfoil()
 
-        # handle event
+        # continue handling events
         super(GraphicsView, self).contextMenuEvent(event)
