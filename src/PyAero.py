@@ -77,7 +77,7 @@ class MainWindow(QtGui.QMainWindow):
 
         QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(style))
 
-        self.airfoil = None
+        self.airfoils = list()
 
         self.bgview = VIEWSTYLE
 

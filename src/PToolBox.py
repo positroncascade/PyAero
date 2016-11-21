@@ -48,7 +48,7 @@ class Toolbox(object):
         layout.addStretch(stretch=2)
         layout.addWidget(self.header)
 
-        self.listwidget = MyListWidget(self)
+        self.listwidget = MyListWidget(self.parent)
         self.listwidget.setEnabled(False)
         # allow multiple selections
         self.listwidget.setSelectionMode(QtGui.QAbstractItemView.
@@ -346,10 +346,14 @@ class Toolbox(object):
 
 
 class MyListWidget(QtGui.QListWidget):
-
+    """Subclassing QListWidget in order to be able to catch key press
+    events
+    """
     def __init__(self, parent):
         super(MyListWidget, self).__init__()
         self.parent = parent
+
+        self.itemClicked.connect(self.handleActivated)
 
     def keyPressEvent(self, event):
 
@@ -359,9 +363,23 @@ class MyListWidget(QtGui.QListWidget):
             items = self.selectedItems()
             for item in items:
                 row = self.row(item)
-                text = item.text()
                 self.takeItem(row)
-                logger.log.info('Deleted: %s' % (text))
+                logger.log.info('Deleted: %s' % (item.text()))
 
-        # continue handling other key press events
+        # continue handling key press events which are not
+        # catched here, but should be catched elsewhere
         super(MyListWidget, self).keyPressEvent(event)
+
+    # @QtCore.pyqtSlot() commented here because otherewise
+    # item is not available
+    def handleActivated(self, item):
+        name = item.text()
+        logger.log.info('Was clicked: %s' % (name))
+
+        for airfoil in self.parent.airfoils:
+            airfoil.contour_item.setSelected(False)
+
+        for selecteditem in self.selectedItems():
+            for airfoil in self.parent.airfoils:
+                if airfoil.name == selecteditem.text():
+                    airfoil.contour_item.setSelected(True)

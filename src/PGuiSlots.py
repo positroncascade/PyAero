@@ -65,14 +65,17 @@ class Slots(object):
         # FIXME
         # FIXME check for multiple loaded airfoils and how to mange them
         # FIXME
-        self.parent.airfoil = PAirfoil.Airfoil(self.parent.scene)
-        loaded = self.parent.airfoil.readContour(filename, comment)
-        self.parent.airfoil.addToScene()
-        self.fitAirfoilInView()
+
+        fileinfo = QtCore.QFileInfo(filename)
+        name = fileinfo.fileName()
+
+        self.parent.airfoils.append(PAirfoil.Airfoil(self.parent.scene, name))
+        last = len(self.parent.airfoils) - 1
+        loaded = self.parent.airfoils[last].readContour(filename, comment)
+        self.parent.airfoils[last].addToScene()
+        self.fitAirfoilInView(last)
 
         if loaded:
-            fileinfo = QtCore.QFileInfo(filename)
-            name = fileinfo.fileName()
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
                             '</b> loaded')
 
@@ -85,26 +88,24 @@ class Slots(object):
         self.parent.postview.readStl('data/SATORI.stl')
 
     @QtCore.pyqtSlot()
-    def fitAirfoilInView(self):
-        if self.parent.airfoil:
+    def fitAirfoilInView(self, id):
+        # FIXME
+        # FIXME move item back to its origin
+        # FIXME it could have been moved
+        # FIXME because ItemIsMovable in PGraphicsItem does not
+        # FIXME get the events or so
+        # FIXME
+        self.parent.airfoils[id].contour_item.setX(0.0)
+        self.parent.airfoils[id].contour_item.setY(0.0)
 
-            # FIXME
-            # FIXME move item back to its origin
-            # FIXME it could have been moved
-            # FIXME because ItemIsMovable in PGraphicsItem does not
-            # FIXME get the events or so
-            # FIXME
-            self.parent.airfoil.item.setX(0.0)
-            self.parent.airfoil.item.setY(0.0)
+        dx = 0.05 * self.parent.airfoils[id].contour_item.rect.width()
+        rect = self.parent.airfoils[id].contour_item.rect.adjusted(-dx, 0, dx, 0)
+        # logger.log.info('Rect Fit Airfoil: %s' % (rect))
+        # logger.log.info('View rect: %s' % (self.parent.view.rect()))
+        self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
 
-            dx = 0.05 * self.parent.airfoil.item.rect.width()
-            rect = self.parent.airfoil.item.rect.adjusted(-dx, 0, dx, 0)
-            # logger.log.info('Rect Fit Airfoil: %s' % (rect))
-            # logger.log.info('View rect: %s' % (self.parent.view.rect()))
-            self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
-
-            # cache view to be able to keep it during resize
-            self.parent.view.getSceneFromView()
+        # cache view to be able to keep it during resize
+        self.parent.view.getSceneFromView()
 
     @QtCore.pyqtSlot()
     def onViewAll(self):
