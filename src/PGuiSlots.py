@@ -76,6 +76,10 @@ class Slots(object):
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
                             '</b> loaded')
 
+            self.parent.centralWidget().tools.header.setEnabled(True)
+            self.parent.centralWidget().tools.listwidget.setEnabled(True)
+            self.parent.centralWidget().tools.listwidget.addItem(name)
+
     @QtCore.pyqtSlot()
     def onPredefinedSTL(self):
         self.parent.postview.readStl('data/SATORI.stl')
@@ -182,7 +186,7 @@ class Slots(object):
         pass
 
     @QtCore.pyqtSlot()
-    def removeGraphicsItem(self):
+    def removeAirfoil(self):
         """Remove all selected items from the scene"""
         items = self.parent.scene.selectedItems()
         print items, '\n'
