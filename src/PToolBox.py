@@ -33,14 +33,24 @@ class Toolbox(object):
         item1.setLayout(layout)
 
         # instance of QFileSystemModel (needs to have a proper parent)
-        self.filesystem = PFileSystem.FileSystem(self.parent)
+        filesystem = PFileSystem.FileSystem(self.parent)
 
         # handler
-        self.filesystem.tree.clicked.connect(self.filesystem.onFileSelected)
-        self.filesystem.tree.doubleClicked.connect(self.filesystem.onFileLoad)
+        filesystem.tree.clicked.connect(filesystem.onFileSelected)
+        filesystem.tree.doubleClicked.connect(filesystem.onFileLoad)
 
-        layout.addWidget(self.filesystem.tree)
-        layout.setAlignment(QtCore.Qt.AlignTop)
+        layout.addWidget(filesystem.tree, stretch=12)
+        # layout.setAlignment(QtCore.Qt.AlignTop)
+
+        self.header = QtGui.QLabel('Loaded airfoil(s)')
+        self.header.setEnabled(False)
+        layout.addStretch(stretch=2)
+        layout.addWidget(self.header)
+
+        self.listwidget = QtGui.QListWidget()
+        self.listwidget.setEnabled(False)
+        layout.addWidget(self.listwidget, stretch=5)
+        layout.addStretch(stretch=1)
 
         # ******************************************
         # toolbox item2 --> Aeropython settings
@@ -240,8 +250,7 @@ class Toolbox(object):
 
         self.toolBox.setItemToolTip(0, 'Airfoil database ' +
                                        '(browse filesystem)')
-        self.toolBox.setItemToolTip(1, 'Analyze the curvature of the ' +
-                                       'selected airfoil')
+        self.toolBox.setItemToolTip(1, 'Spline and refine the contour')
         self.toolBox.setItemToolTip(2, 'Analyze the curvature of the ' +
                                        'selected airfoil')
         self.toolBox.setItemToolTip(3, 'Generate a 2D mesh around the ' +
