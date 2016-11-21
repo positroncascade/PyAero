@@ -19,7 +19,7 @@ STYLE = 'Windows'
 
 # special GUI style
 # if installed, accepts 'Aqua' or 'Dark'
-STYLESPECIAL = None
+STYLESPECIAL = 'Dark'
 
 # application can be exited by preesinf the escape key
 EXITONESCAPE = True
