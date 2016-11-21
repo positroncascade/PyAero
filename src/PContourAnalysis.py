@@ -422,11 +422,16 @@ class ContourAnalysis(QtGui.QFrame):
 
         Returns:
             FLOAT: leading edge radius, its center and related contour
-            point
+            point and id
         """
         radius = self.curvature_data[2]
         rc = np.min(radius)
-        le_id = np.where(radius == rc)
+        # FIXME
+        # FIXME -1 just for testing, not always sure if min gets
+        # FIXME the correct radius; see symmetrical airfoils
+        # FIXME
+        le_id = list(np.where(radius == rc))[0] - 1
+        logger.log.info('le_id: %s %s' % (le_id, type(le_id)))
         # leading edge curvature circle center
         xc = self.curvature_data[3][le_id]
         yc = self.curvature_data[4][le_id]
@@ -470,7 +475,9 @@ class ContourAnalysis(QtGui.QFrame):
         # leading edge curvature circle
         circle = patches.Circle((xc, yc), rc, edgecolor='y', facecolor='None',
                                 lw=2, ls='solid', zorder=2)
+        ax2.plot((xc, xle), (yc, yle), 'r', linewidth=1)
         ax2.plot(xc, yc, marker='o', mfc='b', linewidth=2)
+        ax2.plot(xle, yle, marker='o', mfc='b', linewidth=2)
         ax2.add_patch(circle)
         ax2.set_title('Refined Contour', fontsize=14)
         ax2.set_xlim(-0.05, 1.05)
