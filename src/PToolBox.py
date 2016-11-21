@@ -4,6 +4,7 @@ from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
 from PSettings import ICONS_S, ICONS_L
+import PLogger as logger
 
 
 class Toolbox(object):
@@ -47,8 +48,11 @@ class Toolbox(object):
         layout.addStretch(stretch=2)
         layout.addWidget(self.header)
 
-        self.listwidget = QtGui.QListWidget()
+        self.listwidget = MyListWidget(self)
         self.listwidget.setEnabled(False)
+        # allow multiple selections
+        self.listwidget.setSelectionMode(QtGui.QAbstractItemView.
+                                         ExtendedSelection)
         layout.addWidget(self.listwidget, stretch=5)
         layout.addStretch(stretch=1)
 
@@ -339,3 +343,25 @@ class Toolbox(object):
                         QtGui.QMessageBox.Ok, QtGui.QMessageBox.NoButton,
                         QtGui.QMessageBox.NoButton)
         return
+
+
+class MyListWidget(QtGui.QListWidget):
+
+    def __init__(self, parent):
+        super(MyListWidget, self).__init__()
+        self.parent = parent
+
+    def keyPressEvent(self, event):
+
+        if event.type() == QtCore.QEvent.KeyPress and \
+                           event.matches(QtGui.QKeySequence.Delete):
+
+            items = self.selectedItems()
+            for item in items:
+                row = self.row(item)
+                text = item.text()
+                self.takeItem(row)
+                logger.log.info('Deleted: %s' % (text))
+
+        # continue handling other key press events
+        super(MyListWidget, self).keyPressEvent(event)
