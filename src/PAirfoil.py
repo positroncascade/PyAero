@@ -28,11 +28,11 @@ class Airfoil(object):
         scene (QGraphicsScene): PyAero graphics scene
     """
 
-    def __init__(self, scene):
+    def __init__(self, scene, name):
 
         self.scene = scene
-        self.name = None
-        self.item = None
+        self.name = name
+        self.contour_item = None
         self.type = 'airfoil'
         self.raw_coordinates = None
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
@@ -40,8 +40,6 @@ class Airfoil(object):
         self.brushcolor = QtGui.QColor(150, 150, 150, 255)
 
     def readContour(self, filename, comment='#'):
-
-        self.name = filename
 
         try:
             with open(filename, mode='r') as f:
@@ -85,17 +83,17 @@ class Airfoil(object):
 
         # add contour as a GraphicsItem to the scene
         # these are the objects which are drawn in the GraphicsView
-        self.item = PGraphicsItem.GraphicsItem(contour, self.scene)
-        self.scene.addItem(self.item)
+        self.contour_item = PGraphicsItem.GraphicsItem(contour, self.scene)
+        self.scene.addItem(self.contour_item)
 
     def createItemsGroup(self):
         """Container that treats a group of items as a single item
         One item is the contour itself
         Other items are chord, camber, point markers, etc.
         """
-        self.contour_group = QtGui.QGraphicsItemGroup(parent=self.item,
+        self.contour_group = QtGui.QGraphicsItemGroup(parent=self.contour_item,
                                                       scene=self.scene)
-        self.markers = QtGui.QGraphicsItemGroup(parent=self.item,
+        self.markers = QtGui.QGraphicsItemGroup(parent=self.contour_item,
                                                 scene=self.scene)
 
     def addMarkers(self, type='circle'):
