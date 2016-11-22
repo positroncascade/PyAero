@@ -95,18 +95,23 @@ class GraphicsView(QtGui.QGraphicsView):
 
         point = event.pos()
 
-        # boolean to trigger weather to restrict it horizontally
+        # FIXME
+        # FIXME both horizontal and vertical don't work yet
+        # FIXME
+        # boolean to trigger movement restriction
         if self.moveVertical:
             x = 0
             y = self.lastPoint.y() - point.y()
-            if self.parent.airfoil.item.isSelected():
-                self.parent.airfoil.item.setPos(QtCore.QPointF(x, y))
+            for airfoil in self.parent.airfoils:
+                if airfoil.contour_item.isSelected():
+                    airfoil.contour_item.setPos(QtCore.QPointF(x, y))
             self.lastPoint.y = point.y
         elif self.moveHorizontal:
             x = point.x()
             y = self.lastPoint.y()
-            if self.parent.airfoil.item.isSelected():
-                self.parent.airfoil.item.setPos(QtCore.QPointF(x, y))
+            for airfoil in self.parent.airfoils:
+                if airfoil.contour_item.isSelected():
+                    airfoil.contour_item.setPos(QtCore.QPointF(x, y))
 
         # continue handling other mouse move events
         super(GraphicsView, self).mouseMoveEvent(event)
@@ -119,7 +124,10 @@ class GraphicsView(QtGui.QGraphicsView):
         # check if CTRL+SHIFT is pressed simultaneously
         if (modifiers & QtCore.Qt.ControlModifier) and \
                 (modifiers & QtCore.Qt.ShiftModifier):
-            self.moveVertical = True
+            # FIXME
+            # FIXME don't do anything until above code is fixed
+            # FIXME
+            # self.moveVertical = True
             return
 
         if key == QtCore.Qt.Key_Plus:
@@ -131,6 +139,7 @@ class GraphicsView(QtGui.QGraphicsView):
         elif key == QtCore.Qt.Key_Home:
             self.parent.slots.onViewAll()
         elif modifiers == QtCore.Qt.ControlModifier:
+            # self.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
             self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
             self.setInteractive(False)
 
@@ -212,7 +221,9 @@ class GraphicsView(QtGui.QGraphicsView):
         if action == togglebg:
             self.parent.slots.onBackground()
         elif action == fitairfoil:
-            self.parent.slots.fitAirfoilInView()
+            for id, airfoil in enumerate(self.parent.airfoils):
+                if airfoil.contour_item.isSelected():
+                    self.parent.slots.fitAirfoilInView(id)
         elif action == fitall:
             self.parent.slots.onViewAll()
         # remove all selected items from the scene

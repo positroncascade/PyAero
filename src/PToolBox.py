@@ -274,22 +274,24 @@ class Toolbox(object):
 
     @QtCore.pyqtSlot()
     def toggleRawPoints(self):
-        """Toggle points from raw airfoil contour (on/off)"""
-        if self.parent.airfoil.markers:
-            visible = self.parent.airfoil.markers.isVisible()
-            self.parent.airfoil.markers.setVisible(not visible)
+        """Toggle points of raw airfoil contour (on/off)"""
+        for airfoil in self.parent.airfoils:
+            if airfoil.markers and airfoil.contour_item.isSelected():
+                visible = airfoil.markers.isVisible()
+                airfoil.markers.setVisible(not visible)
 
     @QtCore.pyqtSlot()
     def toggleChord(self):
         """Toggle visibility of the airfoil chord"""
-        if self.parent.airfoil.chord:
-            visible = self.parent.airfoil.chord.isVisible()
-            self.parent.airfoil.chord.setVisible(not visible)
+        for airfoil in self.parent.airfoils:
+            if airfoil.chord and airfoil.contour_item.isSelected():
+                visible = airfoil.chord.isVisible()
+                airfoil.chord.setVisible(not visible)
 
     @QtCore.pyqtSlot()
     def runPanelMethod(self):
         """Gui callback to run AeroPython panel method in module PSvpMethod"""
-        if not self.parent.airfoil:
+        if not self.parent.airfoils:
             self.noairfoilWarning('Can\'t run AeroPython')
             return
 
@@ -309,7 +311,7 @@ class Toolbox(object):
     def analyzeAirfoil(self):
         """Airfoil contour analysis with respect to geometric features"""
 
-        if not self.parent.airfoil:
+        if not self.parent.airfoils:
             self.noairfoilWarning('Can\'t do contour analysis')
             return
 

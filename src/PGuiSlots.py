@@ -99,7 +99,8 @@ class Slots(object):
         self.parent.airfoils[id].contour_item.setY(0.0)
 
         dx = 0.05 * self.parent.airfoils[id].contour_item.rect.width()
-        rect = self.parent.airfoils[id].contour_item.rect.adjusted(-dx, 0, dx, 0)
+        rect = self.parent.airfoils[id].contour_item.rect. \
+            adjusted(-dx, 0, dx, 0)
         # logger.log.info('Rect Fit Airfoil: %s' % (rect))
         # logger.log.info('View rect: %s' % (self.parent.view.rect()))
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
@@ -188,13 +189,11 @@ class Slots(object):
 
     @QtCore.pyqtSlot()
     def removeAirfoil(self):
-        """Remove all selected items from the scene"""
-        items = self.parent.scene.selectedItems()
-        print items, '\n'
-        for item in items:
-            self.parent.scene.removeItem(item)
+        """Remove all selected aiorfoils from the scene"""
+        for airfoil in self.parent.airfoils:
+            self.parent.scene.removeItem(airfoil.contour_item)
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
-                            self.parent.airfoil.name + '</b> removed')
+                            airfoil.name + '</b> removed')
 
     @QtCore.pyqtSlot()
     def onMessage(self, msg):
