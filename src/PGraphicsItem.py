@@ -22,7 +22,6 @@ class GraphicsItem(QtGui.QGraphicsItem):
         # FIXME handled in the view or scene and therefore not propagated
         # FIXME
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
-
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
 
@@ -44,15 +43,33 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.focusrect = QtCore.QRectF(self.rect.left(), self.rect.top(),
                                        self.rect.width(), self.rect.height())
 
+    def itemChange(self, change, value):
+        if change == QtGui.QGraphicsItem.ItemSelectedHasChanged:
+            # when selecting an airfoil item in the graphics view
+            # select the respective item in PToolbox/MyListWidget
+            # which contains a list of loaded airfoils
+            if self.isSelected():
+                # FIXME
+                # FIXME Loop through all airfoils and find their names
+                # FIXME match the name with the list elements and
+                # FIXME set respective element as selected
+                # self.parent does not yet exist; needs to be retrieved
+                listitem = 1
+                # get MainWindow instance here (overcomes handling parents)
+                mainwindow = QtCore.QCoreApplication.instance().window
+                mainwindow.centralwidget.tools.listwidget. \
+                    setItemSelected(listitem, True)
+
+        return QtGui.QGraphicsItem.itemChange(self, change, value)
+
     def mousePressEvent(self, event):
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
 
-        # FIXME
-        # FIXME do this only when an item is clicked
-        # FIXME
         # set item as topmost in stack
-        self.setZValue(self.scene.items()[0].zValue() + 1)
+        zstack = [itm.zValue() for itm in self.scene.items()]
+        zmax = max(zstack)
+        self.setZValue(zmax + 1)
         self.setSelected(True)
 
         # handle event
@@ -64,7 +81,6 @@ class GraphicsItem(QtGui.QGraphicsItem):
         super(GraphicsItem, self).mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event):
-
         # handle event
         super(GraphicsItem, self).mouseMoveEvent(event)
 

@@ -366,14 +366,22 @@ class MyListWidget(QtGui.QListWidget):
             for item in items:
                 row = self.row(item)
                 self.takeItem(row)
-                logger.log.info('Deleted: %s' % (item.text()))
+                delete = False
+                for airfoil in self.parent.airfoils:
+                    if item.text() == airfoil.name:
+                        delete = True
+                        logger.log.info('Deleted: %s' % (item.text()))
+                        break
+                if delete:
+                    self.parent.airfoils.remove(airfoil)
+                    self.parent.scene.removeItem(airfoil.contour_item)
 
         # continue handling key press events which are not
-        # catched here, but should be catched elsewhere
+        # handled here, but should be catched elsewhere
         super(MyListWidget, self).keyPressEvent(event)
 
     # @QtCore.pyqtSlot() commented here because otherewise
-    # item is not available
+    # "item" is not available
     def handleActivated(self, item):
         name = item.text()
         logger.log.info('Was clicked: %s' % (name))

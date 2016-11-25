@@ -80,6 +80,9 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).resizeEvent(event)
 
     def mousePressEvent(self, event):
+
+        self.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
+
         # keep track of click position
         self.lastPoint = event.pos()
 
@@ -126,7 +129,7 @@ class GraphicsView(QtGui.QGraphicsView):
                 (modifiers & QtCore.Qt.ShiftModifier):
             # FIXME
             # FIXME don't do anything until above code is fixed
-            # FIXME
+            # FIXME in the mouse move event
             # self.moveVertical = True
             return
 
