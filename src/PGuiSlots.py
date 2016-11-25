@@ -189,7 +189,7 @@ class Slots(object):
 
     @QtCore.pyqtSlot()
     def removeAirfoil(self):
-        """Remove all selected aiorfoils from the scene"""
+        """Remove all selected airfoils from the scene"""
         for airfoil in self.parent.airfoils:
             self.parent.scene.removeItem(airfoil.contour_item)
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
