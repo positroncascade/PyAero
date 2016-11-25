@@ -217,6 +217,14 @@ def main():
     window.showMaximized()
     window.show()
 
+    # add attribute "window" to QApplication instance "app"
+    # and assign it the MainWindow instance "window"
+    # thus the MainWindow instance can be accessed from everywhere
+    # by using "QtCore.QCoreApplication.instance().window"
+    # with this method application wide attributes can be set
+    # this helps to overcome nested usage of "parent"
+    app.window = window
+
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
