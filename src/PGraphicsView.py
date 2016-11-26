@@ -221,10 +221,7 @@ class GraphicsView(QtGui.QGraphicsView):
         menu.addSeparator()
 
         delitems = menu.addAction('Delete selected')
-        # FIXME
-        # FIXME keyboard shortcut does not work
-        # FIXME
-        # delitems.setShortcut('CTRL+r')
+        delitems.setShortcut('Del')
 
         menu.addSeparator()
 

@@ -3,7 +3,7 @@
 from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
-from PSettings import ICONS_S, ICONS_L
+from PSettings import ICONS_L
 import PLogger as logger
 
 
@@ -358,10 +358,9 @@ class MyListWidget(QtGui.QListWidget):
         self.itemClicked.connect(self.handleActivated)
 
     def keyPressEvent(self, event):
+        key = event.key()
 
-        if event.type() == QtCore.QEvent.KeyPress and \
-                           event.matches(QtGui.QKeySequence.Delete):
-
+        if key == QtCore.Qt.Key_Delete:
             items = self.selectedItems()
             for item in items:
                 row = self.row(item)
@@ -375,6 +374,13 @@ class MyListWidget(QtGui.QListWidget):
                 if delete:
                     self.parent.airfoils.remove(airfoil)
                     self.parent.scene.removeItem(airfoil.contour_item)
+
+        # FIXME
+        # FIXME workaround because Key_Home event ends elsewhere
+        # FIXME
+        if key == QtCore.Qt.Key_Home:
+            # logger.log.info('Home hit in listwidget')
+            self.parent.slots.onViewAll()
 
         # continue handling key press events which are not
         # handled here, but should be catched elsewhere
