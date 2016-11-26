@@ -136,8 +136,8 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
     def drawFocusRect(self, painter):
         self.focusbrush = QtGui.QBrush()
-        self.focuspen = QtGui.QPen(QtCore.Qt.SolidLine)
-        self.focuspen.setColor(QtCore.Qt.black)
+        self.focuspen = QtGui.QPen(QtCore.Qt.DashLine)
+        self.focuspen.setColor(QtCore.Qt.darkGray)
         self.focuspen.setWidthF(1.)
         self.focuspen.setCosmetic(True)  # no thickness change when zoomed
         painter.setBrush(self.focusbrush)
