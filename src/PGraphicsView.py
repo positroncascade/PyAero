@@ -2,7 +2,6 @@ import math
 from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM
-import PLogger as logger
 
 
 class GraphicsView(QtGui.QGraphicsView):
@@ -25,7 +24,8 @@ class GraphicsView(QtGui.QGraphicsView):
 
         # set QGraphicsView attributes
         self.setRenderHints(QtGui.QPainter.Antialiasing |
-                            QtGui.QPainter.HighQualityAntialiasing)
+                            QtGui.QPainter.HighQualityAntialiasing |
+                            QtGui.QPainter.TextAntialiasing)
         self.setViewportUpdateMode(QtGui.QGraphicsView.FullViewportUpdate)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
 
