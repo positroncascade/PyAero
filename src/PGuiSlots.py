@@ -190,10 +190,28 @@ class Slots(object):
     @QtCore.pyqtSlot()
     def removeAirfoil(self):
         """Remove all selected airfoils from the scene"""
+        removed = list()
         for airfoil in self.parent.airfoils:
-            self.parent.scene.removeItem(airfoil.contour_item)
-            logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
-                            airfoil.name + '</b> removed')
+            if airfoil.contour_item.isSelected():
+                removed.append(airfoil)
+                # remove from scene
+                self.parent.scene.removeItem(airfoil.contour_item)
+                logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
+                                airfoil.name + '</b> removed')
+
+                # remove from listwidget
+                # get MainWindow instance here (overcomes handling parents)
+                mainwindow = QtCore.QCoreApplication.instance().mainwindow
+                centralwidget = mainwindow.centralWidget()
+                lw = centralwidget.tools.listwidget
+                itms = lw.findItems(airfoil.name, QtCore.Qt.MatchExactly)
+                for itm in itms:
+                    row = lw.row(itm)
+                    lw.takeItem(row)
+
+        # remove from list of airfoils
+        for r in removed:
+            self.parent.airfoils.remove(r)
 
     @QtCore.pyqtSlot()
     def onMessage(self, msg):

@@ -116,7 +116,18 @@ class GraphicsView(QtGui.QGraphicsView):
                 if airfoil.contour_item.isSelected():
                     airfoil.contour_item.setPos(QtCore.QPointF(x, y))
 
-        # continue handling other mouse move events
+        selected = False
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                selected = True
+        # if at least one airfoil ist selected in the view
+        # then give focus to the listwidget with its name
+        if selected:
+            mainwindow = QtCore.QCoreApplication.instance().mainwindow
+            centralwidget = mainwindow.centralWidget()
+            centralwidget.tools.listwidget.setFocus()
+
+        # continue handling mouse move events
         super(GraphicsView, self).mouseMoveEvent(event)
 
     def keyPressEvent(self, event):
@@ -141,8 +152,9 @@ class GraphicsView(QtGui.QGraphicsView):
             self.scaleView(f)
         elif key == QtCore.Qt.Key_Home:
             self.parent.slots.onViewAll()
+        elif key == QtCore.Qt.Key_Delete:
+            self.parent.slots.removeAirfoil()
         elif modifiers == QtCore.Qt.ControlModifier:
-            # self.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
             self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
             self.setInteractive(False)
 

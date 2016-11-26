@@ -69,6 +69,9 @@ class GraphicsItem(QtGui.QGraphicsItem):
                 for itm in itms:
                     centralwidget.tools.listwidget. \
                         setItemSelected(itm, False)
+            # give focus to listwidget so that highlighting works
+            # (at least for short period until mouse is moved)
+            centralwidget.tools.listwidget.setFocus()
 
         return QtGui.QGraphicsItem.itemChange(self, change, value)
 
@@ -91,6 +94,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         super(GraphicsItem, self).mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event):
+
         # handle event
         super(GraphicsItem, self).mouseMoveEvent(event)
 
@@ -132,7 +136,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
     def drawFocusRect(self, painter):
         self.focusbrush = QtGui.QBrush()
-        self.focuspen = QtGui.QPen(QtCore.Qt.DotLine)
+        self.focuspen = QtGui.QPen(QtCore.Qt.SolidLine)
         self.focuspen.setColor(QtCore.Qt.black)
         self.focuspen.setWidthF(1.)
         self.focuspen.setCosmetic(True)  # no thickness change when zoomed
