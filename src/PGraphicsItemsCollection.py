@@ -15,7 +15,7 @@ class GraphicsCollection(object):
         self.args ... list of arguments to self.method
     """
 
-    def __init__(self):
+    def __init__(self, name=None):
 
         pen = QtGui.QPen(QtCore.Qt.SolidLine)
         pen.setColor(QtGui.QColor(0, 0, 0, 255))
@@ -65,7 +65,7 @@ class GraphicsCollection(object):
         self.method = 'drawRect'
         self.args = [self.rect]
 
-    def Polygon(self, polygon):
+    def Polygon(self, polygon, name=None):
         """Custom polygon graphics item pre-populated for PGraphicsItem
 
         Args:
@@ -75,6 +75,8 @@ class GraphicsCollection(object):
         self.shape.addPolygon(polygon)
         self.method = 'drawPolygon'
         self.args = [polygon]
+        # in case of an airfoil its the airfoil name (PAirfoil.py)
+        self.name = name
 
     def Mesh(self, mesh):
         self.method = 'drawPath'

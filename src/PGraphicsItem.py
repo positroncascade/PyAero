@@ -12,7 +12,11 @@ class GraphicsItem(QtGui.QGraphicsItem):
     """
 
     def __init__(self, item, scene=None):
-        # call constructor of QGraphicsItem
+        """
+        Args:
+            item (object): PGraphicsItemsCollection object
+            scene (None, optional): the scene
+        """
         super(GraphicsItem, self).__init__()
 
         self.scene = scene
@@ -39,6 +43,8 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.shape = item.shape
         self.hoverstyle = QtCore.Qt.SolidLine
         self.hoverwidth = 0.01
+        if hasattr(item, 'name'):
+            self.name = item.name
 
         self.focusrect = QtCore.QRectF(self.rect.left(), self.rect.top(),
                                        self.rect.width(), self.rect.height())
@@ -48,17 +54,21 @@ class GraphicsItem(QtGui.QGraphicsItem):
             # when selecting an airfoil item in the graphics view
             # select the respective item in PToolbox/MyListWidget
             # which contains a list of loaded airfoils
+
+            # get MainWindow instance here (overcomes handling parents)
+            mainwindow = QtCore.QCoreApplication.instance().mainwindow
+            centralwidget = mainwindow.centralWidget()
+            itms = centralwidget.tools.listwidget. \
+                findItems(self.name, QtCore.Qt.MatchExactly)
+
             if self.isSelected():
-                # FIXME
-                # FIXME Loop through all airfoils and find their names
-                # FIXME match the name with the list elements and
-                # FIXME set respective element as selected
-                # self.parent does not yet exist; needs to be retrieved
-                listitem = 1
-                # get MainWindow instance here (overcomes handling parents)
-                mainwindow = QtCore.QCoreApplication.instance().window
-                mainwindow.centralwidget.tools.listwidget. \
-                    setItemSelected(listitem, True)
+                for itm in itms:
+                    centralwidget.tools.listwidget. \
+                        setItemSelected(itm, True)
+            else:
+                for itm in itms:
+                    centralwidget.tools.listwidget. \
+                        setItemSelected(itm, False)
 
         return QtGui.QGraphicsItem.itemChange(self, change, value)
 

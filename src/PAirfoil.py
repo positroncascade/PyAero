@@ -21,7 +21,7 @@ class Airfoil(object):
             which belong to the airfoil contour
         item (QGraphicsItem): graphics item derived from QPolygonF object
         markers (QGraphicsItem): color for airoil outline points
-        name (str): airfoil name
+        name (str): airfoil name (without path)
         pencolor (QColor): color for airoil outline
         penwidth (float): thickness of airfoil outline
         raw_coordinates (numpy array): list of contour points as tuples
@@ -33,7 +33,6 @@ class Airfoil(object):
         self.scene = scene
         self.name = name
         self.contour_item = None
-        self.type = 'airfoil'
         self.raw_coordinates = None
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
         self.penwidth = 2.5
@@ -74,7 +73,7 @@ class Airfoil(object):
         contour = gc.GraphicsCollection()
         # make it polygon type and populate its points
         points = [QtCore.QPointF(x, y) for x, y in zip(*self.raw_coordinates)]
-        contour.Polygon(QtGui.QPolygonF(points))
+        contour.Polygon(QtGui.QPolygonF(points), self.name)
         # set its properties
         contour.pen.setColor(self.pencolor)
         contour.pen.setWidth(self.penwidth)
