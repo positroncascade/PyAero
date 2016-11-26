@@ -388,13 +388,12 @@ class ContourAnalysis(QtGui.QFrame):
             # logger.stack(logger.log)
             self.reset()
 
-        # interpolate a spline through the raw contour points
-
         # FIXME
         # FIXME get airfoil coordinates here from scene item
         # FIXME either selected airfoil or only loaded airfoil if any
         # FIXME
 
+        # interpolate a spline through the raw contour points
         x, y = self.parent.airfoil.raw_coordinates
         self.spline(x, y, points=spline_points, degree=2)
 
