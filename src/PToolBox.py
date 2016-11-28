@@ -241,6 +241,14 @@ class Toolbox(object):
         button.clicked.connect(self.modifyAirfoil)
 
         # ******************************************
+        # toolbox item7 --> Bokeh test
+        # ******************************************
+        layout = QtGui.QBoxLayout()
+        layout.addWidget(webview)
+        item7 = QtGui.QWidget()
+        item7.setLayout(layout)
+
+        # ******************************************
         # End of toolbox items
         # ******************************************
 
