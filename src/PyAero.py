@@ -24,7 +24,7 @@ import PGraphicsScene
 import PContourAnalysis
 import PGuiSlots
 import PVtkView
-import PHtmlView
+# import PHtmlView
 import PToolBox
 from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
                       STYLESPECIAL
@@ -98,7 +98,7 @@ class MainWindow(QtGui.QMainWindow):
         self.contourview = PContourAnalysis.ContourAnalysis(self)
         self.meshingview = PGraphicsView.GraphicsView(self)
         self.postview = PVtkView.VtkWindow(self)
-        self.htmlview = PHtmlView.HtmlView(self)
+        # self.htmlview = PHtmlView.HtmlView(self)
 
         # create slots (i.e. handlers or callbacks)
         self.slots = PGuiSlots.Slots(self)
@@ -181,7 +181,7 @@ class CentralWidget(QtGui.QWidget):
         self.tabs.addTab(self.parent.contourview, 'Contour Analysis')
         self.tabs.addTab(self.parent.meshingview, 'Meshing')
         self.tabs.addTab(self.parent.postview, 'Post Processing')
-        self.tabs.addTab(self.parent.htmlview, 'HTML View')
+        # self.tabs.addTab(self.parent.htmlview, 'HTML View')
 
         # connect tab changed signal to slot
         self.tabs.currentChanged.connect(self.parent.slots.onTabChanged)

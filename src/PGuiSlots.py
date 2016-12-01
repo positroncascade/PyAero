@@ -98,11 +98,7 @@ class Slots(object):
         self.parent.airfoils[id].contour_item.setX(0.0)
         self.parent.airfoils[id].contour_item.setY(0.0)
 
-        dx = 0.05 * self.parent.airfoils[id].contour_item.rect.width()
-        rect = self.parent.airfoils[id].contour_item.rect. \
-            adjusted(-dx, 0, dx, 0)
-        # logger.log.info('Rect Fit Airfoil: %s' % (rect))
-        # logger.log.info('View rect: %s' % (self.parent.view.rect()))
+        rect = self.parent.airfoils[id].contour_item.boundingRect()
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
 
         # cache view to be able to keep it during resize
@@ -112,7 +108,6 @@ class Slots(object):
     def onViewAll(self):
         # calculates and returns the bounding rect of all items on the scene
         rect = self.parent.scene.itemsBoundingRect()
-        # logger.log.info('Rect FitAll: %s' % (rect))
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
 
         # cache view to be able to keep it during resize

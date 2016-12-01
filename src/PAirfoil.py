@@ -120,6 +120,8 @@ class Airfoil(object):
                 points.Circle(x, y, 0.003)
 
             marker = PGraphicsItem.GraphicsItem(points, self.scene)
+            # marker.setFlag(QtGui.QGraphicsItem.ItemIgnoresTransformations,
+            #                True)
             self.markers.addToGroup(marker)
 
         self.contour_group.addToGroup(self.markers)

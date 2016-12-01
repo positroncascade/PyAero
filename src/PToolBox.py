@@ -243,10 +243,10 @@ class Toolbox(object):
         # ******************************************
         # toolbox item7 --> Bokeh test
         # ******************************************
-        layout = QtGui.QBoxLayout()
-        layout.addWidget(webview)
-        item7 = QtGui.QWidget()
-        item7.setLayout(layout)
+        # layout = QtGui.QBoxLayout()
+        # layout.addWidget(webview)
+        # item7 = QtGui.QWidget()
+        # item7.setLayout(layout)
 
         # ******************************************
         # End of toolbox items

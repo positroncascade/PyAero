@@ -46,8 +46,15 @@ class GraphicsItem(QtGui.QGraphicsItem):
         if hasattr(item, 'name'):
             self.name = item.name
 
-        self.focusrect = QtCore.QRectF(self.rect.left(), self.rect.top(),
-                                       self.rect.width(), self.rect.height())
+        # FIXME
+        # FIXME half penwidth needed for the correct bounding rect
+        # FIXME self.focusrect is anyway calculated in drawFocusRect method
+        # FIXME ???????????????
+        pw = 0.0
+        self.focusrect = QtCore.QRectF(self.rect.left()-pw/2,
+                                       self.rect.top()-pw/2,
+                                       self.rect.width()+pw,
+                                       self.rect.height()+pw)
 
     def itemChange(self, change, value):
         if change == QtGui.QGraphicsItem.ItemSelectedHasChanged:
@@ -55,7 +62,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
             # select the respective item in PToolbox/MyListWidget
             # which contains a list of loaded airfoils
 
-            # get MainWindow instance here (overcomes handling parents)
+            # get MainWindow instance here (avoid handling parents)
             mainwindow = QtCore.QCoreApplication.instance().mainwindow
             centralwidget = mainwindow.centralWidget()
             itms = centralwidget.tools.listwidget. \

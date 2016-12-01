@@ -58,7 +58,7 @@ VIEWSTYLE = 'gradient'
 
 # set zoom limits so that scene is always in meaningful size
 MINZOOM = 100.0
-MAXZOOM = 10000.
+MAXZOOM = 20000.
 
 # scale increment
 SCALEINC = 1.1
