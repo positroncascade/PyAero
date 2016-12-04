@@ -32,6 +32,7 @@ class GraphicsCollection(object):
 
         self.scale = (1, 1)
         self.tooltip = ''
+        self.info = ''
 
         self.method = ''
         self.args = []
@@ -53,7 +54,7 @@ class GraphicsCollection(object):
         self.method = 'drawLine'
         self.args = [x1, y1, x2, y2]
 
-    def Circle(self, x, y, r):
+    def Circle(self, x, y, r, marker=False):
         self.rect = QtCore.QRectF(x-r, y-r, 2.*r, 2.*r)
         self.shape.addEllipse(self.rect)
         self.method = 'drawEllipse'
@@ -77,6 +78,7 @@ class GraphicsCollection(object):
         self.args = [polygon]
         # in case of an airfoil its the airfoil name (PAirfoil.py)
         self.name = name
+        self.tooltip = name
 
     def Mesh(self, mesh):
         self.method = 'drawPath'

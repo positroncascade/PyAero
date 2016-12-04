@@ -117,11 +117,9 @@ class Airfoil(object):
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
 
             if type == 'circle':
-                points.Circle(x, y, 0.003)
+                points.Circle(x, y, 0.003, marker=True)
 
             marker = PGraphicsItem.GraphicsItem(points, self.scene)
-            # marker.setFlag(QtGui.QGraphicsItem.ItemIgnoresTransformations,
-            #                True)
             self.markers.addToGroup(marker)
 
         self.contour_group.addToGroup(self.markers)

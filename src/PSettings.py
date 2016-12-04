@@ -57,8 +57,8 @@ SCROLLBARS = False
 VIEWSTYLE = 'gradient'
 
 # set zoom limits so that scene is always in meaningful size
-MINZOOM = 100.0
-MAXZOOM = 20000.
+MINZOOM = 10.0
+MAXZOOM = 80000.
 
 # scale increment
 SCALEINC = 1.1

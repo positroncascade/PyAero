@@ -18,6 +18,7 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).__init__(parent)
 
         self.parent = parent
+        self.scalefactor = 1.0
 
         self.moveHorizontal = False
         self.moveVertical = False
@@ -185,6 +186,9 @@ class GraphicsView(QtGui.QGraphicsView):
         # super(GraphicsView, self).wheelEvent(event)
 
     def scaleView(self, factor):
+
+        self.scalefactor = factor
+
         f = self.matrix().scale(factor, factor). \
             mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
         # logger.log.info('Scalefactor %s, f = %s' % (factor, f))

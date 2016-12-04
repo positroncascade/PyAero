@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+import PLogger as logger
 
 
 class GraphicsItem(QtGui.QGraphicsItem):
@@ -28,6 +29,10 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
+        # docs: For performance reasons, these notifications
+        # are disabled by default.
+        # needed for : ItemScaleHasChanged
+        self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
 
         self.setAcceptsHoverEvents(True)
 
@@ -39,6 +44,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.rect = QtCore.QRectF(item.rect)
         self.setToolTip(item.tooltip)
         self.scale = item.scale
+        self.info = item.info
         self.font = item.font
         self.shape = item.shape
         self.hoverstyle = QtCore.Qt.SolidLine
@@ -149,6 +155,8 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.focuspen.setCosmetic(True)  # no thickness change when zoomed
         painter.setBrush(self.focusbrush)
         painter.setPen(self.focuspen)
+
+        # handle text focusrect
         if 'text' in self.method.lower():
             size = self.args[2].size()
             self.rect = QtCore.QRectF(
