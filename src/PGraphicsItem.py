@@ -1,5 +1,4 @@
 from PyQt4 import QtGui, QtCore
-import PLogger as logger
 
 
 class GraphicsItem(QtGui.QGraphicsItem):
@@ -36,7 +35,8 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
         self.setAcceptsHoverEvents(True)
 
-        self.method = item.method  # method of QPainter
+        # method of QPainter
+        self.method = item.method
         self.args = item.args
         self.pen = item.pen
         self.penwidth = item.pen.width()
@@ -48,7 +48,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.font = item.font
         self.shape = item.shape
         self.hoverstyle = QtCore.Qt.SolidLine
-        self.hoverwidth = 0.01
+        self.hoverwidth = 2.
         if hasattr(item, 'name'):
             self.name = item.name
 
@@ -126,26 +126,41 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
     def paint(self, painter, option, widget):
         # this function must be overwritten when subclassing QGraphicsItem
+
         painter.setBrush(self.brush)
-        if self.isSelected():
-            color = self.brush.color()
-            color.setAlpha(80)
-            brush = QtGui.QBrush(color)
-            painter.setBrush(brush)
         painter.setPen(self.pen)
         painter.setFont(self.font)
 
+        if self.isSelected():
+
+            # draw rectangle around selected item
+            self.drawFocusRect(painter)
+
+            # make selected item opaque
+            color = self.brush.color()
+            # color.setAlpha(80)
+            brush = QtGui.QBrush(color)
+            painter.setBrush(brush)
+
         # care for difference between objects and text
+        # i.e. normally y-coordinates go top down
+        # to make a normal coordinate system y-axis is swapped in PGraphicsview
+        # since PyQT does this automatically for text in the original setup
+        # the text here needs to be swapped back to be printed correctly
+        # scale on text items therefore in PGraphicsitemsCollection
+        # gets scale (1, -1), all other items get scale (1, 1)
         painter.scale(self.scale[0], self.scale[1])
 
         # call module painter with its method given by string in self.method
         # args are arguments to method
+        # painter is a QPainter instance
         # depending on the method a variable number of arguments is needed
+        # example:
+        # if self.method = 'drawEllipse'
+        # and self.args = QRectF(x, y, w, h)
+        # the call to painter would render as:
+        # painter.drawEllipse(*self.args)
         getattr(painter, self.method)(*self.args)
-
-        if self.isSelected():
-            self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
-            self.drawFocusRect(painter)
 
     def drawFocusRect(self, painter):
         self.focusbrush = QtGui.QBrush()

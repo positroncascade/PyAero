@@ -284,7 +284,7 @@ class Toolbox(object):
     def toggleRawPoints(self):
         """Toggle points of raw airfoil contour (on/off)"""
         for airfoil in self.parent.airfoils:
-            if airfoil.markers and airfoil.contour_item.isSelected():
+            if hasattr(airfoil, 'markers') and airfoil.contour_item.isSelected():
                 visible = airfoil.markers.isVisible()
                 airfoil.markers.setVisible(not visible)
 
@@ -292,7 +292,7 @@ class Toolbox(object):
     def toggleChord(self):
         """Toggle visibility of the airfoil chord"""
         for airfoil in self.parent.airfoils:
-            if airfoil.chord and airfoil.contour_item.isSelected():
+            if hasattr(airfoil, 'chord') and airfoil.contour_item.isSelected():
                 visible = airfoil.chord.isVisible()
                 airfoil.chord.setVisible(not visible)
 

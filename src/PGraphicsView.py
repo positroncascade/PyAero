@@ -18,10 +18,10 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).__init__(parent)
 
         self.parent = parent
-        self.scalefactor = 1.0
 
         self.moveHorizontal = False
         self.moveVertical = False
+        self.CTRL = False
 
         # set QGraphicsView attributes
         self.setRenderHints(QtGui.QPainter.Antialiasing |
@@ -82,7 +82,8 @@ class GraphicsView(QtGui.QGraphicsView):
 
     def mousePressEvent(self, event):
 
-        self.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
+        if not self.CTRL:
+            self.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
 
         # keep track of click position
         self.lastPoint = event.pos()
@@ -133,7 +134,6 @@ class GraphicsView(QtGui.QGraphicsView):
 
     def keyPressEvent(self, event):
         key = event.key()
-
         modifiers = QtGui.QApplication.keyboardModifiers()
 
         # check if CTRL+SHIFT is pressed simultaneously
@@ -156,6 +156,7 @@ class GraphicsView(QtGui.QGraphicsView):
         elif key == QtCore.Qt.Key_Delete:
             self.parent.slots.removeAirfoil()
         elif modifiers == QtCore.Qt.ControlModifier:
+            self.CTRL = True
             self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
             self.setInteractive(False)
 
@@ -163,6 +164,9 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
+        modifiers = QtGui.QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ControlModifier:
+            self.CTRL = False
 
         self.moveHorizontal = False
         self.moveVertical = False
@@ -180,19 +184,21 @@ class GraphicsView(QtGui.QGraphicsView):
         f = SCALEINC
         if math.copysign(1, event.delta()) > 0:
             f = 1.0 / SCALEINC
+
         self.scaleView(f)
+
+        # rescale markers during zoom
+        # i.e. keep them constant size
+        # self.adjustMarkerSize(f)
+
         # DO NOT CONTINUE HANDLING EVENTS HERE!!!
         # this would destroy the mouse anchor
         # super(GraphicsView, self).wheelEvent(event)
 
     def scaleView(self, factor):
 
-        self.scalefactor = factor
-
         f = self.matrix().scale(factor, factor). \
             mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
-        # logger.log.info('Scalefactor %s, f = %s' % (factor, f))
-        # logger.log.info('MINZOOM %s, MAXZOOM = %s' % (MINZOOM, MAXZOOM))
         if f < MINZOOM or f > MAXZOOM:
             return
         self.scale(factor, factor)
@@ -200,8 +206,24 @@ class GraphicsView(QtGui.QGraphicsView):
         # cache view to be able to keep it during resize
         self.getSceneFromView()
 
+    def adjustMarkerSize(self, f):
+        """Adjust marker size during zoom. Marker items are circles
+        which are affected by zoom.
+        """
+        for airfoil in self.parent.airfoils:
+            if hasattr(airfoil, 'markers'):
+                markers = airfoil.markers.childItems()
+                for marker in markers:
+                    # in case of circle, args is a QRectF
+                    rect = marker.args[0]
+                    r = rect.width() / 2.
+                    x = rect.left() + r
+                    y = rect.top() + r
+                    r /= f
+                    marker.args = [QtCore.QRectF(x-r, y-r, 2.*r, 2.*r)]
+
     def getSceneFromView(self):
-        """ cache view to be able to keep it during resize"""
+        """Cache view to be able to keep it during resize"""
 
         # map view rectangle to scene coordinates
         polygon = self.mapToScene(self.rect())

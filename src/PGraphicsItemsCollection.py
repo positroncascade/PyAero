@@ -59,6 +59,8 @@ class GraphicsCollection(object):
         self.shape.addEllipse(self.rect)
         self.method = 'drawEllipse'
         self.args = [self.rect]
+        if marker:
+            self.info = 'marker'
 
     def Rectangle(self, x, y, w, h):
         self.rect = QtCore.QRectF(x, y, w, h)
