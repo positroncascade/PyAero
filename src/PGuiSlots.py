@@ -62,10 +62,6 @@ class Slots(object):
         self.loadAirfoil(DEFAULT_CONTOUR, comment='#')
 
     def loadAirfoil(self, filename, comment='#'):
-        # FIXME
-        # FIXME check for multiple loaded airfoils and how to mange them
-        # FIXME
-
         fileinfo = QtCore.QFileInfo(filename)
         name = fileinfo.fileName()
 
