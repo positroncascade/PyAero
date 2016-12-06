@@ -2,6 +2,7 @@ import math
 from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM
+import PLogger as logger
 
 
 class GraphicsView(QtGui.QGraphicsView):
@@ -197,8 +198,13 @@ class GraphicsView(QtGui.QGraphicsView):
 
     def scaleView(self, factor):
 
+        m = self.matrix()
+        logger.log.info('Matrix scalex, scaley: %s %s' % (m.m11(), m.m22()))
+        logger.log.info('Matrix dx, dy: %s %s' % (m.dx(), m.dy()))
+
         f = self.matrix().scale(factor, factor). \
             mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
+
         if f < MINZOOM or f > MAXZOOM:
             return
         self.scale(factor, factor)
@@ -210,6 +216,8 @@ class GraphicsView(QtGui.QGraphicsView):
         """Adjust marker size during zoom. Marker items are circles
         which are affected by zoom.
         """
+        m = self.matrix()
+
         for airfoil in self.parent.airfoils:
             if hasattr(airfoil, 'markers'):
                 markers = airfoil.markers.childItems()
@@ -221,6 +229,8 @@ class GraphicsView(QtGui.QGraphicsView):
                     y = rect.top() + r
                     r /= f
                     marker.args = [QtCore.QRectF(x-r, y-r, 2.*r, 2.*r)]
+                    logger.log.info('Marker dx, dy: %s %s' %
+                                    (m.dx(), m.dy()))
 
     def getSceneFromView(self):
         """Cache view to be able to keep it during resize"""
