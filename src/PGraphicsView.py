@@ -310,11 +310,16 @@ class GraphicsView(QtGui.QGraphicsView):
 
 
 class RubberBand(QtGui.QRubberBand):
-    """Custom rubberband"""
+    """Custom rubberband
+    from: http://stackoverflow.com/questions/25642618
+    """
 
     def __init__(self, *arg, **kwargs):
 
         super(RubberBand, self).__init__(*arg, **kwargs)
+
+        # set style selectively for the rubberband like that
+        # see: http://stackoverflow.com/questions/25642618
         self.setStyle(QtGui.QStyleFactory.create('windowsvista'))
 
     def paintEvent(self, QPaintEvent):
