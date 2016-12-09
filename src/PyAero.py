@@ -127,7 +127,8 @@ class MainWindow(QtGui.QMainWindow):
     def initUI(self):
 
         # window size, position and title
-        self.setGeometry(700, 100, 1200, 900)
+        # self.setGeometry(700, 100, 1200, 900)
+        self.showMaximized()
         self.setWindowTitle(__appname__ +
                             ' - Airfoil Contour Analysis and CFD Meshing')
 
@@ -217,7 +218,6 @@ def main():
 
     # window style set in PSettings
     window = MainWindow(STYLE)
-    window.showMaximized()
     window.show()
 
     # set application wide attributes

@@ -1,17 +1,25 @@
 import math
 from PyQt4 import QtGui, QtCore
 
-from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM
+from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM, \
+                      MARKERSIZE, MARKERPENWIDTH
 import PLogger as logger
 
 
 class GraphicsView(QtGui.QGraphicsView):
-    """This is the main window in the GUI where items are drawn upon.
-    The class is derived from QtGui.QGraphicsView.
-    """
+    """The graphics view is the canvas where airfoils are drawn upon
+    Its coordinates are in pixels or "physical" coordinates.
 
+    Attributes:
+        CTRL (bool): store
+        lastPoint (TYPE): Description
+        moveHorizontal (bool): Description
+        moveVertical (bool): Description
+        parent (TYPE): Description
+        sceneview (TYPE): Description
+    """
     def __init__(self, parent=None):
-        """Construcor of the GraphicsView window
+        """Constructor of the GraphicsView window
 
         Args:
             parent (QMainWindow object, optional): class MainWindow
@@ -22,7 +30,6 @@ class GraphicsView(QtGui.QGraphicsView):
 
         self.moveHorizontal = False
         self.moveVertical = False
-        self.CTRL = False
 
         # set QGraphicsView attributes
         self.setRenderHints(QtGui.QPainter.Antialiasing |
@@ -82,8 +89,9 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).resizeEvent(event)
 
     def mousePressEvent(self, event):
-
-        if not self.CTRL:
+        modifiers = QtGui.QApplication.keyboardModifiers()
+        # check if CTRL is pressed
+        if not modifiers == QtCore.Qt.ControlModifier:
             self.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
 
         # keep track of click position
@@ -157,7 +165,6 @@ class GraphicsView(QtGui.QGraphicsView):
         elif key == QtCore.Qt.Key_Delete:
             self.parent.slots.removeAirfoil()
         elif modifiers == QtCore.Qt.ControlModifier:
-            self.CTRL = True
             self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
             self.setInteractive(False)
 
@@ -165,9 +172,6 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
-        modifiers = QtGui.QApplication.keyboardModifiers()
-        if modifiers == QtCore.Qt.ControlModifier:
-            self.CTRL = False
 
         self.moveHorizontal = False
         self.moveVertical = False
@@ -190,7 +194,7 @@ class GraphicsView(QtGui.QGraphicsView):
 
         # rescale markers during zoom
         # i.e. keep them constant size
-        # self.adjustMarkerSize(f)
+        self.adjustMarkerSize()
 
         # DO NOT CONTINUE HANDLING EVENTS HERE!!!
         # this would destroy the mouse anchor
@@ -212,21 +216,31 @@ class GraphicsView(QtGui.QGraphicsView):
         # cache view to be able to keep it during resize
         self.getSceneFromView()
 
-    def adjustMarkerSize(self, f):
+    def adjustMarkerSize(self):
         """Adjust marker size during zoom. Marker items are circles
-        which are affected by zoom.
+        which are otherwise affected by zoom.
         """
+        # markers are drawn in PGraphicsItem using scene coordinates
+        # in order to keep them constant size, also when zooming
+        # a fixed pixel size is mapped to scene coordinates
+        # depending on the zoom, this leads to always different scene
+        # coordinates
+        # map a square with side length of MARKERSIZE to the scene coords
+        poly = self.mapToScene(QtCore.QRect(0, 0, MARKERSIZE+1, MARKERSIZE+1))
+        pw = self.mapToScene(QtCore.QRect(0, 0, MARKERPENWIDTH,
+                             MARKERPENWIDTH))
+        rect = poly.boundingRect()
+        pw_mapped = pw.boundingRect()
+        r = rect.width() / 2.
+
         for airfoil in self.parent.airfoils:
             if hasattr(airfoil, 'markers'):
                 markers = airfoil.markers.childItems()
-                for marker in markers:
+                x, y = airfoil.raw_coordinates
+                for i, marker in enumerate(markers):
                     # in case of circle, args is a QRectF
-                    rect = marker.args[0]
-                    r = rect.width() / 2.
-                    x = rect.left() + r
-                    y = rect.top() + r
-                    r /= f
-                    marker.args = [QtCore.QRectF(x-r, y-r, 2.*r, 2.*r)]
+                    marker.args = [QtCore.QRectF(x[i]-r, y[i]-r, 2.*r, 2.*r)]
+                    marker.penwidth = pw_mapped
 
     def getSceneFromView(self):
         """Cache view to be able to keep it during resize"""

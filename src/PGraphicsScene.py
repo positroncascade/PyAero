@@ -2,7 +2,17 @@ from PyQt4 import QtGui
 
 
 class GraphicsScene(QtGui.QGraphicsScene):
-    # call constructor of GraphicsScene
+    """The graphics scene manages all items which are drawn in the graphics view
+    The coordinates in the scene are the "logical" coordinates. These are the
+    real object coordinates. E.g., an airfoil typically is described in an
+    x-range from 0 to 1 (no units are given for that). So when PyAero loads an
+    airfoil, the GraphicsView provides a view on that graphics item. The
+    "fitallinview" after loading, scales the view so that the airfoil is fully
+    fitting the graphics view which is in pixels or "physical" coordinates.
+
+    Attributes:
+        parent (TYPE): Description
+    """
     def __init__(self,  parent=None):
         # call constructor of QGraphicsScene
         super(GraphicsScene, self).__init__(parent)

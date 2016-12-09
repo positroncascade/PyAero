@@ -36,6 +36,10 @@ ICONS_L = ICONS + '24x24/'
 # path can be absolute or relative (to position where starting PyAero)
 AIRFOILDATA = '../data'
 
+# size of airfoil coordinate markers in pixels
+MARKERSIZE = 9
+MARKERPENWIDTH = 2
+
 # default airfoil for fast loading
 DEFAULT_CONTOUR = AIRFOILDATA + '/RC_Glider/mh32.dat'
 

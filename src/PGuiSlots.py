@@ -97,6 +97,9 @@ class Slots(object):
         rect = self.parent.airfoils[id].contour_item.boundingRect()
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
 
+        # adjust airfoil marker size to MARKERSIZE setting
+        self.parent.view.adjustMarkerSize()
+
         # cache view to be able to keep it during resize
         self.parent.view.getSceneFromView()
 
@@ -105,6 +108,9 @@ class Slots(object):
         # calculates and returns the bounding rect of all items on the scene
         rect = self.parent.scene.itemsBoundingRect()
         self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
+
+        # adjust airfoil marker size to MARKERSIZE setting
+        self.parent.view.adjustMarkerSize()
 
         # cache view to be able to keep it during resize
         self.parent.view.getSceneFromView()
