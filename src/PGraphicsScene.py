@@ -23,14 +23,22 @@ class GraphicsScene(QtGui.QGraphicsScene):
         self.setSceneRect(-5000, -5000, 10000, 10000)
 
     def mousePressEvent(self, event):
+        """Re-implement QGraphicsView's mousePressEvent handler"""
+
         self.clearSelection()
-        # handle event
+
+        # call original implementation of QGraphicsView mousePressEvent handler
         super(GraphicsScene, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
-        # handle event
+        """Re-implement QGraphicsView's mousePressEvent handler"""
+
+        # call original implementation of QGraphicsView
+        # mouseReleaseEvent handler
         super(GraphicsScene, self).mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event):
-        # handle event
+        """Re-implement QGraphicsView's mousePressEvent handler"""
+
+        # call original implementation of QGraphicsView mouseMoveEvent handler
         super(GraphicsScene, self).mouseMoveEvent(event)
