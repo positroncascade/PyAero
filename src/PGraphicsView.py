@@ -28,9 +28,9 @@ class GraphicsView(QtGui.QGraphicsView):
         self.rubberband = RubberBand(QtGui.QRubberBand.Rectangle, self)
         self.rubberband.setStyle
 
-        # make view being not interactive by default
-        # nothing can be selected by clicking or rubberbanddrag
-        self.setInteractive(False)
+        # needed for correct mouse wheel zoom
+        # otherwise mouse anchor is wrong; it would use (0, 0)
+        self.setInteractive(True)
 
         # set QGraphicsView attributes
         self.setRenderHints(QtGui.QPainter.Antialiasing |
@@ -75,7 +75,7 @@ class GraphicsView(QtGui.QGraphicsView):
             QGraphicsView {border-style:solid; border-color: lightgrey; \
             border-width: 1px; background-color: QLinearGradient( \
             x1: 0.0, y1: 0.0, x2: 0.0, y2: 1.0, \
-            stop: 0.3 white, stop: 0.8 #4b73b4, stop: 1.0 #263a5a); } """)
+            stop: 0.3 white, stop: 0.6 #4b73b4, stop: 1.0 #263a5a); } """)
         else:
             style = ("""
             QGraphicsView { border-style:solid; border-color: lightgrey; \
@@ -128,6 +128,7 @@ class GraphicsView(QtGui.QGraphicsView):
             pass
 
         if self.rubberband.isVisible():
+            self.setInteractive(False)
             self.rubberband.setGeometry(
                 QtCore.QRect(self.origin, event.pos()).normalized())
 
@@ -148,6 +149,23 @@ class GraphicsView(QtGui.QGraphicsView):
             # rescale markers during zoom
             # i.e. keep them constant size
             self.adjustMarkerSize()
+
+            # reset to True, so that mouse wheel zoom anchor works
+            self.setInteractive(True)
+
+    def wheelEvent(self, event):
+        """Re-implement QGraphicsView's wheelEvent handler"""
+
+        f = SCALEINC
+        if math.copysign(1, event.delta()) > 0:
+            f = 1.0 / SCALEINC
+
+        self.scaleView(f)
+
+        # DO NOT CONTINUE HANDLING EVENTS HERE!!!
+        # this would destroy the mouse anchor
+        # call original implementation of QGraphicsView wheelEvent handler
+        # super(GraphicsView, self).wheelEvent(event)
 
     def keyPressEvent(self, event):
         """Re-implement QGraphicsView's keyPressEvent handler"""
@@ -186,26 +204,6 @@ class GraphicsView(QtGui.QGraphicsView):
         # call original implementation of QGraphicsView keyReleaseEvent handler
         super(GraphicsView, self).keyReleaseEvent(event)
 
-        # if self.dragMode() == QtGui.QGraphicsView.ScrollHandDrag:
-        #     self.setDragMode(QtGui.QGraphicsView.NoDrag)
-        #     self.setInteractive(True)
-        #     # cache view to be able to keep it during resize
-        #     self.getSceneFromView()
-
-    def wheelEvent(self, event):
-        """Re-implement QGraphicsView's wheelEvent handler"""
-
-        f = SCALEINC
-        if math.copysign(1, event.delta()) > 0:
-            f = 1.0 / SCALEINC
-
-        self.scaleView(f)
-
-        # DO NOT CONTINUE HANDLING EVENTS HERE!!!
-        # this would destroy the mouse anchor
-        # call original implementation of QGraphicsView wheelEvent handler
-        # super(GraphicsView, self).wheelEvent(event)
-
     def scaleView(self, factor):
 
         # m = self.matrix()
@@ -219,8 +217,7 @@ class GraphicsView(QtGui.QGraphicsView):
             return
         self.scale(factor, factor)
 
-        # rescale markers during zoom
-        # i.e. keep them constant size
+        # rescale markers during zoom, i.e. keep them constant size
         self.adjustMarkerSize()
 
         # cache view to be able to keep it during resize
@@ -285,7 +282,7 @@ class GraphicsView(QtGui.QGraphicsView):
         fitairfoil.setShortcut('CTRL+f')
 
         fitall = menu.addAction('Fit all items in view')
-        fitall.setShortcut('CTRL+SHIFT+f')
+        fitall.setShortcut('HOME, CTRL+SHIFT+f')
 
         menu.addSeparator()
 
@@ -334,16 +331,13 @@ class RubberBand(QtGui.QRubberBand):
 
         # set pen
         pen = QtGui.QPen()
-        pen.setWidth(6)
-        pen.setColor(QtGui.QColor(20, 20, 50))
+        pen.setWidth(4)
+        pen.setColor(QtGui.QColor(80, 80, 100))
         painter.setPen(pen)
 
         # set brush
-        color = QtGui.QColor(QtCore.Qt.darkGray)
+        color = QtGui.QColor(30, 30, 50, 30)
         painter.setBrush(QtGui.QBrush(color))
-
-        # opacity of fill color; 0=transparent, 1=opaque
-        painter.setOpacity(0.2)
 
         # draw rectangle
         painter.drawRect(QPaintEvent.rect())
