@@ -347,7 +347,8 @@ class GraphicsView(QtGui.QGraphicsView):
             self.parent.slots.onBackground()
         elif action == fitairfoil:
             for id, airfoil in enumerate(self.parent.airfoils):
-                if airfoil.contour_item.isSelected():
+                num = len(self.parent.airfoils)
+                if airfoil.contour_item.isSelected() or num == 1:
                     self.parent.slots.fitAirfoilInView(id)
         elif action == fitall:
             self.parent.slots.onViewAll()
