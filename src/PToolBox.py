@@ -398,8 +398,6 @@ class MyListWidget(QtGui.QListWidget):
     # @QtCore.pyqtSlot() commented here because otherewise
     # "item" is not available
     def handleActivated(self, item):
-        name = item.text()
-        logger.log.info('Was clicked: %s' % (name))
 
         for airfoil in self.parent.airfoils:
             airfoil.contour_item.setSelected(False)
