@@ -94,8 +94,19 @@ class Slots(object):
         self.parent.airfoils[id].contour_item.setX(0.0)
         self.parent.airfoils[id].contour_item.setY(0.0)
 
-        rect = self.parent.airfoils[id].contour_item.boundingRect()
-        self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
+        rectf = self.parent.airfoils[id].contour_item.boundingRect()
+
+        # scale by 2% (seems to be done also by scene.itemsBoundingRect())
+        # after loading a single airfoil this leads to the same zoom as
+        # if onViewAll was called
+        center = rectf.center()
+        w = 1.02 * rectf.width()
+        h = 1.02 * rectf.height()
+        rectf.setWidth(w)
+        rectf.setHeight(h)
+        rectf.moveCenter(center)
+
+        self.parent.view.fitInView(rectf, mode=QtCore.Qt.KeepAspectRatio)
 
         # adjust airfoil marker size to MARKERSIZE setting
         self.parent.view.adjustMarkerSize()
@@ -106,8 +117,8 @@ class Slots(object):
     @QtCore.pyqtSlot()
     def onViewAll(self):
         # calculates and returns the bounding rect of all items on the scene
-        rect = self.parent.scene.itemsBoundingRect()
-        self.parent.view.fitInView(rect, mode=QtCore.Qt.KeepAspectRatio)
+        rectf = self.parent.scene.itemsBoundingRect()
+        self.parent.view.fitInView(rectf, mode=QtCore.Qt.KeepAspectRatio)
 
         # adjust airfoil marker size to MARKERSIZE setting
         self.parent.view.adjustMarkerSize()
