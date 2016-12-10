@@ -2,8 +2,12 @@ import math
 from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM, \
-                      MARKERSIZE, MARKERPENWIDTH
+                      MARKERSIZE, MARKERPENWIDTH, RUBBERBANDSIZE
 import PLogger as logger
+
+# put constraints on rubberband zoom ( relative rectangle wdith)
+RUBBERBANDSIZE = min(RUBBERBANDSIZE, 1.0)
+RUBBERBANDSIZE = max(RUBBERBANDSIZE, 0.05)
 
 
 class GraphicsView(QtGui.QGraphicsView):
@@ -24,9 +28,10 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).__init__(parent)
 
         self.parent = parent
+        self.ctrl = False
 
+        # use custom rubberband
         self.rubberband = RubberBand(QtGui.QRubberBand.Rectangle, self)
-        self.rubberband.setStyle
 
         # needed for correct mouse wheel zoom
         # otherwise mouse anchor is wrong; it would use (0, 0)
@@ -75,7 +80,10 @@ class GraphicsView(QtGui.QGraphicsView):
             QGraphicsView {border-style:solid; border-color: lightgrey; \
             border-width: 1px; background-color: QLinearGradient( \
             x1: 0.0, y1: 0.0, x2: 0.0, y2: 1.0, \
-            stop: 0.3 white, stop: 0.6 #4b73b4, stop: 1.0 #263a5a); } """)
+            stop: 0.3 white, stop: 1.0 #263a5a); } """)
+
+            # if more stops are needed
+            # stop: 0.3 white, stop: 0.6 #4b73b4, stop: 1.0 #263a5a); } """)
         else:
             style = ("""
             QGraphicsView { border-style:solid; border-color: lightgrey; \
@@ -101,7 +109,7 @@ class GraphicsView(QtGui.QGraphicsView):
 
         self.origin = event.pos()
 
-        # do rubberband only with left mouse button
+        # do rubberband zoom only with left mouse button
         if event.button() == QtCore.Qt.LeftButton:
             # initiate rubberband origin and size (zero at first)
             self.rubberband.setGeometry(QtCore.QRect(self.origin,
@@ -122,13 +130,29 @@ class GraphicsView(QtGui.QGraphicsView):
         # put the keyboard focus to the view as well
         self.setFocus()
 
-        # returns the current state of the modifier keys on the keyboard
-        modifiers = QtGui.QApplication.keyboardModifiers()
-        if modifiers == QtCore.Qt.ControlModifier:
-            pass
-
         if self.rubberband.isVisible():
-            self.setInteractive(False)
+
+            # returns the current state of the modifier keys on the keyboard
+            modifiers = QtGui.QApplication.keyboardModifiers()
+
+            if modifiers == QtCore.Qt.ControlModifier:
+                self.ctrl = True
+                # allow to select via rubberband
+                # no zooming done
+                self.setInteractive(True)
+
+                rect = self.rubberband.geometry()
+                for item in self.items():
+                    bnd = self.mapFromScene(item.boundingRect()).boundingRect()
+                    if rect.intersects(bnd):
+                        item.setSelected(True)
+                    else:
+                        item.setSelected(False)
+            else:
+                # do not allow to select with the rubberband
+                # instead do zooming
+                self.setInteractive(False)
+
             self.rubberband.setGeometry(
                 QtCore.QRect(self.origin, event.pos()).normalized())
 
@@ -140,15 +164,26 @@ class GraphicsView(QtGui.QGraphicsView):
         super(GraphicsView, self).mouseReleaseEvent(event)
 
         if self.rubberband.isVisible():
-            self.rubberband.hide()
-            rect = self.rubberband.geometry()
-            rectf = self.mapToScene(rect).boundingRect()
-            # zoom the selected rectangle
-            self.fitInView(rectf, mode=QtCore.Qt.KeepAspectRatio)
 
-            # rescale markers during zoom
-            # i.e. keep them constant size
-            self.adjustMarkerSize()
+            # returns the current state of the modifier keys on the keyboard
+            modifiers = QtGui.QApplication.keyboardModifiers()
+
+            if (modifiers == QtCore.Qt.ControlModifier) or self.ctrl:
+                self.ctrl = False
+                self.rubberband.hide()
+            else:
+                self.rubberband.hide()
+                rect = self.rubberband.geometry()
+                rectf = self.mapToScene(rect).boundingRect()
+
+                # zoom the selected rectangle (works on scene coordinates)
+                # zoom rect must be at least 5% of view width to allow zoom
+                if rect.width() > RUBBERBANDSIZE * self.width():
+                    self.fitInView(rectf, mode=QtCore.Qt.KeepAspectRatio)
+
+                # rescale markers during zoom
+                # i.e. keep them constant size
+                self.adjustMarkerSize()
 
             # reset to True, so that mouse wheel zoom anchor works
             self.setInteractive(True)
@@ -172,9 +207,6 @@ class GraphicsView(QtGui.QGraphicsView):
 
         key = event.key()
 
-        # call original implementation of QGraphicsView keyPressEvent handler
-        super(GraphicsView, self).keyPressEvent(event)
-
         # returns the current state of the modifier keys on the keyboard
         modifiers = QtGui.QApplication.keyboardModifiers()
 
@@ -183,20 +215,44 @@ class GraphicsView(QtGui.QGraphicsView):
                 (modifiers & QtCore.Qt.ShiftModifier):
             pass
 
-        if key == QtCore.Qt.Key_Plus:
+        if key == QtCore.Qt.Key_Plus or key == QtCore.Qt.Key_PageDown:
             f = SCALEINC
+            # if scaling with the keys, the do not use mouse as zoom anchor
+            anchor = self.transformationAnchor()
+            self.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
             self.scaleView(f)
-        elif key == QtCore.Qt.Key_Minus:
+            self.setTransformationAnchor(anchor)
+
+            if key == QtCore.Qt.Key_PageDown:
+                # return here so that later base class is NOT called
+                # because QAbstractScrollArea would otherwise handle ot
+                # and do something we do not want
+                return
+
+        elif key == QtCore.Qt.Key_Minus or key == QtCore.Qt.Key_PageUp:
             f = 1.0 / SCALEINC
+            # if scaling with the keys, the do not use mouse as zoom anchor
+            anchor = self.transformationAnchor()
+            self.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
             self.scaleView(f)
+            self.setTransformationAnchor(anchor)
+
+            if key == QtCore.Qt.Key_PageUp:
+                # return here so that later base class is NOT called
+                # because QAbstractScrollArea would otherwise handle ot
+                # and do something we do not want
+                return
+
         elif key == QtCore.Qt.Key_Home:
             self.parent.slots.onViewAll()
         elif key == QtCore.Qt.Key_Delete:
+            # removes all selected airfoils
             self.parent.slots.removeAirfoil()
-        elif modifiers == QtCore.Qt.ControlModifier:
-            pass
-            # self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
-            # self.setInteractive(False)
+
+        # call original implementation of QGraphicsView keyPressEvent handler
+        # the call here needs to be at the end of the method so that we can
+        # optionally return without calling it; see above
+        super(GraphicsView, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
         """Re-implement QGraphicsView's keyReleaseEvent handler"""
@@ -260,19 +316,6 @@ class GraphicsView(QtGui.QGraphicsView):
         # this is needed during resizing to be able to keep the view
         self.sceneview = QtCore.QRectF(polygon[0], polygon[2])
 
-    def updateListWidget(self):
-
-        selected = False
-        for airfoil in self.parent.airfoils:
-            if airfoil.contour_item.isSelected():
-                selected = True
-        # if at least one airfoil ist selected in the view
-        # then give focus to the listwidget to highlight selections
-        if selected:
-            mainwindow = QtCore.QCoreApplication.instance().mainwindow
-            centralwidget = mainwindow.centralWidget()
-            centralwidget.tools.listwidget.setFocus()
-
     def contextMenuEvent(self, event):
         """creates popup menu for the graphicsview"""
 
@@ -321,23 +364,52 @@ class RubberBand(QtGui.QRubberBand):
 
         super(RubberBand, self).__init__(*args, **kwargs)
 
+        self.view = args[1]
+
+        # set pen
+        self.pen = QtGui.QPen()
+        self.pen.setStyle(QtCore.Qt.SolidLine)
+        self.pen.setColor(QtGui.QColor(80, 80, 100))
+
+        # set brush
+        color = QtGui.QColor(30, 30, 50, 30)
+        self.brush = QtGui.QBrush(color)
+
         # set style selectively for the rubberband like that
         # see: http://stackoverflow.com/questions/25642618
+        # required as opacity might not work
+        # NOTE: opacity removed here
         self.setStyle(QtGui.QStyleFactory.create('windowsvista'))
 
     def paintEvent(self, QPaintEvent):
 
         painter = QtGui.QPainter(self)
 
-        # set pen
-        pen = QtGui.QPen()
-        pen.setWidth(4)
-        pen.setColor(QtGui.QColor(80, 80, 100))
-        painter.setPen(pen)
+        # check if zooming or selecting
+        if self.view.ctrl:
+            # selecting is activated
+            self.pen.setWidth(4)
+            self.pen.setStyle(QtCore.Qt.SolidLine)
+            self.pen.setColor(QtGui.QColor(200, 200, 0))
+            color = QtGui.QColor(200, 200, 0, 30)
+            self.brush = QtGui.QBrush(color)
+        else:
+            # zoom rect must be at least RUBBERBANDSIZE % of view to allow zoom
+            if QPaintEvent.rect().width() < RUBBERBANDSIZE * self.view.width():
+                self.pen.setWidth(2)
+                self.pen.setStyle(QtCore.Qt.DotLine)
+            else:
+                self.pen.setWidth(4)
+                self.pen.setStyle(QtCore.Qt.SolidLine)
+
+            self.pen.setColor(QtGui.QColor(80, 80, 100))
+            color = QtGui.QColor(30, 30, 50, 30)
+            self.brush = QtGui.QBrush(color)
+
+        painter.setPen(self.pen)
 
         # set brush
-        color = QtGui.QColor(30, 30, 50, 30)
-        painter.setBrush(QtGui.QBrush(color))
+        painter.setBrush(self.brush)
 
         # draw rectangle
         painter.drawRect(QPaintEvent.rect())
