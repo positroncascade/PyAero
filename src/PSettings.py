@@ -62,7 +62,13 @@ VIEWSTYLE = 'gradient'
 
 # set zoom limits so that scene is always in meaningful size
 MINZOOM = 10.0
-MAXZOOM = 80000.
+MAXZOOM = 100000.
+
+# set minimum relative rubberband size
+# i.e. width of zoom rectangle wrt to viewer window width
+# for smaller rectangles zoom is deactivated to avoid accidential zooms
+# valid values between 0.05 and 1.0
+RUBBERBANDSIZE = 0.05
 
 # scale increment
 SCALEINC = 1.1
