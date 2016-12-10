@@ -288,7 +288,7 @@ class GraphicsView(QtGui.QGraphicsView):
         # a fixed pixel size is mapped to scene coordinates
         # depending on the zoom, this leads to always different scene
         # coordinates
-        # map a square with side length of MARKERSIZE to the scene coords
+        # map a square with side length of MARKERSIZE+1 to the scene coords
         poly = self.mapToScene(QtCore.QRect(0, 0, MARKERSIZE+1, MARKERSIZE+1))
         pw = self.mapToScene(QtCore.QRect(0, 0, MARKERPENWIDTH,
                              MARKERPENWIDTH))
