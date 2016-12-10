@@ -384,15 +384,7 @@ class MyListWidget(QtGui.QListWidget):
                     logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
                                     airfoil.name + '</b> removed')
 
-        # FIXME
-        # FIXME workaround because Key_Home event ends elsewhere
-        # FIXME
-        if key == QtCore.Qt.Key_Home:
-            # logger.log.info('Home hit in listwidget')
-            self.parent.slots.onViewAll()
-
-        # continue handling key press events which are not
-        # handled here, but should be catched elsewhere
+        # call original implementation of QListWidget keyPressEvent handler
         super(MyListWidget, self).keyPressEvent(event)
 
     # @QtCore.pyqtSlot() commented here because otherewise

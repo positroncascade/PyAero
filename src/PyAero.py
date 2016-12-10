@@ -157,6 +157,9 @@ class MainWindow(QtGui.QMainWindow):
 
         if key == QtCore.Qt.Key_Escape and EXITONESCAPE:
             sys.exit(QtGui.qApp.quit())
+        elif key == QtCore.Qt.Key_Home:
+            # logger.log.info('Home hit in mainwindow')
+            self.slots.onViewAll()
         else:
             # progress event
             super(MainWindow, self).keyPressEvent(event)
