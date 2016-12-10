@@ -1,4 +1,5 @@
 import sys
+import copy
 
 from PyQt4 import QtGui, QtCore
 
@@ -95,18 +96,19 @@ class Slots(object):
         self.parent.airfoils[id].contour_item.setY(0.0)
 
         rectf = self.parent.airfoils[id].contour_item.boundingRect()
+        rf = copy.copy(rectf)
 
         # scale by 2% (seems to be done also by scene.itemsBoundingRect())
         # after loading a single airfoil this leads to the same zoom as
         # if onViewAll was called
-        center = rectf.center()
-        w = 1.02 * rectf.width()
-        h = 1.02 * rectf.height()
-        rectf.setWidth(w)
-        rectf.setHeight(h)
-        rectf.moveCenter(center)
+        center = rf.center()
+        w = 1.02 * rf.width()
+        h = 1.02 * rf.height()
+        rf.setWidth(w)
+        rf.setHeight(h)
+        rf.moveCenter(center)
 
-        self.parent.view.fitInView(rectf, mode=QtCore.Qt.KeepAspectRatio)
+        self.parent.view.fitInView(rf, mode=QtCore.Qt.KeepAspectRatio)
 
         # adjust airfoil marker size to MARKERSIZE setting
         self.parent.view.adjustMarkerSize()
