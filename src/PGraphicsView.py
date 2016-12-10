@@ -107,6 +107,10 @@ class GraphicsView(QtGui.QGraphicsView):
         # call original implementation of QGraphicsView mousePressEvent handler
         super(GraphicsView, self).mousePressEvent(event)
 
+        # if a mouse event happens in the graphics view
+        # put the keyboard focus to the view as well
+        self.setFocus()
+
         self.origin = event.pos()
 
         # do rubberband zoom only with left mouse button
@@ -225,8 +229,8 @@ class GraphicsView(QtGui.QGraphicsView):
 
             if key == QtCore.Qt.Key_PageDown:
                 # return here so that later base class is NOT called
-                # because QAbstractScrollArea would otherwise handle ot
-                # and do something we do not want
+                # because QAbstractScrollArea would otherwise handle
+                # the event and do something we do not want
                 return
 
         elif key == QtCore.Qt.Key_Minus or key == QtCore.Qt.Key_PageUp:
@@ -239,8 +243,8 @@ class GraphicsView(QtGui.QGraphicsView):
 
             if key == QtCore.Qt.Key_PageUp:
                 # return here so that later base class is NOT called
-                # because QAbstractScrollArea would otherwise handle ot
-                # and do something we do not want
+                # because QAbstractScrollArea would otherwise handle
+                # the event and do something we do not want
                 return
 
         elif key == QtCore.Qt.Key_Home:
