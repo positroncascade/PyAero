@@ -38,7 +38,7 @@ It is automatically generated using the files in the [docs](https://github.com/c
 
 ## Release History
 
-* 0.6
+* 0.8
     * Work in progress
 
 
