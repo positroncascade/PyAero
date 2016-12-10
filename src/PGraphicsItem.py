@@ -131,17 +131,6 @@ class GraphicsItem(QtGui.QGraphicsItem):
         painter.setPen(self.pen)
         painter.setFont(self.font)
 
-        if self.isSelected():
-
-            # draw rectangle around selected item
-            self.drawFocusRect(painter)
-
-            # make selected item opaque
-            color = self.brush.color()
-            # color.setAlpha(80)
-            brush = QtGui.QBrush(color)
-            painter.setBrush(brush)
-
         # care for difference between objects and text
         # i.e. normally y-coordinates go top down
         # to make a normal coordinate system y-axis is swapped in PGraphicsview
@@ -161,6 +150,16 @@ class GraphicsItem(QtGui.QGraphicsItem):
         # the call to painter would render as:
         # painter.drawEllipse(*self.args)
         getattr(painter, self.method)(*self.args)
+
+        if self.isSelected():
+            # draw rectangle around selected item
+            self.drawFocusRect(painter)
+
+            # make selected item opaque
+            color = self.brush.color()
+            # color.setAlpha(80)
+            brush = QtGui.QBrush(color)
+            painter.setBrush(brush)
 
     def drawFocusRect(self, painter):
         self.focusbrush = QtGui.QBrush()
