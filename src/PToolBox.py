@@ -3,7 +3,7 @@
 from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
-from PSettings import ICONS_L
+from PSettings import ICONS_L, LOGCOLOR
 import PLogger as logger
 
 
@@ -377,11 +377,12 @@ class MyListWidget(QtGui.QListWidget):
                 for airfoil in self.parent.airfoils:
                     if item.text() == airfoil.name:
                         delete = True
-                        logger.log.info('Deleted: %s' % (item.text()))
                         break
                 if delete:
                     self.parent.airfoils.remove(airfoil)
                     self.parent.scene.removeItem(airfoil.contour_item)
+                    logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
+                                    airfoil.name + '</b> removed')
 
         # FIXME
         # FIXME workaround because Key_Home event ends elsewhere
