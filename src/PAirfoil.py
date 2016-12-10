@@ -34,7 +34,7 @@ class Airfoil(object):
         self.name = name
         self.contour_item = None
         self.raw_coordinates = None
-        self.pencolor = QtGui.QColor(0, 0, 0, 255)
+        self.pencolor = QtGui.QColor(10, 10, 20, 255)
         self.penwidth = 2.5
         self.brushcolor = QtGui.QColor()
         self.brushcolor.setNamedColor('#7c8696')
