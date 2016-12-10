@@ -36,7 +36,8 @@ class Airfoil(object):
         self.raw_coordinates = None
         self.pencolor = QtGui.QColor(0, 0, 0, 255)
         self.penwidth = 2.5
-        self.brushcolor = QtGui.QColor(150, 150, 150, 255)
+        self.brushcolor = QtGui.QColor()
+        self.brushcolor.setNamedColor('#7c8696')
 
     def readContour(self, filename, comment='#'):
 
@@ -113,7 +114,7 @@ class Airfoil(object):
             # be careful with the penwidth as it affects bounding rect
             points.pen.setWidth(0.0001)
             points.pen.setColor(QtGui.QColor(90, 90, 90, 255))
-            points.brush.setColor(QtGui.QColor(255, 0, 0, 255))
+            points.brush.setColor(QtGui.QColor(217, 63, 122, 255))
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
 
             if type == 'circle':

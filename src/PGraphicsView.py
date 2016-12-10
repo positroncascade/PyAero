@@ -75,7 +75,7 @@ class GraphicsView(QtGui.QGraphicsView):
             QGraphicsView {border-style:solid; border-color: lightgrey; \
             border-width: 1px; background-color: QLinearGradient( \
             x1: 0.0, y1: 0.0, x2: 0.0, y2: 1.0, \
-            stop: 0.4 white, stop: 1.0 blue); } """)
+            stop: 0.3 white, stop: 0.8 #4b73b4, stop: 1.0 #263a5a); } """)
         else:
             style = ("""
             QGraphicsView { border-style:solid; border-color: lightgrey; \
@@ -99,10 +99,15 @@ class GraphicsView(QtGui.QGraphicsView):
         # call original implementation of QGraphicsView mousePressEvent handler
         super(GraphicsView, self).mousePressEvent(event)
 
-        # initiate rubberband origin and size (zero at first)
         self.origin = event.pos()
-        self.rubberband.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
-        self.rubberband.show()
+
+        # do rubberband only with left mouse button
+        if event.button() == QtCore.Qt.LeftButton:
+            # initiate rubberband origin and size (zero at first)
+            self.rubberband.setGeometry(QtCore.QRect(self.origin,
+                                        QtCore.QSize()))
+            # show, even at zero size, allows to check later using isVisible()
+            self.rubberband.show()
 
         # returns the current state of the modifier keys on the keyboard
         # modifiers = QtGui.QApplication.keyboardModifiers()
@@ -152,6 +157,7 @@ class GraphicsView(QtGui.QGraphicsView):
         # call original implementation of QGraphicsView keyPressEvent handler
         super(GraphicsView, self).keyPressEvent(event)
 
+        # returns the current state of the modifier keys on the keyboard
         modifiers = QtGui.QApplication.keyboardModifiers()
 
         # check if CTRL+SHIFT is pressed simultaneously
@@ -195,10 +201,6 @@ class GraphicsView(QtGui.QGraphicsView):
 
         self.scaleView(f)
 
-        # rescale markers during zoom
-        # i.e. keep them constant size
-        self.adjustMarkerSize()
-
         # DO NOT CONTINUE HANDLING EVENTS HERE!!!
         # this would destroy the mouse anchor
         # call original implementation of QGraphicsView wheelEvent handler
@@ -216,6 +218,10 @@ class GraphicsView(QtGui.QGraphicsView):
         if f < MINZOOM or f > MAXZOOM:
             return
         self.scale(factor, factor)
+
+        # rescale markers during zoom
+        # i.e. keep them constant size
+        self.adjustMarkerSize()
 
         # cache view to be able to keep it during resize
         self.getSceneFromView()
@@ -314,9 +320,9 @@ class RubberBand(QtGui.QRubberBand):
     from: http://stackoverflow.com/questions/25642618
     """
 
-    def __init__(self, *arg, **kwargs):
+    def __init__(self, *args, **kwargs):
 
-        super(RubberBand, self).__init__(*arg, **kwargs)
+        super(RubberBand, self).__init__(*args, **kwargs)
 
         # set style selectively for the rubberband like that
         # see: http://stackoverflow.com/questions/25642618
@@ -327,16 +333,17 @@ class RubberBand(QtGui.QRubberBand):
         painter = QtGui.QPainter(self)
 
         # set pen
-        pen = QtGui.QPen(QtCore.Qt.darkBlue)
+        pen = QtGui.QPen()
         pen.setWidth(6)
+        pen.setColor(QtGui.QColor(20, 20, 50))
         painter.setPen(pen)
 
         # set brush
         color = QtGui.QColor(QtCore.Qt.darkGray)
         painter.setBrush(QtGui.QBrush(color))
 
-        # set opacity
-        painter.setOpacity(0.3)
+        # opacity of fill color; 0=transparent, 1=opaque
+        painter.setOpacity(0.2)
 
         # draw rectangle
         painter.drawRect(QPaintEvent.rect())
