@@ -44,13 +44,33 @@ class Airfoil(object):
         try:
             with open(filename, mode='r') as f:
                 lines = f.readlines()
-        except IOError as e:
-            logger.log.info('%s: Unable to open file %s.' % (e, filename))
+        except IOError as error:
+            logger.log.error('Unable to open file %s. Error was: %s' %
+                             (filename, error))
             return False
 
         data = [line for line in lines if comment not in line]
-        x = [float(l.split()[0]) for l in data]
-        y = [float(l.split()[1]) for l in data]
+
+        # check for correct data
+        # specifically important for drag and drop
+        try:
+            x = [float(l.split()[0]) for l in data]
+            y = [float(l.split()[1]) for l in data]
+        except (ValueError, IndexError) as error:
+            try:
+                unicode(error, "ascii")
+            except:
+                logger.log.error('Unable to parse file %s. Unknown error caught.' %
+                                 (filename))
+                return False
+            logger.log.error('Unable to parse file %s. Error was: %s' %
+                             (filename, error))
+            logger.log.info('Maybe not a valid airfoil file was used.')
+            return False
+        except:
+            logger.log.error('Unable to parse file %s. Unknown error caught.' %
+                             (filename))
+            return False
 
         # store airfoil coordinates as list of tuples
         self.raw_coordinates = np.array((x, y))
