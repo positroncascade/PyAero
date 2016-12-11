@@ -69,10 +69,10 @@ class Slots(object):
         self.parent.airfoils.append(PAirfoil.Airfoil(self.parent.scene, name))
         last = len(self.parent.airfoils) - 1
         loaded = self.parent.airfoils[last].readContour(filename, comment)
-        self.parent.airfoils[last].addToScene()
-        self.fitAirfoilInView(last)
 
         if loaded:
+            self.parent.airfoils[last].addToScene()
+            self.fitAirfoilInView(last)
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
                             '</b> loaded')
 
