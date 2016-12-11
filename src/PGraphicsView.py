@@ -266,15 +266,16 @@ class GraphicsView(QtGui.QGraphicsView):
 
     def scaleView(self, factor):
 
-        # m = self.matrix()
-        # logger.log.info('Matrix scalex, scaley: %s %s' % (m.m11(), m.m22()))
-        # logger.log.info('Matrix dx, dy: %s %s' % (m.dx(), m.dy()))
+        # check if zoom limits are exceeded
+        # m11 = x-scaling
+        sx = self.matrix().m11()
+        too_big = sx > MAXZOOM and factor > 1.0
+        too_small = sx < MINZOOM and factor < 1.0
 
-        f = self.matrix().scale(factor, factor). \
-            mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
-
-        if f < MINZOOM or f > MAXZOOM:
+        if too_big or too_small:
             return
+
+        # do the actual zooming
         self.scale(factor, factor)
 
         # rescale markers during zoom, i.e. keep them constant size
