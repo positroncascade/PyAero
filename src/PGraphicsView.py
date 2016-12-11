@@ -1,4 +1,6 @@
+import os
 import math
+
 from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM, \
@@ -15,20 +17,26 @@ class GraphicsView(QtGui.QGraphicsView):
     Its coordinates are in pixels or "physical" coordinates.
 
     Attributes:
-        CTRL (bool): store
-        parent (TYPE): Description
-        sceneview (TYPE): Description
+        ctrl (bool): carries status of CTRL key; used aslo in rubberband
+        origin (QPoint): stores location of mouse press
+        parent (QMainWindow): mainwindow instance
+        rubberband (QRubberBand): an instance of the custom rubberband class
+                           used for zooming and selecting
+        sceneview (QRectF): stores current view in scene coordinates
     """
     def __init__(self, parent=None):
-        """Constructor of the GraphicsView window
+        """Default settings for graphicsview instance
 
         Args:
-            parent (QMainWindow object, optional): class MainWindow
+            parent (QMainWindow, optional): mainwindow instance
         """
         super(GraphicsView, self).__init__(parent)
 
         self.parent = parent
         self.ctrl = False
+
+        # allow drops from drag and drop
+        self.setAcceptDrops(True)
 
         # use custom rubberband
         self.rubberband = RubberBand(QtGui.QRubberBand.Rectangle, self)
@@ -263,6 +271,29 @@ class GraphicsView(QtGui.QGraphicsView):
 
         # call original implementation of QGraphicsView keyReleaseEvent handler
         super(GraphicsView, self).keyReleaseEvent(event)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragLeaveEvent(self, event):
+        pass
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            if event.mimeData().hasText():
+                event.setDropAction(QtCore.Qt.CopyAction)
+                event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        for url in event.mimeData().urls():
+            path = url.toLocalFile().toLocal8Bit().data()
+            if os.path.isfile(path):
+                self.parent.slots.loadAirfoil(path, comment='#')
 
     def scaleView(self, factor):
 
