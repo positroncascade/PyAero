@@ -3,6 +3,7 @@
 from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
+import PSplineRefine
 from PSettings import ICONS_L, LOGCOLOR
 import PLogger as logger
 
@@ -177,10 +178,10 @@ class Toolbox(object):
         form.addRow(label, self.tolerance)
 
         label = QtGui.QLabel('Number points on spline (-)')
-        self.spline_points = QtGui.QSpinBox()
-        self.spline_points.setRange(50, 500)
-        self.spline_points.setValue(150)
-        form.addRow(label, self.spline_points)
+        self.points = QtGui.QSpinBox()
+        self.points.setRange(50, 500)
+        self.points.setValue(150)
+        form.addRow(label, self.points)
 
         button = QtGui.QPushButton('Spline and Refine')
         hbl = QtGui.QHBoxLayout()
@@ -238,7 +239,7 @@ class Toolbox(object):
         item6 = QtGui.QWidget()
         item6.setLayout(vbl)
 
-        button.clicked.connect(self.modifyAirfoil)
+        button.clicked.connect(self.spline_and_refine)
 
         # ******************************************
         # toolbox item7 --> Bokeh test
@@ -312,8 +313,28 @@ class Toolbox(object):
         PSvpMethod.runSVP(x, y, u_inf, alpha, npanel)
 
     @QtCore.pyqtSlot()
-    def modifyAirfoil(self):
-        pass
+    def spline_and_refine(self):
+        """Spline and refine airfoil"""
+        if not self.parent.airfoils:
+            self.noairfoilWarning('Can\'t do contour analysis')
+            return
+
+        i = 0
+        for index, airfoil in enumerate(self.parent.airfoils):
+            if airfoil.contour_item.isSelected():
+                id = index
+                i += 1
+        if i != 1:
+            QtGui.QMessageBox. \
+                information(self.parent, 'Information',
+                            'Select exactly 1 airfoil for refinement.',
+                            QtGui.QMessageBox.Ok, QtGui.QMessageBox.NoButton,
+                            QtGui.QMessageBox.NoButton)
+            return
+
+        refine = PSplineRefine.SplineRefine(id)
+        refine.doSplineRefine(tolerance=self.tolerance.value(),
+                              points=self.points.value())
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
@@ -334,9 +355,7 @@ class Toolbox(object):
         plot = 1*self.cpb1.isChecked() + 2*self.cpb2.isChecked() + \
             3*self.cpb3.isChecked()
         # analyse contour
-        self.parent.contourview.analyze(self.tolerance.value(),
-                                        self.spline_points.value(),
-                                        plot)
+        self.parent.contourview.analyze(plot)
 
         # connect signals to slots
         self.cpb1.clicked.connect(lambda:
