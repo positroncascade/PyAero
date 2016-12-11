@@ -82,3 +82,22 @@ class TrailingEdge(object):
             x[i] = x[i] + signum * n[0] * shift_blend**ex * shift
             y[i] = y[i] + signum * n[1] * shift_blend**ex * shift
         return x, y
+
+    def writeContour(self):
+
+        xr = self.raw_coordinates[0]
+        xc = self.coordinates[0]
+        yc = self.coordinates[1]
+        s = '# Trailing edge added to initial contour'.format(len(xc))
+        s1 = '({0} points)\n'.format(len(xr))
+        info = s + s1
+
+        with open(self.name + '_TE' + '.dat', 'w') as f:
+            f.write('#\n')
+            f.write('# Airfoil: ' + self.name + '\n')
+            f.write('# Created from ' + self.filename + '\n')
+            f.write(info)
+            f.write('#\n')
+            for i in range(len(xc)):
+                data = '{:10.8f} {:10.8f} \n'.format(xc[i], yc[i])
+                f.write(data)
