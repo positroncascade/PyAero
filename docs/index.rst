@@ -2,6 +2,11 @@
 
    <br />
 
+.. important::
+   The code is currently under heavy development. It is not usable yet.
+   Code will be productive with version 1.0.
+   This is expected end of December 2016.
+
 
 ********************
 PyAero documentation
