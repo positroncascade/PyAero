@@ -1,14 +1,45 @@
-import numpay as np
+
+import copy
+
+import numpy as np
 import scipy.interpolate as si
 
+from PyQt4 import QtGui, QtCore
+
 from PUtils import Utils
-import Plogger as logger
+import PLogger as logger
 
 
 class SplineRefine(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, id):
+        self.id = id
+
+        # get MainWindow instance here (overcomes handling parents)
+        self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
+
+    def doSplineRefine(self, tolerance=172.0, points=150):
+
+        # get raw coordinates
+        x, y = self.mainwindow.airfoils[self.id].raw_coordinates
+        logger.log.info('Coordinates %s' % (x[0]))
+
+        # interpolate a spline through the raw contour points
+        self.spline_data = self.spline(x, y, points=points, degree=2)
+
+        # refine the contour in order to meet the tolerance
+        spline_data = copy.deepcopy(self.spline_data)
+        self.refine(spline_data, tolerance=tolerance, verbose=True)
+
+        # redo spline on refined contour
+        # spline only evaluated at refined contour points (evaluate=True)
+        coo, u, t, der1, der2, tck = self.spline_data
+        x, y = coo
+        self.spline_data = self.spline(x, y, points=points, degree=2,
+                                       evaluate=True)
+
+        # add spline data to airfoil object
+        self.mainwindow.airfoils[self.id].spline_data = self.spline_data
 
     def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
@@ -44,11 +75,12 @@ class SplineRefine(object):
         # evaluate 2nd derivative at given parameters
         der2 = si.splev(t, tck, der=2)
 
-        self.spline_data = [coo, u, t, der1, der2, tck]
+        spline_data = [coo, u, t, der1, der2, tck]
 
-        return self.spline_data
+        return spline_data
 
-    def refine(self, tol=170.0, recursions=0, verbose=False):
+    def refine(self, spline_data, tolerance=170.0, recursions=0,
+               verbose=False):
         """Recursive refinement with respect to angle criterion (tol).
         If angle between two adjacent line segments is less than tol,
         a recursive refinement of the contour is performed until
@@ -63,9 +95,9 @@ class SplineRefine(object):
         """
 
         # self.spline_data = [coo, u, t, der1, der2, tck]
-        xx, yy = self.spline_data[0]
-        t = self.spline_data[2]
-        tck = self.spline_data[5]
+        xx, yy = spline_data[0]
+        t = spline_data[2]
+        tck = spline_data[5]
 
         if verbose:
             logger.log.info('\nPoints before refining: %s \n' % (len(xx)))
@@ -88,7 +120,7 @@ class SplineRefine(object):
             c = np.array([xx[i + 2], yy[i + 2]])
             angle = Utils.angle_between(a - b, c - b, degree=True)
 
-            if angle < tol:
+            if angle < tolerance:
 
                 refined[i] = True
                 refinements += 1
@@ -120,29 +152,52 @@ class SplineRefine(object):
 
                 if verbose:
                     logger.log.info('Refining between %s %s, Tol=%05.1f Angle=%05.1f\n'
-                                    % (i, i + 1, tol, angle))
+                                    % (i, i + 1, tolerance, angle))
 
         if verbose:
             logger.log.info('Points after refining: %s' % (len(xn)))
 
         # update coordinate array, including inserted points
-        self.spline_data[0] = (xn, yn)
+        spline_data[0] = (xn, yn)
         # update parameter array, including parameters of inserted points
-        self.spline_data[2] = tn
+        spline_data[2] = tn
 
         # this is the recursion :)
         if refinements > 0:
-            self.refine(tol, recursions + 1, verbose)
+            self.refine(spline_data, tolerance, recursions + 1, verbose)
 
         # stopping from recursion if no refinements done in this recursion
         else:
 
             # update derivatives, including inserted points
-            self.spline_data[3] = si.splev(tn, tck, der=1)
-            self.spline_data[4] = si.splev(tn, tck, der=2)
+            spline_data[3] = si.splev(tn, tck, der=1)
+            spline_data[4] = si.splev(tn, tck, der=2)
 
             if verbose:
                 logger.log.info('No more refinements.')
                 logger.log.info('\nTotal number of recursions: %s'
                                 % (recursions - 1))
+
+            # due to recursive call to refine, here no object can be returned
+            # instead use self to transfer data to the outer world :)
+            self.spline_data = copy.deepcopy(spline_data)
             return
+
+    def writeContour(self):
+
+        xr = self.raw_coordinates[0]
+        xc = self.coordinates[0]
+        yc = self.coordinates[1]
+        s = '# Spline with {0} points based on initial contour'.format(len(xc))
+        s1 = '({0} points)\n'.format(len(xr))
+        info = s + s1
+
+        with open(self.name + '_spline_' + str(len(xc)) + '.dat', 'w') as f:
+            f.write('#\n')
+            f.write('# Airfoil: ' + self.name + '\n')
+            f.write('# Created from ' + self.filename + '\n')
+            f.write(info)
+            f.write('#\n')
+            for i in range(len(xc)):
+                data = '{:10.8f} {:10.8f} \n'.format(xc[i], yc[i])
+                f.write(data)
