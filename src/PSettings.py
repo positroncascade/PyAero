@@ -37,7 +37,7 @@ ICONS_L = ICONS + '24x24/'
 AIRFOILDATA = '../data'
 
 # size of airfoil coordinate markers in pixels
-MARKERSIZE = 8
+MARKERSIZE = 6
 MARKERPENWIDTH = 2
 
 # default airfoil for fast loading
