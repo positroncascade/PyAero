@@ -1,6 +1,6 @@
 import copy
 
-impoer numpy as np
+import numpy as np
 
 
 class TrailingEdge(object):
