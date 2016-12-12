@@ -25,9 +25,10 @@ class GraphicsItem(QtGui.QGraphicsItem):
         # FIXME This does not work. Possibly because mouse events are already
         # FIXME handled in the view or scene and therefore not propagated
         # FIXME
-        self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+        self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
+
         # docs: For performance reasons, these notifications
         # are disabled by default.
         # needed for : ItemScaleHasChanged
