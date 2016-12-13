@@ -79,7 +79,7 @@ class Airfoil(object):
 
     def addToScene(self):
         # add airfoil points as GraphicsItem to the scene
-        self.addContour()
+        self.addContour(self.raw_coordinates)
         # create a group of items that carries contour, markers, etc.
         self.createItemsGroup()
         # add the markers to the group
@@ -87,13 +87,13 @@ class Airfoil(object):
         # add the chord to the group
         self.addChord()
 
-    def addContour(self):
+    def addContour(self, coordinates):
         """Add airfoil points as GraphicsItem to the scene"""
 
         # instantiate a graphics item
         contour = gc.GraphicsCollection()
         # make it polygon type and populate its points
-        points = [QtCore.QPointF(x, y) for x, y in zip(*self.raw_coordinates)]
+        points = [QtCore.QPointF(x, y) for x, y in zip(*coordinates)]
         contour.Polygon(QtGui.QPolygonF(points), self.name)
         # set its properties
         contour.pen.setColor(self.pencolor)
@@ -104,6 +104,8 @@ class Airfoil(object):
         # add contour as a GraphicsItem to the scene
         # these are the objects which are drawn in the GraphicsView
         self.contour_item = PGraphicsItem.GraphicsItem(contour, self.scene)
+
+        # add the contour as item to the scene
         self.scene.addItem(self.contour_item)
 
     def createItemsGroup(self):
