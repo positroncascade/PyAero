@@ -51,11 +51,17 @@ class Airfoil(object):
 
         data = [line for line in lines if comment not in line]
 
+        offset = list()
+        # get MainWindow instance here (overcomes handling parents)
+        self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
+        for index, airfoil in enumerate(self.mainwindow.airfoils):
+            offset.append()
+
         # check for correct data
         # specifically important for drag and drop
         try:
             x = [float(l.split()[0]) for l in data]
-            y = [float(l.split()[1]) for l in data]
+            y = [float(l.split()[1]) + offset[] for l in data]
         except (ValueError, IndexError) as error:
             try:
                 unicode(error, "ascii")
