@@ -1,4 +1,3 @@
-
 import copy
 
 import numpy as np
@@ -40,6 +39,9 @@ class SplineRefine(object):
 
         # add spline data to airfoil object
         self.mainwindow.airfoils[self.id].spline_data = self.spline_data
+
+        # add splined and refined contour to the airfoil contour_group
+        # self.contour_group.addToGroup(XXX)
 
     def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
