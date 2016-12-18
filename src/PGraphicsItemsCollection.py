@@ -1,7 +1,5 @@
 from PyQt4 import QtGui, QtCore
 
-from PSettings import MARKERSIZE
-
 
 class GraphicsCollection(object):
     """Collection of custom graphics items which can be used to draw
