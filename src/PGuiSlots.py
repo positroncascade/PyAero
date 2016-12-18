@@ -66,13 +66,17 @@ class Slots(object):
         fileinfo = QtCore.QFileInfo(filename)
         name = fileinfo.fileName()
 
+        last = len(self.parent.airfoils)
         self.parent.airfoils.append(PAirfoil.Airfoil(self.parent.scene, name))
-        last = len(self.parent.airfoils) - 1
         loaded = self.parent.airfoils[last].readContour(filename, comment)
 
         if loaded:
+            # if no error during loading, add item to the scene
             self.parent.airfoils[last].addToScene()
-            self.fitAirfoilInView(last)
+            # shift the airfoils (vertical stack) if more than one loaded
+            self.shiftContours()
+            # fit all airfoils into the view
+            self.onViewAll()
             logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) + name +
                             '</b> loaded')
 
@@ -80,33 +84,60 @@ class Slots(object):
             self.parent.centralWidget().tools.listwidget.setEnabled(True)
             self.parent.centralWidget().tools.listwidget.addItem(name)
 
+    def shiftContours(self, shift=True):
+        """Shifts airfoils vertically from eachother. This is done when
+        more than one airfoil is loaded.
+
+        Slots.fitAirfoilInView() takes care of this shift when fitting
+        automatically the last loaded airfoil to the view.
+
+        Args:
+            shift (bool, optional): Can be used to re-align all airfoils
+        """
+        # get MainWindow instance (overcomes handling parents)
+        self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
+
+        offset = 0.0
+        for i, airfoil in enumerate(self.mainwindow.airfoils):
+            # don't shift the first airfoil
+            if i == 0:
+                continue
+            if shift:
+                delta = 0.006
+                offset += self.mainwindow.airfoils[i-1].offset[1] + \
+                    abs(self.mainwindow.airfoils[i].offset[0]) + delta
+
+            # do the actual shift
+            airfoil.contour_item.setPos(QtCore.QPointF(0.0, offset))
+
     @QtCore.pyqtSlot()
     def onPredefinedSTL(self):
         self.parent.postview.readStl('data/SATORI.stl')
 
     @QtCore.pyqtSlot()
     def fitAirfoilInView(self, id):
-        # FIXME
-        # FIXME move item back to its origin
-        # FIXME it could have been moved
-        # FIXME because ItemIsMovable in PGraphicsItem does not
-        # FIXME get the events or so
-        # FIXME
-        self.parent.airfoils[id].contour_item.setX(0.0)
-        self.parent.airfoils[id].contour_item.setY(0.0)
 
-        rectf = self.parent.airfoils[id].contour_item.boundingRect()
-        rf = copy.copy(rectf)
+        # get bounding rect in scene coordinates
+        item = self.parent.airfoils[id].contour_item
+        rectf = item.boundingRect()
+        rf = copy.deepcopy(rectf)
 
         # scale by 2% (seems to be done also by scene.itemsBoundingRect())
         # after loading a single airfoil this leads to the same zoom as
         # if onViewAll was called
         center = rf.center()
+
         w = 1.02 * rf.width()
         h = 1.02 * rf.height()
         rf.setWidth(w)
         rf.setHeight(h)
-        rf.moveCenter(center)
+
+        # shift center of rectf
+        cx = center.x()
+        # not easy to understand (at least for me)
+        # this is needed due to the Airfoil.shiftContours() function
+        cy = center.y() + item.pos().y()
+        rf.moveCenter(QtCore.QPointF(cx, cy))
 
         self.parent.view.fitInView(rf, mode=QtCore.Qt.KeepAspectRatio)
 
@@ -222,6 +253,12 @@ class Slots(object):
         # remove from list of airfoils
         for r in removed:
             self.parent.airfoils.remove(r)
+
+        # re-shift everything
+        self.shiftContours(shift=True)
+
+        # fit all airfoils into the view
+        self.onViewAll()
 
     @QtCore.pyqtSlot()
     def onMessage(self, msg):

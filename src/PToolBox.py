@@ -4,7 +4,7 @@ from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
 import PSplineRefine
-from PSettings import ICONS_L, LOGCOLOR
+from PSettings import ICONS_L
 import PLogger as logger
 
 
@@ -398,10 +398,11 @@ class ListWidget(QtGui.QListWidget):
                         delete = True
                         break
                 if delete:
-                    self.parent.airfoils.remove(airfoil)
-                    self.parent.scene.removeItem(airfoil.contour_item)
-                    logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
-                                    airfoil.name + '</b> removed')
+                    self.parent.slots.removeAirfoil()
+                    # self.parent.airfoils.remove(airfoil)
+                    # self.parent.scene.removeItem(airfoil.contour_item)
+                    # logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
+                    #                 airfoil.name + '</b> removed')
 
         # call original implementation of QListWidget keyPressEvent handler
         super(ListWidget, self).keyPressEvent(event)

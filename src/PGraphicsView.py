@@ -324,13 +324,14 @@ class GraphicsView(QtGui.QGraphicsView):
         # a fixed pixel size is mapped to scene coordinates
         # depending on the zoom, this leads to always different scene
         # coordinates
-        # map a square with side length of MARKERSIZE+1 to the scene coords
-        poly = self.mapToScene(QtCore.QRect(0, 0, MARKERSIZE+1, MARKERSIZE+1))
+        # map a square with side length of MARKERSIZE to the scene coords
+        poly = self.mapToScene(QtCore.QRect(0, 0, MARKERSIZE, MARKERSIZE))
         pw = self.mapToScene(QtCore.QRect(0, 0, MARKERPENWIDTH,
                              MARKERPENWIDTH))
         rect = poly.boundingRect()
-        pw_mapped = pw.boundingRect()
-        r = rect.width() / 2.
+        r = rect.width()
+        pwr = pw.boundingRect()
+        pw_mapped = pwr.width()
 
         for airfoil in self.parent.airfoils:
             if hasattr(airfoil, 'markers'):

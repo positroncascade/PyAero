@@ -53,15 +53,8 @@ class GraphicsItem(QtGui.QGraphicsItem):
         if hasattr(item, 'name'):
             self.name = item.name
 
-        # FIXME
-        # FIXME half penwidth needed for the correct bounding rect
-        # FIXME self.focusrect is anyway calculated in drawFocusRect method
-        # FIXME ???????????????
-        pw = 0.0
-        self.focusrect = QtCore.QRectF(self.rect.left()-pw/2,
-                                       self.rect.top()-pw/2,
-                                       self.rect.width()+pw,
-                                       self.rect.height()+pw)
+        # initialize bounding rectangle (including penwidth)
+        self.setBoundingRect()
 
     def itemChange(self, change, value):
         if change == QtGui.QGraphicsItem.ItemSelectedHasChanged:
@@ -123,7 +116,19 @@ class GraphicsItem(QtGui.QGraphicsItem):
         # line thickness this rect is bigger than the rect of the ellipse or
         # rect, etc.
         # rect + line thickness is size
-        return self.focusrect
+
+        # calculate the bounding rectangle
+        return self.boundingrect
+
+    def setBoundingRect(self):
+        # FIXME
+        # FIXME how to calculate penwidth here since scen at the beginning
+        # FIXME is not knwon
+        pw = 0.0
+        self.boundingrect = QtCore.QRectF(self.rect.left()-pw/2,
+                                          self.rect.top()-pw/2,
+                                          self.rect.width()+pw,
+                                          self.rect.height()+pw)
 
     def paint(self, painter, option, widget):
         # this function must be overwritten when subclassing QGraphicsItem
@@ -171,19 +176,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         painter.setBrush(self.focusbrush)
         painter.setPen(self.focuspen)
 
-        # handle text focusrect
-        if 'text' in self.method.lower():
-            size = self.args[2].size()
-            self.rect = QtCore.QRectF(
-                self.args[0], self.args[1], size.width(), size.height())
-
-            self.focusrect = QtCore.QRectF(
-                self.rect.left() - self.penwidth / 2,
-                self.rect.top() - self.penwidth / 2,
-                self.rect.width() + self.penwidth,
-                self.rect.height() + self.penwidth)
-
-        painter.drawRect(self.focusrect)
+        painter.drawRect(self.boundingRect())
 
     def hoverEnterEvent(self, event):
         if not self.isSelected():
