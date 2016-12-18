@@ -304,13 +304,14 @@ class Toolbox(object):
             self.noairfoilWarning('Can\'t run AeroPython')
             return
 
-        x, y = self.parent.airfoil.raw_coordinates
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
 
-        u_inf = self.freestream.value()
-        alpha = self.spin.value()
-        npanel = self.panels.value()
-
-        PSvpMethod.runSVP(x, y, u_inf, alpha, npanel)
+                x, y = airfoil.raw_coordinates
+                u_inf = self.freestream.value()
+                alpha = self.spin.value()
+                npanel = self.panels.value()
+                PSvpMethod.runSVP(x, y, u_inf, alpha, npanel)
 
     @QtCore.pyqtSlot()
     def spline_and_refine(self):
@@ -399,10 +400,6 @@ class ListWidget(QtGui.QListWidget):
                         break
                 if delete:
                     self.parent.slots.removeAirfoil()
-                    # self.parent.airfoils.remove(airfoil)
-                    # self.parent.scene.removeItem(airfoil.contour_item)
-                    # logger.log.info('Airfoil <b><font color=%s>' % (LOGCOLOR) +
-                    #                 airfoil.name + '</b> removed')
 
         # call original implementation of QListWidget keyPressEvent handler
         super(ListWidget, self).keyPressEvent(event)
