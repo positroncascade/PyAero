@@ -37,8 +37,8 @@ ICONS_L = ICONS + '24x24/'
 AIRFOILDATA = '../data'
 
 # size of airfoil coordinate markers in pixels
-MARKERSIZE = 4
-MARKERPENWIDTH = 3
+MARKERSIZE = 3
+MARKERPENWIDTH = 1
 
 # default airfoil for fast loading
 DEFAULT_CONTOUR = AIRFOILDATA + '/RC_Glider/mh32.dat'
