@@ -123,20 +123,12 @@ class Airfoil(object):
         """Create marker for polygon contour"""
         # FIXME
         # FIXME make more marker types in PGraphicsCollection
-        # FIXME and fix also scaling behaviour of markers
-        # FIXME
-        # FIXME the pen width influences the bounding rect of
-        # FIXME so that zoom home (i.e. fitallinView is affected)
-        # FIXME
-        # FIXME markers could be replaced by images/icons
         # FIXME
         for x, y in zip(*self.raw_coordinates):
 
             # put airfoil contour points as graphicsitem
             points = gc.GraphicsCollection()
-            # be careful with the penwidth as it affects bounding rect
-            points.pen.setWidth(0.0001)
-            points.pen.setColor(QtGui.QColor(90, 90, 90, 255))
+            points.pen.setColor(QtGui.QColor(60, 60, 80, 255))
             points.brush.setColor(QtGui.QColor(217, 63, 122, 255))
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
 
