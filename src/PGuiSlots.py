@@ -40,23 +40,27 @@ class Slots(object):
         dialog.setNameFilter(DIALOGFILTER)
         dialog.setNameFilterDetailsVisible(True)
         dialog.setDirectory(AIRFOILDATA)
-        dialog.setFileMode(QtGui.QFileDialog.ExistingFile)
+        dialog.setFileMode(QtGui.QFileDialog.ExistingFiles)
 
         # open custom file dialog using custom icons
         if dialog.exec_():
-            filename = dialog.selectedFiles()[0]
+            filenames = dialog.selectedFiles()
             selfilter = dialog.selectedFilter()
 
         try:
-            filename
+            filenames
         # do nothing if CANCEL button was pressed
-        except NameError:
+        except NameError as error:
+            logger.log.info('Error during file load: %s' % (error))
             return
 
         if 'stl' in selfilter.toLower():  # method of QString object
-            self.parent.postview.readStl(filename)
+            # currently limited to load only one STL file
+            self.parent.postview.readStl(filenames[0])
         else:
-            self.loadAirfoil(filename, comment='#')
+            # load one or more airfoils
+            for filename in filenames:
+                self.loadAirfoil(filename, comment='#')
 
     @QtCore.pyqtSlot()
     def onOpenPredefined(self):

@@ -64,3 +64,17 @@ For testing purposes a predefined airfoil can be loaded without the need of a fi
    Toolbar icon to load a predefined airfoil contour
 
 .. seealso:: See tutorial :ref:`tutorial_settings` on how to change the default airfoil.
+
+Load via drag and drop
+^^^^^^^^^^^^^^^^^^^^^^
+
+another convenient way to load one or more airfoil(s) is via drag and drop. Just drag a couple of files, e.g. from the Explorer in Windows, to the graphics window. All files will be loaded and the view will be zoomed in way that all contours fit into the screen.
+
+.. _figure_drag_and_drop:
+.. figure::  images/load_drag_and_drop.png
+   :align:   center
+   :target:  _images/load_drag_and_drop.png
+   :name: Load_drag_and_drop
+
+   Load multiple contours via drag and drop
+
