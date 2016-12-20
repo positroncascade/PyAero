@@ -129,13 +129,10 @@ class Airfoil(object):
         contour.pen.setCosmetic(True)  # no pen thickness change when zoomed
         contour.brush.setColor(self.brushcolor)
 
-        # FIXME
-        # FIXME this does not work yet
-        # FIXME
-
         # remove any previous spline from the contourgroup if any
         if self.contourspline_item:
-            self.contour_group.removeFromGroup(self.contourspline_item)
+            self.scene.removeItem(self.contourspline_item)
+            # self.contour_group.removeFromGroup(self.contourspline_item)
 
         # add contour as a GraphicsItem to the scene
         # these are the objects which are drawn in the GraphicsView
