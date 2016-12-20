@@ -76,5 +76,11 @@ another convenient way to load one or more airfoil(s) is via drag and drop. Just
    :target:  _images/load_drag_and_drop.png
    :name: Load_drag_and_drop
 
+.. _figure_drag_and_drop:
+.. figure::  images/load_drag_and_drop_1.png
+   :align:   center
+   :target:  _images/load_drag_and_drop_1.png
+   :name: Load_drag_and_drop
+
    Load multiple contours via drag and drop
 
