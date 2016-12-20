@@ -33,6 +33,7 @@ class Airfoil(object):
         self.scene = scene
         self.name = name
         self.contour_item = None
+        self.contourspline_item = None
         self.raw_coordinates = None
         self.pencolor = QtGui.QColor(10, 10, 20, 255)
         self.penwidth = 2.5
@@ -108,6 +109,41 @@ class Airfoil(object):
 
         # add the contour as item to the scene
         self.scene.addItem(self.contour_item)
+
+    def addContourSpline(self, coordinates):
+        """Add splined and refined airfoil points as GraphicsItem to
+        the scene
+        """
+        self.pencolor = QtGui.QColor(180, 180, 50, 255)
+        self.penwidth = 2.5
+        self.brushcolor = QtGui.QColor(200, 200, 200, 20)
+
+        # instantiate a graphics item
+        contour = gc.GraphicsCollection()
+        # make it polygon type and populate its points
+        points = [QtCore.QPointF(x, y) for x, y in zip(*coordinates)]
+        contour.Polygon(QtGui.QPolygonF(points), self.name)
+        # set its properties
+        contour.pen.setColor(self.pencolor)
+        contour.pen.setWidth(self.penwidth)
+        contour.pen.setCosmetic(True)  # no pen thickness change when zoomed
+        contour.brush.setColor(self.brushcolor)
+
+        # FIXME
+        # FIXME this does not work yet
+        # FIXME
+
+        # remove any previous spline from the contourgroup if any
+        if self.contourspline_item:
+            self.contour_group.removeFromGroup(self.contourspline_item)
+
+        # add contour as a GraphicsItem to the scene
+        # these are the objects which are drawn in the GraphicsView
+        self.contourspline_item = PGraphicsItem.GraphicsItem(contour,
+                                                             self.scene)
+
+        # add the spline item to the airfoil's contourgroup
+        self.contour_group.addToGroup(self.contourspline_item)
 
     def createItemsGroup(self):
         """Container that treats a group of items as a single item

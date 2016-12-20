@@ -41,7 +41,10 @@ class SplineRefine(object):
         self.mainwindow.airfoils[self.id].spline_data = self.spline_data
 
         # add splined and refined contour to the airfoil contour_group
-        # self.contour_group.addToGroup(XXX)
+        for airfoil in self.mainwindow.airfoils:
+            if airfoil.contour_item.isSelected():
+                # self.spline_data = [coo, u, t, der1, der2, tck]
+                airfoil.addContourSpline(self.spline_data[0])
 
     def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
