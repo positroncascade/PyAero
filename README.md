@@ -1,7 +1,7 @@
 ```diff
 + FIRST RELEASE EXPECTED END OF DECEMBER 2016.
-- Heavy coding ongoing. The meshing kernel is ready but not yet implemented in the GUI.
 + The user interface is ready. Usability is satisfactory for me.
+- The meshing kernel is ready but not yet implemented in the GUI.
 ```
 
 # PyAero
