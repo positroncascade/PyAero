@@ -113,7 +113,12 @@ class GraphicsView(QtGui.QGraphicsView):
         """Re-implement QGraphicsView's mousePressEvent handler"""
 
         # call original implementation of QGraphicsView mousePressEvent handler
-        super(GraphicsView, self).mousePressEvent(event)
+        if event.button() == QtCore.Qt.LeftButton:
+            # do the standard operation only for left button click
+            # e.g. for selection
+            # on right button click this is not called
+            # therefore no deselection happens then
+            super(GraphicsView, self).mousePressEvent(event)
 
         # if a mouse event happens in the graphics view
         # put the keyboard focus to the view as well
@@ -379,10 +384,7 @@ class GraphicsView(QtGui.QGraphicsView):
         if action == togglebg:
             self.parent.slots.onBackground()
         elif action == fitairfoil:
-            for id, airfoil in enumerate(self.parent.airfoils):
-                num = len(self.parent.airfoils)
-                if airfoil.contour_item.isSelected() or num == 1:
-                    self.parent.slots.fitAirfoilInView(id)
+            self.parent.slots.fitAirfoilInView()
         elif action == fitall:
             self.parent.slots.onViewAll()
         # remove all selected items from the scene

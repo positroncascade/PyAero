@@ -25,7 +25,7 @@
         <Submenu name='Make Mesh' tip='Create a block-structured mesh' short='CTRL+m' icon='mesh.png' handler='onBlockMesh'></Submenu>
     </Menubar>
     <Menubar name='View'>
-        <Submenu name='Fit airfoil in view' tip='Redo last action' short='CTRL+f' icon='' handler='fitAirfoilInView'></Submenu>
+        <Submenu name='Fit airfoil in view' tip='Set view to selected airfoil' short='CTRL+f' icon='' handler='fitAirfoilInView'></Submenu>
         <Submenu name='Fit all in view' tip='Set view to all items visible' short='CTRL+SHIFT+f' icon='' handler='onViewAll'></Submenu>
         <Submenu name='Toggle background' tip='Toggle background color' short='CTRL+b' icon='' handler='onBackground'></Submenu>
     </Menubar>

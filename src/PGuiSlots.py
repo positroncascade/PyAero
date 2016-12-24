@@ -113,13 +113,29 @@ class Slots(object):
 
             # do the actual shift
             airfoil.contour_item.setPos(QtCore.QPointF(0.0, offset))
+            if airfoil.contourspline_item:
+                pointf = airfoil.contour_item.pos()
+                logger.log.info('Shift %s %s' % (pointf.x(), pointf.y()))
+                airfoil.contourspline_item.setPos(pointf)
 
     @QtCore.pyqtSlot()
     def onPredefinedSTL(self):
         self.parent.postview.readStl('data/SATORI.stl')
 
     @QtCore.pyqtSlot()
-    def fitAirfoilInView(self, id):
+    def fitAirfoilInView(self):
+
+        if len(self.parent.airfoils) == 0:
+            return
+
+        nothing_selected = True
+        for id, airfoil in enumerate(self.parent.airfoils):
+            if airfoil.contour_item.isSelected():
+                nothing_selected = False
+                break
+
+        if nothing_selected:
+            id = 0
 
         # get bounding rect in scene coordinates
         item = self.parent.airfoils[id].contour_item
