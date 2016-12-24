@@ -113,10 +113,10 @@ class Slots(object):
 
             # do the actual shift
             airfoil.contour_item.setPos(QtCore.QPointF(0.0, offset))
+
             if airfoil.contourspline_item:
-                pointf = airfoil.contour_item.pos()
-                logger.log.info('Shift %s %s' % (pointf.x(), pointf.y()))
-                airfoil.contourspline_item.setPos(pointf)
+                # with zero shift item gets same position as parent
+                airfoil.contourspline_item.setPos(QtCore.QPointF(0.0, 0.0))
 
     @QtCore.pyqtSlot()
     def onPredefinedSTL(self):

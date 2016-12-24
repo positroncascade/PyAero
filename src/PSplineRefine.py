@@ -21,14 +21,16 @@ class SplineRefine(object):
 
         # get raw coordinates
         x, y = self.mainwindow.airfoils[self.id].raw_coordinates
-        logger.log.info('Coordinates %s' % (x[0]))
 
         # interpolate a spline through the raw contour points
+        # constant point distribution used here
+        # typically nose radius poorly resolevd by that
         self.spline_data = self.spline(x, y, points=points, degree=2)
 
         # refine the contour in order to meet the tolerance
+        # this keeps the constant distribution but refines around the nose
         spline_data = copy.deepcopy(self.spline_data)
-        self.refine(spline_data, tolerance=tolerance, verbose=True)
+        self.refine(spline_data, tolerance=tolerance, verbose=False)
 
         # redo spline on refined contour
         # spline only evaluated at refined contour points (evaluate=True)
@@ -45,6 +47,9 @@ class SplineRefine(object):
             if airfoil.contour_item.isSelected():
                 # self.spline_data = [coo, u, t, der1, der2, tck]
                 airfoil.addContourSpline(self.spline_data[0])
+
+        # update contours, i.e. shift contours and associated splined contours
+        self.mainwindow.slots.shiftContours()
 
     def spline(self, x, y, points=200, degree=2, evaluate=False):
         """Interpolate spline through given points
@@ -127,6 +132,11 @@ class SplineRefine(object):
 
             if angle < tolerance:
 
+                if verbose:
+                    logger.log.info('Refining between segments %s %s,' %
+                                    (i, i + 1) + ' Tol=%05.1f, Angle=%05.1f\n'
+                                    % (tolerance, angle))
+
                 refined[i] = True
                 refinements += 1
 
@@ -154,10 +164,6 @@ class SplineRefine(object):
                         logger.log.info('Recursion level: %s \n' %
                                         (recursions))
                     first = False
-
-                if verbose:
-                    logger.log.info('Refining between %s %s, Tol=%05.1f Angle=%05.1f\n'
-                                    % (i, i + 1, tolerance, angle))
 
         if verbose:
             logger.log.info('Points after refining: %s' % (len(xn)))
