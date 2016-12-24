@@ -148,8 +148,7 @@ class Toolbox(object):
         self.cb2 = QtGui.QCheckBox('Airfoil points')
         self.cb2.setChecked(True)
         self.cb3 = QtGui.QCheckBox('Airfoil spline')
-        self.cb3.setChecked(False)
-        self.cb3.setDisabled(True)
+        self.cb3.setChecked(True)
         self.cb4 = QtGui.QCheckBox('Chord')
         self.cb4.setChecked(True)
         layout.addWidget(self.cb1)
@@ -161,7 +160,7 @@ class Toolbox(object):
         # connect signals to slots
         self.cb1.clicked.connect(self.parent.slots.toggleLogDock)
         self.cb2.clicked.connect(self.toggleRawPoints)
-        # self.cb3.clicked.connect()
+        self.cb3.clicked.connect(self.toggleSpline)
         self.cb4.clicked.connect(self.toggleChord)
 
         # ******************************************
@@ -288,6 +287,13 @@ class Toolbox(object):
             if hasattr(airfoil, 'markers') and airfoil.contour_item.isSelected():
                 visible = airfoil.markers.isVisible()
                 airfoil.markers.setVisible(not visible)
+
+    @QtCore.pyqtSlot()
+    def toggleSpline(self):
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                visible = airfoil.contourspline_item.isVisible()
+                airfoil.contourspline_item.setVisible(not visible)
 
     @QtCore.pyqtSlot()
     def toggleChord(self):
