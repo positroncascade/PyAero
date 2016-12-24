@@ -116,7 +116,7 @@ class Airfoil(object):
         """
         self.pencolor = QtGui.QColor(180, 180, 50, 255)
         self.penwidth = 2.5
-        self.brushcolor = QtGui.QColor(200, 200, 200, 20)
+        self.brushcolor = QtGui.QColor(200, 200, 200, 200)
 
         # instantiate a graphics item
         contour = gc.GraphicsCollection()
@@ -128,6 +128,8 @@ class Airfoil(object):
         contour.pen.setWidth(self.penwidth)
         contour.pen.setCosmetic(True)  # no pen thickness change when zoomed
         contour.brush.setColor(self.brushcolor)
+        # add the pline polygon without filling
+        contour.brush.setStyle(QtCore.Qt.NoBrush)
 
         # remove any previous spline from the contourgroup if any
         if self.contourspline_item:
