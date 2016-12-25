@@ -346,6 +346,13 @@ class GraphicsView(QtGui.QGraphicsView):
                     # in case of circle, args is a QRectF
                     marker.args = [QtCore.QRectF(x[i]-r, y[i]-r, 2.*r, 2.*r)]
                     marker.penwidth = pw_mapped
+            if hasattr(airfoil, 'markersSpline'):
+                markers = airfoil.markersSpline.childItems()
+                x, y = airfoil.spline_data[0]
+                for i, marker in enumerate(markers):
+                    # in case of circle, args is a QRectF
+                    marker.args = [QtCore.QRectF(x[i]-r, y[i]-r, 2.*r, 2.*r)]
+                    marker.penwidth = pw_mapped
 
     def getSceneFromView(self):
         """Cache view to be able to keep it during resize"""
