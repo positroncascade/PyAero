@@ -24,12 +24,18 @@ class ContourAnalysis(QtGui.QFrame):
         spline_data (TYPE): Description
         toolbar (TYPE): Description
     """
-    def __init__(self, parent):
+    def __init__(self, parent, canvas=False):
         super(ContourAnalysis, self).__init__(parent)
 
         self.parent = parent
         self.spline_data = None
         self.curvature_data = None
+
+        # run the gui part only when canvas set to true
+        if canvas:
+            self.initUI()
+
+    def initUI(self):
 
         # a figure instance to plot on
         self.figure_top = plt.figure(figsize=(25, 35), tight_layout=True)
@@ -173,18 +179,19 @@ class ContourAnalysis(QtGui.QFrame):
         """
         radius = self.curvature_data[2]
         rc = np.min(radius)
-        # FIXME
-        # FIXME -1 just for testing, not always sure if min gets
-        # FIXME the correct radius; see symmetrical airfoils
-        # FIXME
-        le_id = list(np.where(radius == rc))[0] - 1
-        logger.log.info('le_id: %s %s' % (le_id, type(le_id)))
+        # numpy where returns a tuple
+        # we take the first element, which is type array
+        le_id = np.where(radius == rc)[0]
+        # convert the numpy array to a list and take the first element
+        le_id = le_id.tolist()[0]
         # leading edge curvature circle center
         xc = self.curvature_data[3][le_id]
         yc = self.curvature_data[4][le_id]
         xr, yr = self.spline_data[0]
         xle = xr[le_id]
         yle = yr[le_id]
+        # logger.log.info('Leading edge radius id: %s' % (le_id))
+        logger.log.info('Leading edge radius: %s' % (rc))
 
         return rc, xc, yc, xle, yle, le_id
 
