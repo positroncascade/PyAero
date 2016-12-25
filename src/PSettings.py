@@ -41,7 +41,7 @@ MARKERSIZE = 3
 MARKERPENWIDTH = 1
 
 # default airfoil for fast loading
-DEFAULT_CONTOUR = AIRFOILDATA + '/RC_Glider/mh32.dat'
+DEFAULT_CONTOUR = AIRFOILDATA + '/F1K/hn1033a.dat'
 
 # set the filter for files to be shown in dialogs
 DIALOGFILTER = 'Airfoil contour files (*.dat *.txt);;STL files (*.stl)'
