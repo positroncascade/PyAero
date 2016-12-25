@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Source-vortex panel method
 http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/
@@ -12,6 +14,7 @@ from scipy import integrate
 
 from PyQt4 import QtCore
 
+from PSettings import LOGCOLOR
 import PLogger as logger
 
 
@@ -310,8 +313,8 @@ def get_pressure_field(u, v, freestream):
 
 def get_meshgrid(panels, Nx, Ny, val_x, val_y):
     # defines a mesh grid
-    #Nx, Ny = 20, 20                  # number of points in the x and y directions
-    #val_x, val_y = 1.0, 2.0
+    # Nx, Ny = 20, 20
+    # val_x, val_y = 1.0, 2.0
     x_min, x_max = min( panel.xa for panel in panels ), max( panel.xa for panel in panels )
     y_min, y_max = min( panel.ya for panel in panels ), max( panel.ya for panel in panels )
     x_start, x_end = x_min-val_x*(x_max-x_min), x_max+val_x*(x_max-x_min)
@@ -334,7 +337,7 @@ def get_pressure_coefficient(panels, freestream):
         panel.cp = 1.0 - (panel.vt/freestream.u_inf)**2
 
 
-def runSVP(x, y, u_inf, alpha, npanel=40):
+def runSVP(name, x, y, u_inf, alpha, npanel=40):
 
     x = numpy.array(x)
     y = numpy.array(y)
@@ -349,10 +352,12 @@ def runSVP(x, y, u_inf, alpha, npanel=40):
     #y_start, y_end = y_min-val_y*(y_max-y_min), y_max+val_y*(y_max-y_min)
 
     # defines and creates the object freestream
-    freestream = Freestream(u_inf, alpha)      # instantiation of the object freestream
+    freestream = Freestream(u_inf, alpha)
 
-    A = build_matrix(panels)                  # calculates the singularity matrix
-    b = build_rhs(panels, freestream)         # calculates the freestream RHS
+    # calculates the singularity matrix
+    A = build_matrix(panels)
+    # calculates the freestream RHS
+    b = build_rhs(panels, freestream)
 
     # solves the linear system
     variables = numpy.linalg.solve(A, b)
@@ -365,27 +370,22 @@ def runSVP(x, y, u_inf, alpha, npanel=40):
     time.start()
     # computes the tangential velocity at each panel center.
     get_tangential_velocity(panels, freestream, gamma)
-    duration = time.elapsed()
-    #logger.log.debug('Time for getting tangential velocity at panels %d ms' % (duration))
 
     # computes surface pressure coefficient
     get_pressure_coefficient(panels, freestream)
 
-    #time = QtCore.QTime()
-    #time.start()
-    # computes the velicity field and pressure coefficient on the mesh grid
-    #X, Y = get_meshgrid(panels, 20, 20, 1.0, 2.0)
-    #u, v = get_velocity_field(panels, freestream, X, Y)
-    #cp = get_pressure_field(u, v, freestream)
-    #duration = time.elapsed()
-    #logger.log.debug('Time for for meshgrid setup of velocity and pressure %d ms' % (duration))
-
     # calculates the accuracy
-    accuracy = sum([panel.sigma*panel.length for panel in panels])
-    #print '--> sum of source/sink strengths:', accuracy
-    logger.log.info('Accuracy (sum of source/sink strengths) = %s' % (accuracy))
+    # accuracy = sum([panel.sigma*panel.length for panel in panels])
+    # logger.log.info('Accuracy (sum of source/sink strengths) = %s' %
+    #                 (accuracy))
 
     # calculates of the lift
-    cl = gamma*sum(panel.length for panel in panels)/(0.5*freestream.u_inf*(x_max-x_min))
-    #print '--> Lift coefficient: Cl = %.3f' % cl
-    logger.log.info('<b>Lift coefficient Cl = %.3f [-]</b> @Uinf = %.2f, @AOA = %.1f' % (cl, u_inf, alpha))
+    cl = gamma*sum(panel.length for panel in panels) / \
+        (0.5*freestream.u_inf*(x_max-x_min))
+
+    logger.log.info('Aerodynamic properties <b><font color=%s> %s</b>' %
+                    (LOGCOLOR, name))
+    logger.log.info('&nbsp;&nbsp;&nbsp;<b>Lift coefficient: Cl = %.3f [-]</b>'
+                    % (cl))
+    logger.log.info('&nbsp;&nbsp;&nbsp;<b>Uinf = %.2f [m/s], AOA = %.1f [&deg;] \
+                     </b>' % (u_inf, alpha))
