@@ -85,7 +85,7 @@ class Airfoil(object):
         # create a group of items that carries contour, markers, etc.
         self.createItemsGroup()
         # add the markers to the group
-        self.addMarkers(type='circle')
+        self.addMarkers()
         # add the chord to the group
         self.addChord()
 
@@ -114,9 +114,8 @@ class Airfoil(object):
         """Add splined and refined airfoil points as GraphicsItem to
         the scene
         """
-        self.pencolor = QtGui.QColor(180, 180, 50, 255)
-        self.penwidth = 2.5
-        self.brushcolor = QtGui.QColor(200, 200, 200, 200)
+        self.pencolor = QtGui.QColor(80, 80, 220, 255)
+        self.penwidth = 3.5
 
         # instantiate a graphics item
         contour = gc.GraphicsCollection()
@@ -154,11 +153,9 @@ class Airfoil(object):
         self.markers = QtGui.QGraphicsItemGroup(parent=self.contour_item,
                                                 scene=self.scene)
 
-    def addMarkers(self, type='circle'):
+    def addMarkers(self):
         """Create marker for polygon contour"""
-        # FIXME
-        # FIXME make more marker types in PGraphicsCollection
-        # FIXME
+
         for x, y in zip(*self.raw_coordinates):
 
             # put airfoil contour points as graphicsitem
@@ -167,13 +164,34 @@ class Airfoil(object):
             points.brush.setColor(QtGui.QColor(217, 63, 122, 255))
             points.pen.setCosmetic(True)  # no pen thickness change when zoomed
 
-            if type == 'circle':
-                points.Circle(x, y, 0.003, marker=True)
+            points.Circle(x, y, 0.003, marker=True)
 
             marker = PGraphicsItem.GraphicsItem(points, self.scene)
             self.markers.addToGroup(marker)
 
         self.contour_group.addToGroup(self.markers)
+
+    def addMarkersSpline(self):
+        """Create marker for polygon contour"""
+
+        self.markersSpline = QtGui.QGraphicsItemGroup(
+            parent=self.contour_item,
+            scene=self.scene)
+
+        for x, y in zip(*self.spline_data[0]):
+
+            # put airfoil contour points as graphicsitem
+            points = gc.GraphicsCollection()
+            points.pen.setColor(QtGui.QColor(60, 60, 80, 255))
+            points.brush.setColor(QtGui.QColor(180, 180, 50, 230))
+            points.pen.setCosmetic(True)  # no pen thickness change when zoomed
+
+            points.Circle(x, y, 0.003, marker=True)
+
+            marker = PGraphicsItem.GraphicsItem(points, self.scene)
+            self.markersSpline.addToGroup(marker)
+
+        self.contour_group.addToGroup(self.markersSpline)
 
     def addChord(self):
         line = gc.GraphicsCollection()
