@@ -4,6 +4,7 @@ from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PSvpMethod
 import PSplineRefine
+import PTrailingEdge
 from PSettings import ICONS_L
 import PLogger as logger
 
@@ -67,7 +68,7 @@ class Toolbox(object):
         self.spin.setSingleStep(0.1)
         self.spin.setDecimals(1)
         self.spin.setRange(-10.0, 10.0)
-        self.spin.setValue(2.0)
+        self.spin.setValue(0.0)
         form.addRow(label1, self.spin)
 
         label2 = QtGui.QLabel('Freestream velocity (m/s)')
@@ -173,7 +174,7 @@ class Toolbox(object):
         self.tolerance.setSingleStep(0.1)
         self.tolerance.setDecimals(1)
         self.tolerance.setRange(140.0, 175.0)
-        self.tolerance.setValue(172.0)
+        self.tolerance.setValue(169.0)
         form.addRow(label, self.tolerance)
 
         label = QtGui.QLabel('Number points on spline (-)')
@@ -193,21 +194,35 @@ class Toolbox(object):
 
         form1 = QtGui.QFormLayout()
 
-        label = QtGui.QLabel(u'Blending length relative to chord (%)')
-        self.blending = QtGui.QDoubleSpinBox()
-        self.blending.setSingleStep(0.01)
-        self.blending.setDecimals(2)
-        self.blending.setRange(0.0, 1.0)
-        self.blending.setValue(0.3)
-        form1.addRow(label, self.blending)
+        label = QtGui.QLabel(u'Upper side blending length (%)')
+        self.blend_u = QtGui.QDoubleSpinBox()
+        self.blend_u.setSingleStep(1.0)
+        self.blend_u.setDecimals(1)
+        self.blend_u.setRange(5.0, 100.0)
+        self.blend_u.setValue(30.0)
+        form1.addRow(label, self.blend_u)
+        label = QtGui.QLabel(u'Lower side blending length (%)')
+        self.blend_l = QtGui.QDoubleSpinBox()
+        self.blend_l.setSingleStep(1.0)
+        self.blend_l.setDecimals(1)
+        self.blend_l.setRange(5.0, 100.0)
+        self.blend_l.setValue(30.0)
+        form1.addRow(label, self.blend_l)
 
-        label = QtGui.QLabel(u'Blending polynomial exponent (-)')
-        self.exponent = QtGui.QDoubleSpinBox()
-        self.exponent.setSingleStep(0.1)
-        self.exponent.setDecimals(1)
-        self.exponent.setRange(1.0, 5.0)
-        self.exponent.setValue(3.0)
-        form1.addRow(label, self.exponent)
+        label = QtGui.QLabel(u'Upper blending polynomial exponent (-)')
+        self.exponent_u = QtGui.QDoubleSpinBox()
+        self.exponent_u.setSingleStep(0.1)
+        self.exponent_u.setDecimals(1)
+        self.exponent_u.setRange(1.0, 5.0)
+        self.exponent_u.setValue(3.0)
+        form1.addRow(label, self.exponent_u)
+        label = QtGui.QLabel(u'Lower blending polynomial exponent (-)')
+        self.exponent_l = QtGui.QDoubleSpinBox()
+        self.exponent_l.setSingleStep(0.1)
+        self.exponent_l.setDecimals(1)
+        self.exponent_l.setRange(1.0, 5.0)
+        self.exponent_l.setValue(3.0)
+        form1.addRow(label, self.exponent_l)
 
         label = QtGui.QLabel(u'Trailing edge thickness relative to chord (%)')
         self.thickness = QtGui.QDoubleSpinBox()
@@ -239,6 +254,7 @@ class Toolbox(object):
         item6.setLayout(vbl)
 
         button.clicked.connect(self.spline_and_refine)
+        button1.clicked.connect(self.makeTrailingEdge)
 
         # ******************************************
         # toolbox item7 --> Bokeh test
@@ -316,32 +332,45 @@ class Toolbox(object):
                 x, y = airfoil.raw_coordinates
                 u_inf = self.freestream.value()
                 alpha = self.spin.value()
-                npanel = self.panels.value()
-                PSvpMethod.runSVP(x, y, u_inf, alpha, npanel)
+                panels = self.panels.value()
+                PSvpMethod.runSVP(airfoil.name, x, y, u_inf, alpha, panels)
 
     @QtCore.pyqtSlot()
     def spline_and_refine(self):
         """Spline and refine airfoil"""
+
         if not self.parent.airfoils:
-            self.noairfoilWarning('Can\'t do contour analysis')
+            self.noairfoilWarning('Can\'t do splining and refining')
             return
 
-        i = 0
-        for index, airfoil in enumerate(self.parent.airfoils):
+        for airfoil in self.parent.airfoils:
             if airfoil.contour_item.isSelected():
-                id = index
-                i += 1
-        if i != 1:
-            QtGui.QMessageBox. \
-                information(self.parent, 'Information',
-                            'Select exactly 1 airfoil for refinement.',
-                            QtGui.QMessageBox.Ok, QtGui.QMessageBox.NoButton,
-                            QtGui.QMessageBox.NoButton)
+                id = self.parent.airfoils.index(airfoil)
+
+                refine = PSplineRefine.SplineRefine(id)
+                refine.doSplineRefine(tolerance=self.tolerance.value(),
+                                      points=self.points.value())
+
+    @QtCore.pyqtSlot()
+    def makeTrailingEdge(self):
+
+        if not self.parent.airfoils:
+            self.noairfoilWarning('Can\'t make trailing edge')
             return
 
-        refine = PSplineRefine.SplineRefine(id)
-        refine.doSplineRefine(tolerance=self.tolerance.value(),
-                              points=self.points.value())
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                id = self.parent.airfoils.index(airfoil)
+
+                trailing = PTrailingEdge.TrailingEdge(id)
+                trailing.trailingEdge(blend=self.blend_u.value()/100.0,
+                                      ex=self.exponent_u.value(),
+                                      thickness=self.thickness.value(),
+                                      side='upper')
+                trailing.trailingEdge(blend=self.blend_l.value()/100.0,
+                                      ex=self.exponent_l.value(),
+                                      thickness=self.thickness.value(),
+                                      side='lower')
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):

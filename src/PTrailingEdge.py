@@ -2,11 +2,31 @@ import copy
 
 import numpy as np
 
+from PyQt4 import QtGui, QtCore
+from PUtils import Utils
+import PContourAnalysis as pca
+
+import PLogger as logger
+
 
 class TrailingEdge(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, id):
+
+        self.id = id
+
+        # get MainWindow instance here (overcomes handling parents)
+        self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
+
+        # add spline data to airfoil object
+        self.spline_data = self.mainwindow.airfoils[self.id].spline_data
+
+        # contour analysis instance (no canvas/drawing needed)
+        self.contour = pca.ContourAnalysis(None, canvas=False)
+        self.contour.spline_data = self.spline_data
+        self.contour.getCurvature()
+
+        logger.log.info('I was in the trailing edge')
 
     def getUpperLower(self):
         """Split contour in upper and lower parts
@@ -15,7 +35,7 @@ class TrailingEdge(object):
             TYPE: Coordinates of upper and lower contours
         """
         # leading edge radius
-        rc, xc, yc, xle, yle, le_id = self.getLeRadius()
+        rc, xc, yc, xle, yle, le_id = self.contour.getLeRadius()
 
         x, y = self.spline_data[0]
         upper = (x[:le_id + 1], y[:le_id + 1])
@@ -56,8 +76,30 @@ class TrailingEdge(object):
         xt = np.concatenate([xnu, xnl[1:]])
         yt = np.concatenate([ynu, ynl[1:]])
         self.spline_data[0] = (xt, yt)
+        self.mainwindow.airfoils[self.id].spline_data[0] = (xt, yt)
 
-        return self.spline_data[0]
+        # add splined and refined contour to the airfoil contour_group
+        for airfoil in self.mainwindow.airfoils:
+            if airfoil.contour_item.isSelected():
+                if airfoil.contourspline_item:
+                    self.mainwindow.scene.removeItem(airfoil.contourspline_item)
+                if hasattr(airfoil, 'markersSpline'):
+                    self.mainwindow.scene.removeItem(airfoil.markersSpline)
+                airfoil.addContourSpline(self.spline_data[0])
+                airfoil.addMarkersSpline()
+                airfoil.contourspline_item.brush.setStyle(QtCore.Qt.SolidPattern)
+                color = QtGui.QColor()
+                color.setNamedColor('#7c8696')
+                airfoil.contourspline_item.brush.setColor(color)
+                airfoil.markers.setZValue(100)
+                airfoil.chord.setZValue(99)
+                airfoil.markers.setVisible(False)
+                airfoil.contour_item.brush.setStyle(QtCore.Qt.NoBrush)
+                airfoil.contour_item.pen.setStyle(QtCore.Qt.NoPen)
+                self.mainwindow.view.adjustMarkerSize()
+
+        # update contours, i.e. shift contours and associated splined contours
+        self.mainwindow.slots.shiftContours()
 
     def trailing(self, xx, yy, blend, ex, thickness, side='upper'):
         xmin = np.min(xx)
