@@ -39,8 +39,16 @@ It is automatically generated using the files in the [docs](https://github.com/c
 
 ## Release History
 
+* 0.9
+    * GUI is almost ready, at least ready to be able to do meaningful work
+    * All preparations for mehing are done
+    * Airfoil contours can be loaded, splined and refined
+    * A trailing edge thickness can be added
+
 * 0.8
-    * Work in progress
+    * Raw functionality of GUI available
+    * Zooming and moving works
+    * Airfoils can be loaded (also multiple airfoils is possible)
 
 
 Andreas Ennemoser – [@chiefenne](https://twitter.com/chiefenne) – andreas.ennemoser@aon.at
