@@ -191,7 +191,7 @@ class ContourAnalysis(QtGui.QFrame):
         xle = xr[le_id]
         yle = yr[le_id]
         # logger.log.info('Leading edge radius id: %s' % (le_id))
-        logger.log.info('Leading edge radius: %s' % (rc))
+        # logger.log.info('Leading edge radius: %s' % (rc))
 
         return rc, xc, yc, xle, yle, le_id
 
