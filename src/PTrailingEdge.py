@@ -26,8 +26,6 @@ class TrailingEdge(object):
         self.contour.spline_data = self.spline_data
         self.contour.getCurvature()
 
-        logger.log.info('I was in the trailing edge')
-
     def getUpperLower(self):
         """Split contour in upper and lower parts
 
