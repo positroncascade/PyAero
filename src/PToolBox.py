@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 from PyQt4 import QtGui, QtCore
 import PFileSystem
+import PIconProvider
 import PSvpMethod
 import PSplineRefine
 import PTrailingEdge
-from PSettings import ICONS_L
+from PSettings import ICONS_L, DIALOGFILTER, OUTPUTDATA
 import PLogger as logger
 
 
@@ -189,8 +192,11 @@ class Toolbox(object):
         hbl.addWidget(button, stretch=4)
         hbl.addStretch(stretch=1)
 
-        box = QtGui.QGroupBox('Airfoil contour refinement settings')
-        box.setLayout(form)
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(form)
+        vbox.addLayout(hbl)
+        box = QtGui.QGroupBox('Airfoil contour refinement')
+        box.setLayout(vbox)
 
         form1 = QtGui.QFormLayout()
 
@@ -228,12 +234,9 @@ class Toolbox(object):
         self.thickness = QtGui.QDoubleSpinBox()
         self.thickness.setSingleStep(0.05)
         self.thickness.setDecimals(2)
-        self.thickness.setRange(0.0, 5.0)
-        self.thickness.setValue(0.6)
+        self.thickness.setRange(0.0, 10.0)
+        self.thickness.setValue(0.4)
         form1.addRow(label, self.thickness)
-
-        box1 = QtGui.QGroupBox('Airfoil trailing edge settings')
-        box1.setLayout(form1)
 
         button1 = QtGui.QPushButton('Add Trailing Edge')
         hbl1 = QtGui.QHBoxLayout()
@@ -241,13 +244,32 @@ class Toolbox(object):
         hbl1.addWidget(button1, stretch=4)
         hbl1.addStretch(stretch=1)
 
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(form1)
+        vbox.addLayout(hbl1)
+        box1 = QtGui.QGroupBox('Airfoil trailing edge')
+        box1.setLayout(vbox)
+
+        # export menu
+        name = ''
+        hbox = QtGui.QHBoxLayout()
+        lbl = QtGui.QLabel('Filename')
+        self.lineedit = QtGui.QLineEdit(name)
+        btn = QtGui.QPushButton('Browse')
+        hbox.addWidget(lbl)
+        hbox.addWidget(self.lineedit)
+        hbox.addWidget(btn)
+
+        box2 = QtGui.QGroupBox('Export modified contour')
+        box2.setLayout(hbox)
+
         vbl = QtGui.QVBoxLayout()
         vbl.addStretch(1)
         vbl.addWidget(box)
-        vbl.addLayout(hbl)
         vbl.addStretch(1)
         vbl.addWidget(box1)
-        vbl.addLayout(hbl1)
+        vbl.addStretch(1)
+        vbl.addWidget(box2)
         vbl.addStretch(10)
 
         item6 = QtGui.QWidget()
@@ -255,6 +277,9 @@ class Toolbox(object):
 
         button.clicked.connect(self.spline_and_refine)
         button1.clicked.connect(self.makeTrailingEdge)
+        button.clicked.connect(self.updatename)
+        button1.clicked.connect(self.updatename)
+        btn.clicked.connect(self.onBrowse)
 
         # ******************************************
         # toolbox item7 --> Bokeh test
@@ -270,7 +295,8 @@ class Toolbox(object):
 
         # populate toolbox
         self.tb1 = self.toolBox.addItem(item1, 'Airfoil Database')
-        self.tb2 = self.toolBox.addItem(item6, 'Contour Refinement')
+        self.tb2 = self.toolBox.addItem(item6,
+                                        'Contour Splining and Refinement')
         self.tb3 = self.toolBox.addItem(item3, 'Contour Analysis')
         self.tb4 = self.toolBox.addItem(item4, 'Meshing')
         self.tb5 = self.toolBox.addItem(item2, 'Aerodynamics')
@@ -360,6 +386,17 @@ class Toolbox(object):
 
         for airfoil in self.parent.airfoils:
             if airfoil.contour_item.isSelected():
+                # check if splining already available
+                if not hasattr(airfoil, 'spline_data'):
+                    QtGui.QMessageBox. \
+                        information(self.parent, 'Information',
+                                    'Splining needs to be done first. %s.' %
+                                    ('Can\'t make trailing edge'),
+                                    QtGui.QMessageBox.Ok,
+                                    QtGui.QMessageBox.NoButton,
+                                    QtGui.QMessageBox.NoButton)
+                    return
+
                 id = self.parent.airfoils.index(airfoil)
 
                 trailing = PTrailingEdge.TrailingEdge(id)
@@ -408,6 +445,65 @@ class Toolbox(object):
                         QtGui.QMessageBox.Ok, QtGui.QMessageBox.NoButton,
                         QtGui.QMessageBox.NoButton)
         return
+
+    @QtCore.pyqtSlot()
+    def updatename(self):
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                name = airfoil.name
+                break
+
+        sending_button = self.parent.sender()
+        nameroot, extension = os.path.splitext(str(name))
+
+        if 'Spline' in sending_button.text():
+            nameroot += '_Spline'
+            self.lineedit.setText(nameroot + extension)
+        if 'Trailing' in sending_button.text():
+            nameroot += '_Spline_TE'
+            self.lineedit.setText(nameroot + extension)
+
+    def onBrowse(self):
+
+        dialog = QtGui.QFileDialog()
+
+        provider = PIconProvider.IconProvider()
+        dialog.setIconProvider(provider)
+        dialog.setNameFilter(DIALOGFILTER)
+        dialog.setNameFilterDetailsVisible(True)
+        dialog.setDirectory(OUTPUTDATA)
+        # allow only to select one file
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile)
+        # display also size and date
+        dialog.setViewMode(QtGui.QFileDialog.Detail)
+        # make it a save dialog
+        dialog.setAcceptMode(QtGui.QFileDialog.AcceptSave)
+        # put default name in the save dialog
+        dialog.selectFile(self.lineedit.text())
+
+        # open custom file dialog using custom icons
+        if dialog.exec_():
+            names = dialog.selectedFiles()
+            # filter = dialog.selectedFilter()
+
+        # names is a list of QStrings
+        filename = str(names[0])
+
+        if not filename:
+            return
+
+        # get coordinates of modified contour
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                x, y = airfoil.spline_data[0]
+
+        with open(filename, 'w') as f:
+            f.write('#\n')
+            f.write('# Derived from:     %s\n' % (str(airfoil.name)))
+            f.write('# Number of points: %s\n' % (len(x)))
+            f.write('#\n')
+            for i, xx in enumerate(x):
+                f.write(2*'{:10.6f}'.format(x[i], y[i]) + '\n')
 
 
 class ListWidget(QtGui.QListWidget):
