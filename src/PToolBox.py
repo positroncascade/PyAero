@@ -297,26 +297,26 @@ class Toolbox(object):
         self.tb1 = self.toolBox.addItem(item1, 'Airfoil Database')
         self.tb2 = self.toolBox.addItem(item6,
                                         'Contour Splining and Refinement')
-        self.tb3 = self.toolBox.addItem(item3, 'Contour Analysis')
         self.tb4 = self.toolBox.addItem(item4, 'Meshing')
         self.tb5 = self.toolBox.addItem(item2, 'Aerodynamics')
+        self.tb3 = self.toolBox.addItem(item3, 'Contour Analysis')
         self.tb6 = self.toolBox.addItem(item5, 'Viewing options')
 
         self.toolBox.setItemToolTip(0, 'Airfoil database ' +
                                        '(browse filesystem)')
         self.toolBox.setItemToolTip(1, 'Spline and refine the contour')
-        self.toolBox.setItemToolTip(2, 'Analyze the curvature of the ' +
+        self.toolBox.setItemToolTip(2, 'Generate a 2D mesh around the ' +
                                        'selected airfoil')
-        self.toolBox.setItemToolTip(3, 'Generate a 2D mesh around the ' +
-                                       'selected airfoil')
-        self.toolBox.setItemToolTip(4, 'Compute panel based aerodynamic ' +
+        self.toolBox.setItemToolTip(3, 'Compute panel based aerodynamic ' +
                                     'coefficients')
+        self.toolBox.setItemToolTip(4, 'Analyze the curvature of the ' +
+                                       'selected airfoil')
 
         self.toolBox.setItemIcon(0, QtGui.QIcon(ICONS_L + 'airfoil.png'))
         self.toolBox.setItemIcon(1, QtGui.QIcon(ICONS_L + 'Pixel editor.png'))
-        self.toolBox.setItemIcon(2, QtGui.QIcon(ICONS_L + 'Pixel editor.png'))
-        self.toolBox.setItemIcon(3, QtGui.QIcon(ICONS_L + 'mesh.png'))
-        self.toolBox.setItemIcon(4, QtGui.QIcon(ICONS_L + 'Fast delivery.png'))
+        self.toolBox.setItemIcon(2, QtGui.QIcon(ICONS_L + 'mesh.png'))
+        self.toolBox.setItemIcon(3, QtGui.QIcon(ICONS_L + 'Fast delivery.png'))
+        self.toolBox.setItemIcon(4, QtGui.QIcon(ICONS_L + 'Pixel editor.png'))
         self.toolBox.setItemIcon(5, QtGui.QIcon(ICONS_L + 'Configuration.png'))
 
         # preselect airfoil database box
