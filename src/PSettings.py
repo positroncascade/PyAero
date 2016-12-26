@@ -36,6 +36,9 @@ ICONS_L = ICONS + '24x24/'
 # path can be absolute or relative (to position where starting PyAero)
 AIRFOILDATA = '../data'
 
+# modified contours and mesh folder
+OUTPUTDATA = '../OUTPUT'
+
 # size of airfoil coordinate markers in pixels
 MARKERSIZE = 3
 MARKERPENWIDTH = 1
