@@ -8,6 +8,7 @@ import PIconProvider
 import PSvpMethod
 import PSplineRefine
 import PTrailingEdge
+import PMeshing
 from PSettings import ICONS_L, DIALOGFILTER, OUTPUTDATA
 import PLogger as logger
 
@@ -138,8 +139,62 @@ class Toolbox(object):
         # ******************************************
         # toolbox item4 --> Meshing
         # ******************************************
+        form = QtGui.QFormLayout()
+
+        label = QtGui.QLabel(u'Gridpoints along airfoil')
+        points_on_airfoil = 100
+        text = QtGui.QLineEdit(str(points_on_airfoil))
+        text.setEnabled(False)
+        form.addRow(label, text)
+
+        label = QtGui.QLabel(u'Gridpoints normal to airfoil')
+        self.points_n = QtGui.QSpinBox()
+        self.points_n.setSingleStep(1)
+        self.points_n.setRange(1, 200)
+        self.points_n.setValue(15)
+        form.addRow(label, self.points_n)
+
+        label = QtGui.QLabel('Thickness normal to Airfoil (%)')
+        label.setToolTip('The thickness is specified wrt to the unit chord')
+        self.normal_thickness = QtGui.QDoubleSpinBox()
+        self.normal_thickness.setSingleStep(0.1)
+        self.normal_thickness.setRange(1., 10.)
+        self.normal_thickness.setValue(4.0)
+        self.normal_thickness.setDecimals(1)
+        form.addRow(label, self.normal_thickness)
+
+        label = QtGui.QLabel('Cell Thickness ratio (-)')
+        label.setToolTip('Thickness of the last cell vs. the first cell in ' +
+                         'the airfoil mesh block' +
+                         '\nThe first cell is the one attached to the airfoil')
+        self.ratio = QtGui.QDoubleSpinBox()
+        self.ratio.setSingleStep(0.1)
+        self.ratio.setRange(1., 10.)
+        self.ratio.setValue(3.0)
+        self.ratio.setDecimals(1)
+        form.addRow(label, self.ratio)
+
+        button = QtGui.QPushButton('Create Mesh')
+        hbl = QtGui.QHBoxLayout()
+        hbl.addStretch(stretch=1)
+        hbl.addWidget(button, stretch=4)
+        hbl.addStretch(stretch=1)
+
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(form)
+        vbox.addLayout(hbl)
+        box = QtGui.QGroupBox('Airfoil contour meshing')
+        box.setLayout(vbox)
+
+        vbl = QtGui.QVBoxLayout()
+        vbl.addStretch(1)
+        vbl.addWidget(box)
+        vbl.addStretch(15)
 
         item4 = QtGui.QWidget()
+        item4.setLayout(vbl)
+
+        button.clicked.connect(self.makeMesh)
 
         # ******************************************
         # toolbox item5 --> viewing options (checkboxes)
@@ -410,6 +465,27 @@ class Toolbox(object):
                                       side='lower')
 
     @QtCore.pyqtSlot()
+    def makeMesh(self):
+
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                contour = airfoil.spline_data[0]
+                name = airfoil.name
+                nameroot, extension = os.path.splitext(str(name))
+                break
+
+        tunnel = PMeshing.Windtunnel()
+        block_airfoil, block_te = \
+            tunnel.AirfoilMesh(name='block_airfoil',
+                               contour=contour,
+                               divisions=self.points_n.value(),
+                               ratio=self.ratio.value(),
+                               thickness=self.normal_thickness.value()/100.0)
+
+        block_airfoil.writeFLMA(OUTPUTDATA + nameroot + '.flma', depth=0.2)
+        block_te.writeFLMA(OUTPUTDATA + nameroot + '_TE.flma', depth=0.2)
+
+    @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
         """Airfoil contour analysis with respect to geometric features"""
 
@@ -486,11 +562,11 @@ class Toolbox(object):
             names = dialog.selectedFiles()
             # filter = dialog.selectedFilter()
 
+        if not names:
+            return
+
         # names is a list of QStrings
         filename = str(names[0])
-
-        if not filename:
-            return
 
         # get coordinates of modified contour
         for airfoil in self.parent.airfoils:
