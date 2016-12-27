@@ -174,6 +174,41 @@ class Toolbox(object):
         self.ratio.setDecimals(1)
         form.addRow(label, self.ratio)
 
+        label = QtGui.QLabel(u'Gridpoints at trailing edge')
+        self.te_div = QtGui.QSpinBox()
+        self.te_div.setSingleStep(1)
+        self.te_div.setRange(1, 20)
+        self.te_div.setValue(3)
+        form.addRow(label, self.te_div)
+
+        label = QtGui.QLabel(u'Gridpoints downstream trailing edge')
+        self.points_te = QtGui.QSpinBox()
+        self.points_te.setSingleStep(1)
+        self.points_te.setRange(1, 100)
+        self.points_te.setValue(6)
+        form.addRow(label, self.points_te)
+
+        label = QtGui.QLabel('Length behing trailing edge (%)')
+        label.setToolTip('The length is specified wrt to the unit chord')
+        self.length_te = QtGui.QDoubleSpinBox()
+        self.length_te.setSingleStep(0.1)
+        self.length_te.setRange(0.1, 30.)
+        self.length_te.setValue(4.0)
+        self.length_te.setDecimals(1)
+        form.addRow(label, self.length_te)
+
+        label = QtGui.QLabel('Cell Thickness ratio (-)')
+        label.setToolTip('Thickness of the last cell vs. the first cell in ' +
+                         'the trailing edge mesh block' + '\n'
+                         'The first cell is the one attached to the airfoil ' +
+                         'trailing edge')
+        self.ratio_te = QtGui.QDoubleSpinBox()
+        self.ratio_te.setSingleStep(0.1)
+        self.ratio_te.setRange(1., 10.)
+        self.ratio_te.setValue(3.0)
+        self.ratio_te.setDecimals(1)
+        form.addRow(label, self.ratio_te)
+
         button = QtGui.QPushButton('Create Mesh')
         hbl = QtGui.QHBoxLayout()
         hbl.addStretch(stretch=1)
@@ -471,19 +506,25 @@ class Toolbox(object):
             if airfoil.contour_item.isSelected():
                 contour = airfoil.spline_data[0]
                 name = airfoil.name
-                nameroot, extension = os.path.splitext(str(name))
                 break
 
         tunnel = PMeshing.Windtunnel()
-        block_airfoil, block_te = \
+        block_airfoil = \
             tunnel.AirfoilMesh(name='block_airfoil',
                                contour=contour,
                                divisions=self.points_n.value(),
                                ratio=self.ratio.value(),
                                thickness=self.normal_thickness.value()/100.0)
 
-        block_airfoil.writeFLMA(OUTPUTDATA + nameroot + '.flma', depth=0.2)
-        block_te.writeFLMA(OUTPUTDATA + nameroot + '_TE.flma', depth=0.2)
+        block_te = \
+            tunnel.TrailingEdgeMesh(block_airfoil, name='block_TE',
+                                    te_divisions=self.te_div.value(),
+                                    length=self.length_te.value()/100.0,
+                                    divisions=self.points_te.value(),
+                                    ratio=self.ratio_te.value())
+
+        block_airfoil.writeFLMA(airfoil=name, depth=0.2)
+        block_te.writeFLMA(airfoil=name, depth=0.2)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
