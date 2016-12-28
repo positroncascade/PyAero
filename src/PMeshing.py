@@ -2,9 +2,10 @@
 import os
 import copy
 import numpy as np
+import scipy.interpolate as si
 
 from PUtils import Utils as Utils
-from PSettings import OUTPUTDATA, LOGCOLOR
+from PSettings import OUTPUTDATA
 import PLogger as logger
 
 
@@ -59,11 +60,16 @@ class Windtunnel(object):
 
         # smooth trailing edge block
         smooth = Smooth(block_te)
-        nodes = smooth.selectNodes(domain='interior')
-        block_te_smooth = smooth.smooth(nodes, iterations=1,
-                                        algorithm='parallelogram')
+        # nodes = smooth.selectNodes(domain='interior')
+        # block_te = smooth.smooth(nodes, iterations=1,
+        #                                 algorithm='parallelogram')
+        lower = block_te.getULines[0]
+        upper = block_te.getULines[-1]
+        upper = block_te.getVLines[0]
+        right = block_te.getVLines[-1]
+        block_te = smooth.transfinite(lower, upper, upper, right)
 
-        return block_te_smooth
+        return block_te
 
 
 class BlockMesh(object):
@@ -291,9 +297,75 @@ class Smooth(object):
     def __init__(self, block):
         self.block = block
 
-    def transfinite(xi_count, eta_count, xi_curve_bottom, xi_curve_top,
-                    eta_curve_left, eta_curve_right):
-        pass
+    def transfinite(lower, upper, left, right):
+        """Make a transfinite interpolation.
+
+        http://en.wikipedia.org/wiki/Transfinite_interpolation
+
+        Args:
+            lower (list): List of (x, y) tuples describing the lower bound
+            upper (list): List of (x, y) tuples describing the upper bound
+            left (list): List of (x, y) tuples describing the left bound
+            right (list): List of (x, y) tuples describing the right bound
+
+        Example input for the lower boundary
+            lower = [(0.0, 0.0), (0.1, 0.3),  (0.5, 0.4)]
+        """
+
+        lower = np.array(lower)
+        upper = np.array(upper)
+        left = np.array(left)
+        right = np.array(right)
+
+        # interpolate B-spline through data points
+        # here, a linear interpolant is derived "k=1"
+        # splprep returns:
+        # tck ... tuple (t,c,k) containing the vector of knots,
+        #         the B-spline coefficients, and the degree of the spline.
+        #   u ... array of the parameters for each given point (knot)
+        tck_left, u_left = si.splprep(left.T, s=0, k=1)
+        tck_right, u_right = si.splprep(right.T, s=0, k=1)
+        tck_lower, u_lower = si.splprep(lower.T, s=0, k=1)
+        tck_upper, u_upper = si.splprep(upper.T, s=0, k=1)
+
+        # evaluate function at any parameter "0<=t<=1"
+        def eta_left(t):
+            return np.array(si.splev(t, tck_left, der=0))
+
+        def eta_right(t):
+            return np.array(si.splev(t, tck_right, der=0))
+
+        def xi_bottom(t):
+            return np.array(si.splev(t, tck_lower, der=0))
+
+        def xi_top(t):
+            return np.array(si.splev(t, tck_upper, der=0))
+
+        nodes = np.zeros((len(u_left) * len(u_lower), 2))
+
+        # corner points
+        c1 = xi_bottom(0.0)
+        c2 = xi_top(0.0)
+        c3 = xi_bottom(1.0)
+        c4 = xi_top(1.0)
+
+        for i, xi in enumerate(u_lower):
+            xi_t = u_upper[i]
+            for j, eta in enumerate(u_left):
+                eta_r = u_right[j]
+
+                node = i * len(u_left) + j
+
+                # formula for the transinite interpolation
+                point = (1.0 - xi) * eta_left(eta) + xi * eta_right(eta_r) + \
+                    (1.0 - eta) * xi_bottom(xi) + eta * xi_top(xi_t) - \
+                    ((1.0 - xi) * (1.0 - eta) * c1 + (1.0 - xi) * eta * c2 +
+                     xi * (1.0 - eta) * c3 + xi * eta * c4)
+
+                nodes[node, 0] = point[0]
+                nodes[node, 1] = point[1]
+
+        return nodes
 
     def getRotationAngle(self, node, n, degree=True):
 
@@ -374,7 +446,7 @@ class Smooth(object):
                               (self.block.getNodeCoo(nb[2]) +
                                self.block.getNodeCoo(nb[4]) +
                                self.block.getNodeCoo(nb[6]) +
-                               self.block.getNodeCoo(nb[8])) / 20.0
+                               self.block.getNodeCoo(nb[8])) / 2.0
 
                 self.block.setNodeCoo(node, new_pos.tolist())
 
