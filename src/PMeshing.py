@@ -53,17 +53,17 @@ class Windtunnel(object):
         block_te.addLine(line)
         block_te.extrudeLine(line, length=length, direction=3,
                              divisions=divisions, ratio=ratio)
+
+        # equidistant point distribution
         block_te.distribute(direction='u', number=divisions+1)
-        # block_te.distribute(direction='v', line_number=1)
-        # block_te.distribute(direction='v', line_number=3)
 
-        # # smooth trailing edge block
-        # smooth = Smooth(block_te)
-        # nodes = smooth.selectNodes(domain='interior')
-        # block_te_smooth = smooth.smooth(nodes, iterations=1,
-        #                                 algorithm='laplace')
+        # smooth trailing edge block
+        smooth = Smooth(block_te)
+        nodes = smooth.selectNodes(domain='interior')
+        block_te_smooth = smooth.smooth(nodes, iterations=1,
+                                        algorithm='parallelogram')
 
-        return block_te
+        return block_te_smooth
 
 
 class BlockMesh(object):
@@ -105,6 +105,18 @@ class BlockMesh(object):
         u = len(self.ULines[0]) - 1
         v = len(self.ULines) - 1
         return u, v
+
+    def getNodeCoo(self, node):
+        I, J = node[0], node[1]
+        uline = self.getULines()[J]
+        point = uline[I]
+        return np.array(point)
+
+    def setNodeCoo(self, node, new_pos):
+        I, J = node[0], node[1]
+        uline = self.getULines()[J]
+        uline[I] = new_pos
+        return
 
     def extrudeLine(self, line, direction=0, length=0.1, divisions=1,
                     ratio=1.00001, constant=False):
@@ -210,7 +222,7 @@ class BlockMesh(object):
 
         folder = OUTPUTDATA + '/'
         nameroot, extension = os.path.splitext(str(airfoil))
-        filename = nameroot + '_' + self.name + '_' + '.flma'
+        filename = nameroot + '_' + self.name + '.flma'
         fullname = folder + filename
 
         logger.log.info('Mesh <b><font color=%s> %s</b> saved to output folder'
@@ -272,3 +284,119 @@ class BlockMesh(object):
 
             # write FIRE selections to FLMA file
             f.write('0')
+
+
+class Smooth(object):
+
+    def __init__(self, block):
+        self.block = block
+
+    def transfinite(xi_count, eta_count, xi_curve_bottom, xi_curve_top,
+                    eta_curve_left, eta_curve_right):
+        pass
+
+    def getRotationAngle(self, node, n, degree=True):
+
+        before = n - 1
+        if before == 0:
+            before = 8
+        after = n + 1
+        if after == 9:
+            after = 1
+
+        b = np.array([graph.node[neighbours[before]]['pos'][0],
+                      graph.node[neighbours[before]]['pos'][1]])
+        a = np.array([graph.node[neighbours[after]]['pos'][0],
+                      graph.node[neighbours[after]]['pos'][1]])
+        c = np.array([graph.node[node]['pos'][0], graph.node[node]['pos'][1]])
+        s = np.array([graph.node[neighbours[n]]['pos'][0],
+                      graph.node[neighbours[n]]['pos'][1]])
+        u = b - s
+        v = a - s
+        w = c - s
+        alpha2 = Utils.angle_between(u, w, degree=degree) * (-1.0) * \
+            np.sign(np.cross(u, w))
+        alpha1 = Utils.angle_between(w, v, degree=degree) * (-1.0) * \
+            np.sign(np.cross(w, v))
+        beta = (alpha2 - alpha1) / 2.0
+
+        return beta
+
+    def getNeighbours(self, node):
+        """Get a list of neighbours around a node """
+
+        i, j = node[0], node[1]
+        neighbours = {1: (i - 1, j - 1), 2: (i, j - 1), 3: (i + 1, j - 1),
+                      4: (i + 1, j), 5: (i + 1, j + 1), 6: (i, j + 1),
+                      7: (i - 1, j + 1), 8: (i - 1, j)}
+        return neighbours
+
+    def smooth(self, nodes, iterations=1, algorithm='angle_based'):
+        """Smoothing of a square lattice mesh
+
+        Algorithms:
+           - Angle based
+             Tian Zhou:
+             AN ANGLE-BASED APPROACH TO TWO-DIMENSIONAL MESH SMOOTHING
+           - Laplace
+             Mean of surrounding node coordinates
+           - Parallelogram smoothing
+             Sanjay Kumar Khattri:
+             A NEW SMOOTHING ALGORITHM FOR QUADRILATERAL AND HEXAHEDRAL MESHES
+
+        Args:
+            nodes (TYPE): List of (i, j) tuples for the nodes to be smoothed
+            iterations (int, optional): Number of smoothing iterations
+            algorithm (str, optional): Smoothing algorithm
+        """
+
+        # loop number of smoothing iterations
+        for i in range(iterations):
+
+            new_pos = list()
+
+            # smooth a node (i, j)
+            for node in nodes:
+                nb = self.getNeighbours(node)
+
+                if algorithm == 'laplace':
+                    new_pos = (self.block.getNodeCoo(nb[2]) +
+                               self.block.getNodeCoo(nb[4]) +
+                               self.block.getNodeCoo(nb[6]) +
+                               self.block.getNodeCoo(nb[8])) / 4.0
+
+                if algorithm == 'parallelogram':
+
+                    new_pos = (self.block.getNodeCoo(nb[1]) +
+                               self.block.getNodeCoo(nb[3]) +
+                               self.block.getNodeCoo(nb[5]) +
+                               self.block.getNodeCoo(nb[7])) / 4.0 - \
+                              (self.block.getNodeCoo(nb[2]) +
+                               self.block.getNodeCoo(nb[4]) +
+                               self.block.getNodeCoo(nb[6]) +
+                               self.block.getNodeCoo(nb[8])) / 20.0
+
+                self.block.setNodeCoo(node, new_pos.tolist())
+
+        return self.block
+
+    def selectNodes(self, domain='interior'):
+        """Generate a node index list
+
+        Args:
+            domain (str, optional): Defines the part of the domain where
+                                    nodes shall be selected
+
+        Returns:
+            List: Indices as (i, j) tuples
+        """
+        U, V = self.block.getDivUV()
+        nodes = list()
+
+        # select all nodes except boundary nodes
+        if domain == 'interior':
+            for i in range(1, U):
+                for j in range(1, V):
+                    nodes.append((i, j))
+
+        return nodes
