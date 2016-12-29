@@ -260,13 +260,13 @@ class SplineRefine(object):
             y = np.append(y, p[1])
             t = np.append(t, 1.-s)
 
-            # update coordinate array, including inserted points
-            self.spline_data[0] = (x, y)
-            # update parameter array, including parameters of inserted points
-            self.spline_data[2] = t
-            # update derivatives, including inserted points
-            self.spline_data[3] = si.splev(s, tck, der=1)
-            self.spline_data[4] = si.splev(s, tck, der=2)
+        # update coordinate array, including inserted points
+        self.spline_data[0] = (x, y)
+        # update parameter array, including parameters of inserted points
+        self.spline_data[2] = t
+        # update derivatives, including inserted points
+        self.spline_data[3] = si.splev(t, tck, der=1)
+        self.spline_data[4] = si.splev(t, tck, der=2)
 
     def spacing(self, divisions=10, ratio=1.0, thickness=1.0):
         """Calculate point distribution on a line
