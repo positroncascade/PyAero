@@ -17,7 +17,8 @@ class SplineRefine(object):
         # get MainWindow instance here (overcomes handling parents)
         self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
 
-    def doSplineRefine(self, tolerance=172.0, points=150):
+    def doSplineRefine(self, tolerance=172.0, points=150, ref_te=3,
+                       ref_te_n=6, ref_te_ratio=3.0):
 
         # get raw coordinates
         x, y = self.mainwindow.airfoils[self.id].raw_coordinates
@@ -38,6 +39,9 @@ class SplineRefine(object):
         x, y = coo
         self.spline_data = self.spline(x, y, points=points, degree=2,
                                        evaluate=True)
+
+        # refine the trailing edge of the spline
+        self.refine_te(ref_te, ref_te_n, ref_te_ratio)
 
         # add spline data to airfoil object
         self.mainwindow.airfoils[self.id].spline_data = self.spline_data
@@ -207,6 +211,93 @@ class SplineRefine(object):
             # instead use self to transfer data to the outer world :)
             self.spline_data = copy.deepcopy(spline_data)
             return
+
+    def refine_te(self, ref_te, ref_te_n, ref_te_ratio):
+        """Refine the airfoil contour at the trailing edge
+
+        Args:
+            ref_te (TYPE): Description
+            ref_te_n (TYPE): Description
+            ref_te_ratio (TYPE): Description
+
+        Returns:
+            TYPE: Description
+        """
+        # get parameter of point to which refinement reaches
+        tref = self.spline_data[2][ref_te]
+
+        # calculate the new spacing at the trailing edge points
+        spacing = self.spacing(divisions=ref_te_n, ratio=ref_te_ratio,
+                               thickness=tref)
+
+        # insert new points with the spacing into the airfoil contour data
+
+        x, y = self.spline_data[0]
+        t = self.spline_data[2]
+        tck = self.spline_data[5]
+
+        # remove points which will be refined
+        index = range(ref_te+1)
+        x = np.delete(x, index)
+        y = np.delete(y, index)
+        t = np.delete(t, index)
+
+        index = range(len(x))[-(ref_te+1):]
+        x = np.delete(x, index)
+        y = np.delete(y, index)
+        t = np.delete(t, index)
+
+        # add refined points
+        for s in spacing[::-1]:
+            # upper side
+            p = si.splev(s, tck, der=0)
+            x = np.insert(x, 0, p[0])
+            y = np.insert(y, 0, p[1])
+            t = np.insert(t, 0, s)
+            # lower side
+            p = si.splev(1.-s, tck, der=0)
+            x = np.append(x, p[0])
+            y = np.append(y, p[1])
+            t = np.append(t, 1.-s)
+
+            # update coordinate array, including inserted points
+            self.spline_data[0] = (x, y)
+            # update parameter array, including parameters of inserted points
+            self.spline_data[2] = t
+            # update derivatives, including inserted points
+            self.spline_data[3] = si.splev(s, tck, der=1)
+            self.spline_data[4] = si.splev(s, tck, der=2)
+
+    def spacing(self, divisions=10, ratio=1.0, thickness=1.0):
+        """Calculate point distribution on a line
+
+        Args:
+            divisions (int, optional): Number of subdivisions
+            ratio (float, optional): Ratio of last to first subdivision size
+            thickness (float, optional): length of line
+
+        Returns:
+            TYPE: Description
+        """
+        if divisions == 1:
+            sp = [0.0, 1.0]
+            return np.array(sp)
+
+        growth = ratio**(1.0 / (float(divisions) - 1.0))
+
+        if growth == 1.0:
+            growth = 1.0 + 1.0e-10
+
+        s0 = 1.0
+        s = [s0]
+        for i in range(1, divisions + 1):
+            app = s0 * growth**i
+            s.append(app)
+        sp = np.array(s)
+        sp -= sp[0]
+        sp /= sp[-1]
+        sp *= thickness
+        return sp
 
     def writeContour(self):
 
