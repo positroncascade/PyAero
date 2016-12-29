@@ -270,8 +270,31 @@ class Toolbox(object):
         self.tolerance.setValue(169.0)
         form.addRow(label, self.tolerance)
 
+        label = QtGui.QLabel(u'Refine trailing edge (old segments)')
+        self.ref_te = QtGui.QSpinBox()
+        self.ref_te.setSingleStep(1)
+        self.ref_te.setRange(1, 50)
+        self.ref_te.setValue(3)
+        form.addRow(label, self.ref_te)
+
+        label = QtGui.QLabel(u'Refine trailing edge (new segments)')
+        self.ref_te_n = QtGui.QSpinBox()
+        self.ref_te_n.setSingleStep(1)
+        self.ref_te_n.setRange(1, 100)
+        self.ref_te_n.setValue(6)
+        form.addRow(label, self.ref_te_n)
+
+        label = QtGui.QLabel(u'Refine trailing edge ratio')
+        self.ref_te_ratio = QtGui.QDoubleSpinBox()
+        self.ref_te_ratio.setSingleStep(0.1)
+        self.ref_te_ratio.setDecimals(1)
+        self.ref_te_ratio.setRange(1., 10.)
+        self.ref_te_ratio.setValue(3.0)
+        form.addRow(label, self.ref_te_ratio)
+
         label = QtGui.QLabel('Number points on spline (-)')
         self.points = QtGui.QSpinBox()
+        self.ref_te.setSingleStep(10)
         self.points.setRange(50, 500)
         self.points.setValue(150)
         form.addRow(label, self.points)
@@ -465,7 +488,10 @@ class Toolbox(object):
 
                 refine = PSplineRefine.SplineRefine(id)
                 refine.doSplineRefine(tolerance=self.tolerance.value(),
-                                      points=self.points.value())
+                                      points=self.points.value(),
+                                      ref_te=self.ref_te.value(),
+                                      ref_te_n=self.ref_te_n.value(),
+                                      ref_te_ratio=self.ref_te_ratio.value())
 
     @QtCore.pyqtSlot()
     def makeTrailingEdge(self):
