@@ -30,14 +30,16 @@ class Windtunnel(object):
         block_airfoil.extrudeLine(line, length=thickness, direction=3,
                                   divisions=divisions, ratio=ratio)
 
+        self.block_airfoil = block_airfoil
+
         return block_airfoil
 
-    def TrailingEdgeMesh(self, block_airfoil, name='', te_divisions=3,
+    def TrailingEdgeMesh(self, name='', te_divisions=3,
                          length=0.04, divisions=6, ratio=3.0):
 
         # compile first line of trailing edge block
-        first = block_airfoil.getLine(number=0, direction='v')
-        last = block_airfoil.getLine(number=-1, direction='v')
+        first = self.block_airfoil.getLine(number=0, direction='v')
+        last = self.block_airfoil.getLine(number=-1, direction='v')
         last_reversed = copy.deepcopy(last)
         last_reversed.reverse()
 
@@ -56,13 +58,34 @@ class Windtunnel(object):
                              divisions=divisions, ratio=ratio)
 
         # equidistant point distribution
-        block_te.distribute(direction='u', number=divisions+1)
+        block_te.distribute(direction='u', number=-1)
 
         # make a transfinite interpolation
         # i.e., recreate pooints inside the block
         block_te.transfinite()
 
+        self.block_te = block_te
+
         return block_te
+
+    def TunnelMesh(self, name=''):
+        block_tunnel = BlockMesh(name=name)
+
+        line = self.block_te.getVLines()[-1]
+        print '______the_line__type____', line
+        line.reverse()
+        del line[-1]
+        line += self.block_airfoil.getULines()[-1]
+        del line[-1]
+        line += self.block_te.getVLines()[0]
+
+        block_tunnel.addLine(line)
+        block_tunnel.extrudeLine(line, length=2.0, direction=3,
+                                 divisions=20, ratio=3.0)
+
+        self.block_tunnel = block_tunnel
+
+        return block_tunnel
 
 
 class BlockMesh(object):
@@ -141,16 +164,16 @@ class BlockMesh(object):
                 line = zip(xo.tolist(), yo.tolist())
                 self.addLine(line)
 
-    def distribute(self, direction='u', number=1):
+    def distribute(self, direction='u', number=0):
 
         U, V = self.getDivUV()
 
         divisions = {'u': U, 'v': V}
 
         if direction == 'u':
-            line = self.ULines[number - 1]
+            line = self.getULines()[number]
         elif direction == 'v':
-            line = self.getVLines()[number - 1]
+            line = self.getVLines()[number]
 
         p1 = np.array((line[0], line[0]))
         p2 = np.array((line[-1], line[-1]))
@@ -253,22 +276,22 @@ class BlockMesh(object):
         def eta_right(t):
             return np.array(si.splev(t, tck_right, der=0))
 
-        def xi_bottom(t):
+        def xi_lower(t):
             return np.array(si.splev(t, tck_lower, der=0))
 
-        def xi_top(t):
+        def xi_upper(t):
             return np.array(si.splev(t, tck_upper, der=0))
 
         nodes = np.zeros((len(u_left) * len(u_lower), 2))
 
         # corner points
-        c1 = xi_bottom(0.0)
-        c2 = xi_top(0.0)
-        c3 = xi_bottom(1.0)
-        c4 = xi_top(1.0)
+        c1 = xi_lower(0.0)
+        c2 = xi_upper(0.0)
+        c3 = xi_lower(1.0)
+        c4 = xi_upper(1.0)
 
         for i, xi in enumerate(u_lower):
-            xi_t = u_upper[i]
+            xi_u = u_upper[i]
             for j, eta in enumerate(u_left):
                 eta_r = u_right[j]
 
@@ -276,22 +299,33 @@ class BlockMesh(object):
 
                 # formula for the transinite interpolation
                 point = (1.0 - xi) * eta_left(eta) + xi * eta_right(eta_r) + \
-                    (1.0 - eta) * xi_bottom(xi) + eta * xi_top(xi_t) - \
+                    (1.0 - eta) * xi_lower(xi) + eta * xi_upper(xi_u) - \
                     ((1.0 - xi) * (1.0 - eta) * c1 + (1.0 - xi) * eta * c2 +
                      xi * (1.0 - eta) * c3 + xi * eta * c4)
 
                 nodes[node, 0] = point[0]
                 nodes[node, 1] = point[1]
 
-        ulines = list()
-        uline = list()
+        vlines = list()
+        vline = list()
         i = 0
         for node in nodes:
             i += 1
-            uline.append(node)
+            vline.append(node)
             if i % len(left) == 0:
-                ulines.append(uline[::-1])
-                uline = list()
+                vlines.append(vline)
+                vline = list()
+
+        vlines.reverse()
+
+        ulines = list()
+        uline = list()
+        for i in range(len(vlines[0])):
+            for vline in vlines:
+                x, y = vline[i][0], vline[i][1]
+                uline.append((x, y))
+            ulines.append(uline[::-1])
+            uline = list()
 
         self.ULines = ulines
 

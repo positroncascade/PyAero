@@ -543,14 +543,17 @@ class Toolbox(object):
                                thickness=self.normal_thickness.value()/100.0)
 
         block_te = \
-            tunnel.TrailingEdgeMesh(block_airfoil, name='block_TE',
+            tunnel.TrailingEdgeMesh(name='block_TE',
                                     te_divisions=self.te_div.value(),
                                     length=self.length_te.value()/100.0,
                                     divisions=self.points_te.value(),
                                     ratio=self.ratio_te.value())
 
+        block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
+
         block_airfoil.writeFLMA(airfoil=name, depth=0.2)
         block_te.writeFLMA(airfoil=name, depth=0.2)
+        block_tunnel.writeFLMA(airfoil=name, depth=0.2)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
