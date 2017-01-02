@@ -71,17 +71,86 @@ class Windtunnel(object):
     def TunnelMesh(self, name=''):
         block_tunnel = BlockMesh(name=name)
 
+        # line composed of trailing edge and airfoil meshes
         line = self.block_te.getVLines()[-1]
-        print '______the_line__type____', line
         line.reverse()
         del line[-1]
         line += self.block_airfoil.getULines()[-1]
         del line[-1]
         line += self.block_te.getVLines()[0]
+        block_tunnel.addLine(line)
+
+        # line composed of upper, lower and front line segments
+        p1 = np.array((block_tunnel.getULines()[0][0][0], 2.0))
+        p2 = np.array((0.0, 2.0))
+        p3 = np.array((0.0, -2.0))
+        p4 = np.array((block_tunnel.getULines()[0][-1][0], -2.0))
+
+        # upper line of wind tunnel
+        line = list()
+        vec = p2 - p1
+        for t in np.linspace(0.0, 1.0, 100):
+            p = p1 + t * vec
+            line.append(p.tolist())
+        del line[-1]
+        # front half circle of wind tunnel
+        r = 2.0
+        for phi in np.linspace(90.0, 270.0, 200):
+            phir = np.radians(phi)
+            x = r * np.cos(phir)
+            y = r * np.sin(phir)
+            line.append((x, y))
+        del line[-1]
+        # lower line of wind tunnel
+        vec = p4 - p3
+        for t in np.linspace(0.0, 1.0, 100):
+            p = p3 + t * vec
+            line.append(p.tolist())
+        line = np.array(line)
+        tck, u = si.splprep(line.T, s=0, k=1)
+        t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
+        line = si.splev(t, tck, der=0)
+        line = zip(line[0].tolist(), line[1].tolist())
 
         block_tunnel.addLine(line)
-        block_tunnel.extrudeLine(line, length=2.0, direction=3,
-                                 divisions=20, ratio=3.0)
+
+        p5 = np.array(block_tunnel.getULines()[0][0])
+        p6 = np.array(block_tunnel.getULines()[0][-1])
+
+        # first vline
+        vec = p1 - p5
+        dist = np.linalg.norm(vec)
+        spacing = BlockMesh.spacing(divisions=50, ratio=10.0, thickness=dist)
+        vline1 = list()
+        vline1.append((p5.tolist()[0], p5.tolist()[1]))
+        for i in range(1, len(spacing)):
+            p = p5 + spacing[i] * Utils.unit_vector(vec)
+            vline1.append((p.tolist()[0], p.tolist()[1]))
+        del vline1[-1]
+        vline1.append((p1.tolist()[0], p1.tolist()[1]))
+
+        # last vline
+        vec = p4 - p6
+        dist = np.linalg.norm(vec)
+        spacing = BlockMesh.spacing(divisions=50, ratio=10.0, thickness=dist)
+        vline2 = list()
+        vline2.append((p6.tolist()[0], p6.tolist()[1]))
+        for i in range(1, len(spacing)):
+            p = p6 + spacing[i] * Utils.unit_vector(vec)
+            vline2.append((p.tolist()[0], p.tolist()[1]))
+        del vline2[-1]
+        vline2.append((p4.tolist()[0], p4.tolist()[1]))
+
+        boundary = list()
+        boundary.append(block_tunnel.getULines()[0])
+        boundary.append(block_tunnel.getULines()[-1])
+        boundary.append(vline1)
+        boundary.append(vline2)
+        block_tunnel.transfinite(block=False, boundary=boundary)
+
+        smooth = Smooth(block_tunnel)
+        nodes = smooth.selectNodes(domain='interior')
+        smooth.smooth(nodes, iterations=15, algorithm='laplace')
 
         self.block_tunnel = block_tunnel
 
@@ -164,27 +233,40 @@ class BlockMesh(object):
                 line = zip(xo.tolist(), yo.tolist())
                 self.addLine(line)
 
-    def distribute(self, direction='u', number=0):
-
-        U, V = self.getDivUV()
-
-        divisions = {'u': U, 'v': V}
+    def distribute(self, direction='u', number=0, type='constant'):
 
         if direction == 'u':
-            line = self.getULines()[number]
+            line = np.array(self.getULines()[number])
         elif direction == 'v':
-            line = self.getVLines()[number]
+            line = np.array(self.getVLines()[number])
 
-        p1 = np.array((line[0], line[0]))
-        p2 = np.array((line[-1], line[-1]))
-        vec = p2 - p1
+        # interpolate B-spline through data points
+        # here, a linear interpolant is derived "k=1"
+        # splprep returns:
+        # tck ... tuple (t,c,k) containing the vector of knots,
+        #         the B-spline coefficients, and the degree of the spline.
+        #   u ... array of the parameters for each given point (knot)
+        tck, u = si.splprep(line.T, s=0, k=1)
 
-        for i in range(1, divisions[direction]):
-            delta = p1 + i * vec / divisions[direction]
-            line[i] = delta[0]
-            line[i] = delta[1]
+        if type == 'constant':
+            t = np.linspace(0.0, 1.0, num=len(line))
+        if type == 'transition':
+            first = np.array(self.getULines()[0])
+            last = np.array(self.getULines()[-1])
+            tck_first, u_first = si.splprep(first.T, s=0, k=1)
+            tck_last, u_last = si.splprep(last.T, s=0, k=1)
+            if number < 0.0:
+                number = len(self.getVLines())
+            v = float(number) / float(len(self.getVLines()))
+            t = (1.0 - v) * u_first + v * u_last
 
-    def spacing(self, divisions=10, ratio=1.0, thickness=1.0):
+        # evaluate function at any parameter "0<=t<=1"
+        line = si.splev(t, tck, der=0)
+        line = zip(line[0].tolist(), line[1].tolist())
+        self.getULines()[number] = line
+
+    @staticmethod
+    def spacing(divisions=10, ratio=1.0, thickness=1.0):
         """Calculate point distribution on a line
 
         Args:
@@ -216,6 +298,15 @@ class BlockMesh(object):
         sp *= thickness
         return sp
 
+    def mapLines(self, line_1, line_2):
+        """Map the distribution of points from one line to another line
+
+        Args:
+            line_1 (LIST): Source line (will be mapped)
+            line_2 (LIST): Destination line (upon this line_1 is mapped)
+        """
+        pass
+
     def curveNormals(self, x, y, closed=False):
         istart = 0
         iend = 0
@@ -240,18 +331,41 @@ class BlockMesh(object):
             iend = 0
         return np.array(n)
 
-    def transfinite(self):
+    def transfinite(self, block=True, boundary=None):
         """Make a transfinite interpolation.
 
         http://en.wikipedia.org/wiki/Transfinite_interpolation
 
-        Example input for the lower boundary
+                       upper
+                --------------------
+                |                  |
+                |                  |
+           left |                  | right
+                |                  |
+                |                  |
+                --------------------
+                       lower
+
+        Example input for the lower boundary:
             lower = [(0.0, 0.0), (0.1, 0.3),  (0.5, 0.4)]
         """
-        lower = self.getULines()[0]
-        upper = self.getULines()[-1]
-        left = self.getVLines()[0]
-        right = self.getVLines()[-1]
+
+        if block:
+            lower = self.getULines()[0]
+            upper = self.getULines()[-1]
+            left = self.getVLines()[0]
+            right = self.getVLines()[-1]
+        else:
+            lower = boundary[0]
+            upper = boundary[1]
+            left = boundary[2]
+            right = boundary[3]
+
+        # FIXME
+        # FIXME left and right need to swapped from input
+        # FIXME
+        # FIXME like: left, right = right, left
+        # FIXME
 
         lower = np.array(lower)
         upper = np.array(upper)
@@ -264,10 +378,10 @@ class BlockMesh(object):
         # tck ... tuple (t,c,k) containing the vector of knots,
         #         the B-spline coefficients, and the degree of the spline.
         #   u ... array of the parameters for each given point (knot)
-        tck_left, u_left = si.splprep(left.T, s=0, k=1)
-        tck_right, u_right = si.splprep(right.T, s=0, k=1)
         tck_lower, u_lower = si.splprep(lower.T, s=0, k=1)
         tck_upper, u_upper = si.splprep(upper.T, s=0, k=1)
+        tck_left, u_left = si.splprep(left.T, s=0, k=1)
+        tck_right, u_right = si.splprep(right.T, s=0, k=1)
 
         # evaluate function at any parameter "0<=t<=1"
         def eta_left(t):
