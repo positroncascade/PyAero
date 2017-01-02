@@ -148,9 +148,35 @@ class Windtunnel(object):
         boundary.append(vline2)
         block_tunnel.transfinite(block=False, boundary=boundary)
 
-        smooth = Smooth(block_tunnel)
-        nodes = smooth.selectNodes(domain='interior')
-        smooth.smooth(nodes, iterations=15, algorithm='laplace')
+        # test
+        # test
+        # test
+        ulines = list()
+        old_ulines = block_tunnel.getULines()
+        for j, uline in enumerate(block_tunnel.getULines()):
+            if j == 0 or j == len(block_tunnel.getULines())-1:
+                ulines.append(uline)
+                continue
+            x, y = zip(*uline)
+            x = np.array(x)
+            y = np.array(y)
+            line = list()
+            normals = BlockMesh.curveNormals(x, y)
+            for i, point in enumerate(uline):
+                if i == 0 or i == len(uline)-1:
+                    line.append(point)
+                    continue
+                pt = np.array(old_ulines[j][i])
+                dist = pt.dot(normals[j-1])
+                pn = np.array(point) + dist * normals[j-1]
+                v = float(j) / float(len(block_tunnel.getULines()))
+                pnew = (1.0-v**2) * pn + v**2 * pt
+                line.append((pnew.tolist()[0], pnew.tolist()[1]))
+            ulines.append(line)
+
+        block_tunnel = BlockMesh(name=name)
+        for uline in ulines:
+            block_tunnel.addLine(uline)
 
         self.block_tunnel = block_tunnel
 
@@ -307,7 +333,8 @@ class BlockMesh(object):
         """
         pass
 
-    def curveNormals(self, x, y, closed=False):
+    @staticmethod
+    def curveNormals(x, y, closed=False):
         istart = 0
         iend = 0
         n = list()
@@ -567,7 +594,7 @@ class Smooth(object):
                       7: (i - 1, j + 1), 8: (i - 1, j)}
         return neighbours
 
-    def smooth(self, nodes, iterations=1, algorithm='angle_based'):
+    def smooth(self, nodes, iterations=1, algorithm='laplace'):
         """Smoothing of a square lattice mesh
 
         Algorithms:
@@ -611,6 +638,9 @@ class Smooth(object):
                                self.block.getNodeCoo(nb[4]) +
                                self.block.getNodeCoo(nb[6]) +
                                self.block.getNodeCoo(nb[8])) / 2.0
+
+                if algorithm == 'angle_based':
+                    pass
 
                 self.block.setNodeCoo(node, new_pos.tolist())
 
