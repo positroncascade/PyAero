@@ -550,10 +550,12 @@ class Toolbox(object):
                                     ratio=self.ratio_te.value())
 
         block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
+        block_tunnel_back = tunnel.TunnelMeshBack(name='block_tunnel_back')
 
         block_airfoil.writeFLMA(airfoil=name, depth=0.2)
         block_te.writeFLMA(airfoil=name, depth=0.2)
         block_tunnel.writeFLMA(airfoil=name, depth=0.2)
+        block_tunnel_back.writeFLMA(airfoil=name, depth=0.2)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):

@@ -126,34 +126,16 @@ class Windtunnel(object):
         p6 = np.array(block_tunnel.getULines()[0][-1])
 
         # first vline
-        vec = p1 - p5
-        dist = np.linalg.norm(vec)
-        spacing = BlockMesh.spacing(divisions=50, ratio=10.0, thickness=dist)
-        vline1 = list()
-        vline1.append((p5.tolist()[0], p5.tolist()[1]))
-        for i in range(1, len(spacing)):
-            p = p5 + spacing[i] * Utils.unit_vector(vec)
-            vline1.append((p.tolist()[0], p.tolist()[1]))
-        del vline1[-1]
-        vline1.append((p1.tolist()[0], p1.tolist()[1]))
+        vline1 = BlockMesh.makeLine(p5, p1, divisions=50, ratio=10.0)
 
         # last vline
-        vec = p4 - p6
-        dist = np.linalg.norm(vec)
-        spacing = BlockMesh.spacing(divisions=50, ratio=10.0, thickness=dist)
-        vline2 = list()
-        vline2.append((p6.tolist()[0], p6.tolist()[1]))
-        for i in range(1, len(spacing)):
-            p = p6 + spacing[i] * Utils.unit_vector(vec)
-            vline2.append((p.tolist()[0], p.tolist()[1]))
-        del vline2[-1]
-        vline2.append((p4.tolist()[0], p4.tolist()[1]))
+        vline2 = BlockMesh.makeLine(p6, p4, divisions=50, ratio=10.0)
 
         boundary = [block_tunnel.getULines()[0],
                     block_tunnel.getULines()[-1],
                     vline1,
                     vline2]
-        block_tunnel.transfinite(block=False, boundary=boundary)
+        block_tunnel.transfinite(boundary=boundary)
 
         # blending between normals (inner lines) and transfinite (outer lines)
         ulines = list()
@@ -227,6 +209,36 @@ class Windtunnel(object):
 
         return block_tunnel
 
+    def TunnelMeshBack(self, name=''):
+        block_tunnel_back = BlockMesh(name=name)
+
+        # line composed of trailing edge and block_tunnel meshes
+        line = self.block_tunnel.getVLines()[-1]
+        line.reverse()
+        del line[-1]
+        line += self.block_te.getULines()[-1]
+        del line[-1]
+        line += self.block_tunnel.getVLines()[0]
+        block_tunnel_back.addLine(line)
+
+        #
+        p1 = np.array((0.0, 2.0))
+        p4 = np.array((0.0, -2.0))
+        p7 = np.array((5.0, 2.0))
+        p8 = np.array((5.0, -2.0))
+
+        upper = BlockMesh.makeLine(p7, p1, divisions=100, ratio=0.1)
+        lower = BlockMesh.makeLine(p8, p4, divisions=100, ratio=0.1)
+        left = line
+        right = BlockMesh.makeLine(p8, p7, divisions=len(left)-1, ratio=1.0)
+
+        boundary = [upper, lower, right, left]
+        block_tunnel_back.transfinite(boundary=boundary)
+
+        self.block_tunnel_back = block_tunnel_back
+
+        return block_tunnel_back
+
 
 class BlockMesh(object):
 
@@ -279,6 +291,21 @@ class BlockMesh(object):
         uline = self.getULines()[J]
         uline[I] = new_pos
         return
+
+    @staticmethod
+    def makeLine(p1, p2, divisions=1, ratio=1.0):
+        vec = p2 - p1
+        dist = np.linalg.norm(vec)
+        spacing = BlockMesh.spacing(divisions=divisions,
+                                    ratio=ratio, thickness=dist)
+        line = list()
+        line.append((p1.tolist()[0], p1.tolist()[1]))
+        for i in range(1, len(spacing)):
+            p = p1 + spacing[i] * Utils.unit_vector(vec)
+            line.append((p.tolist()[0], p.tolist()[1]))
+        del line[-1]
+        line.append((p2.tolist()[0], p2.tolist()[1]))
+        return line
 
     def extrudeLine(self, line, direction=0, length=0.1, divisions=1,
                     ratio=1.00001, constant=False):
@@ -427,7 +454,7 @@ class BlockMesh(object):
             iend = 0
         return np.array(n)
 
-    def transfinite(self, block=True, boundary=None, ij=[]):
+    def transfinite(self, boundary=[], ij=[]):
         """Make a transfinite interpolation.
 
         http://en.wikipedia.org/wiki/Transfinite_interpolation
@@ -448,22 +475,21 @@ class BlockMesh(object):
 
         self.ULines_Save = copy.deepcopy(self.getULines())
 
-        if block:
-            if ij:
-                lower = self.getULines()[ij[2]][ij[0]:ij[1]+1]
-                upper = self.getULines()[ij[3]][ij[0]:ij[1]+1]
-                left = self.getVLines()[ij[0]][ij[2]:ij[3]+1]
-                right = self.getVLines()[ij[1]][ij[2]:ij[3]+1]
-            else:
-                lower = self.getULines()[0]
-                upper = self.getULines()[-1]
-                left = self.getVLines()[0]
-                right = self.getVLines()[-1]
-        else:
+        if boundary:
             lower = boundary[0]
             upper = boundary[1]
             left = boundary[2]
             right = boundary[3]
+        elif ij:
+            lower = self.getULines()[ij[2]][ij[0]:ij[1]+1]
+            upper = self.getULines()[ij[3]][ij[0]:ij[1]+1]
+            left = self.getVLines()[ij[0]][ij[2]:ij[3]+1]
+            right = self.getVLines()[ij[1]][ij[2]:ij[3]+1]
+        else:
+            lower = self.getULines()[0]
+            upper = self.getULines()[-1]
+            left = self.getVLines()[0]
+            right = self.getVLines()[-1]
 
         # FIXME
         # FIXME left and right need to swapped from input
