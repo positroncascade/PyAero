@@ -106,9 +106,17 @@ class Windtunnel(object):
         for t in np.linspace(0.0, 1.0, 100):
             p = p3 + t * vec
             line.append(p.tolist())
+
         line = np.array(line)
         tck, u = si.splprep(line.T, s=0, k=1)
-        t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
+        qq = 0
+        if qq == 1:
+            t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
+        else:
+            xx = np.linspace(-1.3, 1.3, len(block_tunnel.getULines()[0]))
+            t = np.tanh(xx)
+            t -= np.min(t)
+            t /= np.max(t)
         line = si.splev(t, tck, der=0)
         line = zip(line[0].tolist(), line[1].tolist())
 
@@ -141,42 +149,79 @@ class Windtunnel(object):
         del vline2[-1]
         vline2.append((p4.tolist()[0], p4.tolist()[1]))
 
-        boundary = list()
-        boundary.append(block_tunnel.getULines()[0])
-        boundary.append(block_tunnel.getULines()[-1])
-        boundary.append(vline1)
-        boundary.append(vline2)
+        boundary = [block_tunnel.getULines()[0],
+                    block_tunnel.getULines()[-1],
+                    vline1,
+                    vline2]
         block_tunnel.transfinite(block=False, boundary=boundary)
 
-        # test
-        # test
-        # test
+        # blending between normals (inner lines) and transfinite (outer lines)
         ulines = list()
         old_ulines = block_tunnel.getULines()
+
         for j, uline in enumerate(block_tunnel.getULines()):
+
+            # skip first and last line
             if j == 0 or j == len(block_tunnel.getULines())-1:
                 ulines.append(uline)
                 continue
-            x, y = zip(*uline)
-            x = np.array(x)
-            y = np.array(y)
+
             line = list()
-            normals = BlockMesh.curveNormals(x, y)
+            xo, yo = zip(*old_ulines[0])
+            xo = np.array(xo)
+            yo = np.array(yo)
+            normals = BlockMesh.curveNormals(xo, yo)
+
             for i, point in enumerate(uline):
+
+                # skip first and last point
                 if i == 0 or i == len(uline)-1:
                     line.append(point)
                     continue
+
                 pt = np.array(old_ulines[j][i])
-                dist = pt.dot(normals[j-1])
-                pn = np.array(point) + dist * normals[j-1]
+                pto = np.array(old_ulines[0][i])
+                vec = pt - pto
+                # projection of vec into normal
+                dist = np.dot(vec, normals[i]) / np.linalg.norm(normals[i])
+                pn = pto + dist * normals[i]
                 v = float(j) / float(len(block_tunnel.getULines()))
-                pnew = (1.0-v**2) * pn + v**2 * pt
+                exp = 0.6
+                pnew = (1.0-v**exp) * pn + v**exp * pt
                 line.append((pnew.tolist()[0], pnew.tolist()[1]))
+
             ulines.append(line)
 
         block_tunnel = BlockMesh(name=name)
         for uline in ulines:
             block_tunnel.addLine(uline)
+
+        ij = [0, 15, 0, len(block_tunnel.getULines())-1]
+        block_tunnel.transfinite(ij=ij)
+        ij = [len(block_tunnel.getVLines())-16,
+              len(block_tunnel.getVLines())-1,
+              0,
+              len(block_tunnel.getULines())-1]
+        block_tunnel.transfinite(ij=ij)
+
+        sm = 0
+        if sm == 1:
+            smooth = Smooth(block_tunnel)
+
+            nodes = smooth.selectNodes(domain='interior')
+            block_tunnel = smooth.smooth(nodes, iterations=1,
+                                         algorithm='laplace')
+            ij = [1, 15, 1, len(block_tunnel.getULines())-2]
+            nodes = smooth.selectNodes(domain='ij', ij=ij)
+            block_tunnel = smooth.smooth(nodes, iterations=100,
+                                         algorithm='laplace')
+            ij = [len(block_tunnel.getVLines())-17,
+                  len(block_tunnel.getVLines())-2,
+                  1,
+                  len(block_tunnel.getULines())-2]
+            nodes = smooth.selectNodes(domain='ij', ij=ij)
+            block_tunnel = smooth.smooth(nodes, iterations=100,
+                                         algorithm='laplace')
 
         self.block_tunnel = block_tunnel
 
@@ -291,6 +336,30 @@ class BlockMesh(object):
         line = zip(line[0].tolist(), line[1].tolist())
         self.getULines()[number] = line
 
+    def split(self, line_number, direction='u'):
+
+        dir = {'u': self.getULines(), 'v': self.getVLines()}
+        block_1 = list()
+        block_2 = list()
+
+        for i, line in enumerate(dir[direction]):
+            if i <= line_number:
+                block_1.append(line)
+            elif i >= line_number:
+                block_2.append(line)
+
+        return block_1, block_2
+
+    def connect(self, block_1, block_2, direction='u'):
+
+        del block_2[0]
+        lines = block_1 + block_2
+
+        if direction == 'v':
+            lines = self.makeUfromV(lines)
+
+        self.ULines = lines
+
     @staticmethod
     def spacing(divisions=10, ratio=1.0, thickness=1.0):
         """Calculate point distribution on a line
@@ -358,7 +427,7 @@ class BlockMesh(object):
             iend = 0
         return np.array(n)
 
-    def transfinite(self, block=True, boundary=None):
+    def transfinite(self, block=True, boundary=None, ij=[]):
         """Make a transfinite interpolation.
 
         http://en.wikipedia.org/wiki/Transfinite_interpolation
@@ -377,11 +446,19 @@ class BlockMesh(object):
             lower = [(0.0, 0.0), (0.1, 0.3),  (0.5, 0.4)]
         """
 
+        self.ULines_Save = copy.deepcopy(self.getULines())
+
         if block:
-            lower = self.getULines()[0]
-            upper = self.getULines()[-1]
-            left = self.getVLines()[0]
-            right = self.getVLines()[-1]
+            if ij:
+                lower = self.getULines()[ij[2]][ij[0]:ij[1]+1]
+                upper = self.getULines()[ij[3]][ij[0]:ij[1]+1]
+                left = self.getVLines()[ij[0]][ij[2]:ij[3]+1]
+                right = self.getVLines()[ij[1]][ij[2]:ij[3]+1]
+            else:
+                lower = self.getULines()[0]
+                upper = self.getULines()[-1]
+                left = self.getVLines()[0]
+                right = self.getVLines()[-1]
         else:
             lower = boundary[0]
             upper = boundary[1]
@@ -459,6 +536,19 @@ class BlockMesh(object):
 
         vlines.reverse()
 
+        if ij:
+            ulines = self.makeUfromV(vlines)
+            n = -1
+            for k in range(ij[2], ij[3]+1):
+                n += 1
+                self.ULines[k][ij[0]:ij[1]+1] = ulines[n]
+        else:
+            self.ULines = self.makeUfromV(vlines)
+
+        return
+
+    @staticmethod
+    def makeUfromV(vlines):
         ulines = list()
         uline = list()
         for i in range(len(vlines[0])):
@@ -467,10 +557,7 @@ class BlockMesh(object):
                 uline.append((x, y))
             ulines.append(uline[::-1])
             uline = list()
-
-        self.ULines = ulines
-
-        return nodes
+        return ulines
 
     def getRotationAngle(self, node, n, degree=True):
 
@@ -646,7 +733,7 @@ class Smooth(object):
 
         return self.block
 
-    def selectNodes(self, domain='interior'):
+    def selectNodes(self, domain='interior', ij=[]):
         """Generate a node index list
 
         Args:
@@ -661,8 +748,19 @@ class Smooth(object):
 
         # select all nodes except boundary nodes
         if domain == 'interior':
-            for i in range(1, U):
-                for j in range(1, V):
-                    nodes.append((i, j))
+            istart = 1
+            iend = U
+            jstart = 1
+            jend = V
+
+        if domain == 'ij':
+            istart = ij[0]
+            iend = ij[1]
+            jstart = ij[2]
+            jend = ij[3]
+
+        for i in range(istart, iend):
+            for j in range(jstart, jend):
+                nodes.append((i, j))
 
         return nodes
