@@ -4,13 +4,15 @@
 
 .. important::
    VERSION 1.0 is released.
-   Meshes in AVL-FIRE and SU2 format can be generated now.
-   The documentation needs to be updated.
+   Meshes in AVL-FIRE, SU2, and GMESH formats can be generated now.
 
 .. important::
    At the moment 4 mesh blocks and associated files are generated.
    These need to be connected first, to be able to get the full mesh.
    An update shall come soon.
+
+.. important::
+   Meshes are not yet visualized in PyAero. Coming soon.
 
 ********************
 PyAero documentation
@@ -36,16 +38,34 @@ PyAero is open-source and distributed under the MIT license, see `LICENSE <licen
 Features
 ========
 
- - Load and display airfoil contour files (different formats are recognized)
- - Airfoil contour analysis, refining and splining
- - Trailing edge generation including smart blending functions
- - Automatic generation of block-strcuctured meshes for airfoils (C-type)
- - Mesh control (specifically in the boundary layer region) and smoothing
- - Automatic definition of boundary faces
- - Mesh export (AVL FIRE .flma, SU2 .su2)
+ - Load and display airfoil contour files
+ - Airfoil splining and refining
+   - Prepare contour for meshing
+   - Splining is done to get a smooth contour and sufficient contour points
+   - Refining allows to improve leading and trailing edge resolution
+ - Airfoil contour analysis
+   - Analyze gradient, curvature, and curvature circle at the leading edge
+ - Trailing edge generation
+   - Specification of the trailing edge thickness
+   - Smart blending functions (arbitrary polynomial)
+   - Independent blending for upper and lower contour (e.g. for strong cambered airfoils)
+ - Automatic generation of block-strcuctured meshes for airfoils
+   - Currently only single element C-type meshes are supported
+ - Mesh control
+   - Boundary layer region
+   - Wake region
+   - Windtunnel
+ - Mesh export
+   - `AVL FIRE <http://www.avl.com/fire-m>`_, format specification *.flma
+   - `SU2 <http://su2.stanford.edu/>`_, format specification *.su2
+   - `GMESH <http://gmsh.info>`_, format specification *.msh
  - Simple aerodynamic analysis, i.e. panel methods
- - Advanced aerodynamic analysis, i.e. linking to open source CFD software
- - More to come :)
+   - Aeropython 
+
+
+Quickstart (for the impatient)
+==============================
+
 
 Code repository
 ===============
