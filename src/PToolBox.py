@@ -453,6 +453,7 @@ class Toolbox(object):
         self.tb4 = self.toolBox.addItem(self.item_msh, 'Meshing')
         self.tb5 = self.toolBox.addItem(self.item_ap, 'Aerodynamics')
         self.tb3 = self.toolBox.addItem(self.item_ca, 'Contour Analysis')
+        self.toolBox.setItemEnabled(self.tb3, False)
         self.tb6 = self.toolBox.addItem(self.item_vo, 'Viewing options')
 
         self.toolBox.setItemToolTip(0, 'Airfoil database ' +
@@ -574,6 +575,7 @@ class Toolbox(object):
                 break
 
         tunnel = PMeshing.Windtunnel()
+
         self.block_airfoil = \
             tunnel.AirfoilMesh(name='block_airfoil',
                                contour=contour,
@@ -589,7 +591,7 @@ class Toolbox(object):
                                     ratio=self.ratio_te.value())
 
         self.block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
-        self.block_tunnel_back = tunnel.TunnelMeshBack(name='block_tunnel_back')
+        self.block_tunnel_1 = tunnel.TunnelMeshBack(name='block_tunnel_back')
 
     @QtCore.pyqtSlot()
     def exportMesh(self):
@@ -603,13 +605,13 @@ class Toolbox(object):
             self.block_airfoil.writeFLMA(airfoil=name, depth=0.2)
             self.block_te.writeFLMA(airfoil=name, depth=0.2)
             self.block_tunnel.writeFLMA(airfoil=name, depth=0.2)
-            self.block_tunnel_back.writeFLMA(airfoil=name, depth=0.2)
+            self.block_tunnel_1.writeFLMA(airfoil=name, depth=0.2)
 
         if self.check_SU2.isChecked():
             self.block_airfoil.writeSU2(airfoil=name)
             self.block_te.writeSU2(airfoil=name)
             self.block_tunnel.writeSU2(airfoil=name)
-            self.block_tunnel_back.writeSU2(airfoil=name)
+            self.block_tunnel_1.writeSU2(airfoil=name)
 
         if self.check_SU2.isChecked():
             pass
