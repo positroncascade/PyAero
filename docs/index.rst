@@ -76,7 +76,8 @@ Features
 
 Quickstart (for the impatient)
 ==============================
-Goto chapter :ref:`quickstart`.
+
+Follow `THIS <https://www.youtube.com/watch?v=YHSXszaFTiM&t=6s>`_ YouTube video to get the minimum necessary introduction to `PyAero <index.html>`_.
 
 Code repository
 ===============
