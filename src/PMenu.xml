@@ -17,13 +17,6 @@
         <Submenu name='Undo' tip='Undo last action' short='CTRL+z' icon='Undo.png' handler='onUndo'></Submenu>
         <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
     </Menubar>
-    <Menubar name='Airfoil'>
-        <Submenu name='Undo' tip='Undo last action' short='CTRL+z' icon='Undo.png' handler='onUndo'></Submenu>
-        <Submenu name='Redo' tip='Redo last action' short='CTRL+y' icon='Redo.png' handler='onRedo'></Submenu>
-    </Menubar>
-    <Menubar name='Meshing'>
-        <Submenu name='Make Mesh' tip='Create a block-structured mesh' short='CTRL+m' icon='mesh.png' handler='onBlockMesh'></Submenu>
-    </Menubar>
     <Menubar name='View'>
         <Submenu name='Fit airfoil in view' tip='Set view to selected airfoil' short='CTRL+f' icon='' handler='fitAirfoilInView'></Submenu>
         <Submenu name='Fit all in view' tip='Set view to all items visible' short='CTRL+SHIFT+f' icon='' handler='onViewAll'></Submenu>
@@ -34,13 +27,9 @@
         <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
         <Submenu name='Settings' tip='Customize PyAero' short='CTRL+e' icon='Settings.png' handler='onCalculator'></Submenu>
     </Menubar>
-    <Menubar name='Test objects'>
-        <Submenu name='Toggle test objects' tip='Start the internal calculator' short='CTRL+t' icon='Full basket.png' handler='toggleTestObjects'></Submenu>
-        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
-        <Submenu name='Donnerwetter' tip='Donnerwetter' short='CTRL+e' icon='Settings.png' handler='onCalculator'></Submenu>
-    </Menubar>
     <Menubar name='Help'>
-        <Submenu name='Manual' tip='Open PyAero manual' short='CTRL+h' icon='Help book.png' handler='onHelp'></Submenu>
+        <Submenu name='Manual (PDF)' tip='Open PyAero manual' short='CTRL+h' icon='Help book.png' handler='onHelp'></Submenu>
+        <Submenu name='Manual (online)' tip='Open PyAero online documentation' short='CTRL+SHIFT+h' icon='Help book.png' handler='onHelpOnline'></Submenu>
         <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
         <Submenu name='About Qt' tip='Show the Qt librarys about box' short='' icon='' handler='QtGui.qApp.aboutQt'></Submenu>
         <Submenu name='About PyAero' tip='Information about the PyAero and its licensing' short='' icon='About.png' handler='onAbout'></Submenu>
