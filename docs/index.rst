@@ -40,26 +40,39 @@ Features
 
  - Load and display airfoil contour files
  - Airfoil splining and refining
+ 
    - Prepare contour for meshing
    - Splining is done to get a smooth contour and sufficient contour points
    - Refining allows to improve leading and trailing edge resolution
+ 
  - Airfoil contour analysis
+ 
    - Analyze gradient, curvature, and curvature circle at the leading edge
+ 
  - Trailing edge generation
+ 
    - Specification of the trailing edge thickness
    - Smart blending functions (arbitrary polynomial)
    - Independent blending for upper and lower contour (e.g. for strong cambered airfoils)
+ 
  - Automatic generation of block-strcuctured meshes for airfoils
+ 
    - Currently only single element C-type meshes are supported
+ 
  - Mesh control
+ 
    - Boundary layer region
    - Wake region
    - Windtunnel
+ 
  - Mesh export
+ 
    - `AVL FIRE <http://www.avl.com/fire-m>`_, format specification *.flma
    - `SU2 <http://su2.stanford.edu/>`_, format specification *.su2
    - `GMESH <http://gmsh.info>`_, format specification *.msh
+ 
  - Simple aerodynamic analysis, i.e. panel methods
+ 
    - Aeropython 
 
 
