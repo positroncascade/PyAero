@@ -32,12 +32,21 @@ class Toolbox(object):
         style = (""" QToolBox::tab:selected {font: bold; } """)
         self.toolBox.setStyleSheet(style)
 
-        # ******************************************
-        # toolbox item1 --> treeview in PFileSystem
-        # ******************************************
-        item1 = QtGui.QWidget()
+        # create toolbox items
+        self.itemFileSystem()
+        self.itemAeropython()
+        self.itemContourAnalysis()
+        self.itemContourModification()
+        self.itemMeshing()
+        self.itemViewingOptions()
+
+        self.makeToolbox()
+
+    def itemFileSystem(self):
+
+        self.item_fs = QtGui.QWidget()
         layout = QtGui.QVBoxLayout()
-        item1.setLayout(layout)
+        self.item_fs.setLayout(layout)
 
         # instance of QFileSystemModel (needs to have a proper parent)
         filesystem = PFileSystem.FileSystem(self.parent)
@@ -62,9 +71,8 @@ class Toolbox(object):
         layout.addWidget(self.listwidget, stretch=5)
         layout.addStretch(stretch=1)
 
-        # ******************************************
-        # toolbox item2 --> Aeropython settings
-        # ******************************************
+    def itemAeropython(self):
+
         form = QtGui.QFormLayout()
 
         label1 = QtGui.QLabel(u'Angle of attack (°)')
@@ -92,14 +100,13 @@ class Toolbox(object):
         runbtn = QtGui.QPushButton('Calculate lift coefficient')
         form.addRow(runbtn)
 
-        item2 = QtGui.QGroupBox('AeroPython Panel Method')
-        item2.setLayout(form)
+        self.item_ap = QtGui.QGroupBox('AeroPython Panel Method')
+        self.item_ap.setLayout(form)
 
         runbtn.clicked.connect(self.runPanelMethod)
 
-        # ******************************************
-        # toolbox item3 --> contour analysis
-        # ******************************************
+    def itemContourAnalysis(self):
+
         box = QtGui.QVBoxLayout()
 
         hlayout = QtGui.QHBoxLayout()
@@ -131,14 +138,13 @@ class Toolbox(object):
 
         box.addStretch(1)
 
-        item3 = QtGui.QWidget()
-        item3.setLayout(box)
+        self.item_ca = QtGui.QWidget()
+        self.item_ca.setLayout(box)
 
         button1.clicked.connect(self.analyzeAirfoil)
 
-        # ******************************************
-        # toolbox item4 --> Meshing
-        # ******************************************
+    def itemMeshing(self):
+
         form = QtGui.QFormLayout()
 
         label = QtGui.QLabel(u'Gridpoints along airfoil')
@@ -221,22 +227,67 @@ class Toolbox(object):
         box = QtGui.QGroupBox('Airfoil contour meshing')
         box.setLayout(vbox)
 
+        # export menu
+        name = ''
+        hbox = QtGui.QHBoxLayout()
+        lbl = QtGui.QLabel('Filename')
+        self.lineedit = QtGui.QLineEdit(name)
+        btn = QtGui.QPushButton('Browse')
+        hbox.addWidget(lbl)
+        hbox.addWidget(self.lineedit)
+        hbox.addWidget(btn)
+
+        button1 = QtGui.QPushButton('Export Mesh')
+        hbl = QtGui.QHBoxLayout()
+        hbl.addStretch(stretch=1)
+        hbl.addWidget(button1, stretch=4)
+        hbl.addStretch(stretch=1)
+
+        rdl = QtGui.QHBoxLayout()
+        btn_group = QtGui.QButtonGroup()
+        self.check_FIRE = QtGui.QCheckBox('AVL FIRE')
+        self.check_SU2 = QtGui.QCheckBox('SU2')
+        self.check_GMSH = QtGui.QCheckBox('GMSH')
+        btn_group.addButton(self.check_FIRE)
+        btn_group.addButton(self.check_SU2)
+        self.check_FIRE.setChecked(True)
+        self.check_SU2.setChecked(False)
+        self.check_GMSH.setChecked(False)
+        self.check_GMSH.setEnabled(False)
+        rdl.addStretch(5)
+        rdl.addWidget(self.check_FIRE)
+        rdl.addStretch(1)
+        rdl.addWidget(self.check_SU2)
+        rdl.addStretch(1)
+        rdl.addWidget(self.check_GMSH)
+        rdl.addStretch(5)
+
+        vbl1 = QtGui.QVBoxLayout()
+        vbl1.addLayout(rdl)
+        vbl1.addLayout(hbox)
+        vbl1.addLayout(hbl)
+
+        box2 = QtGui.QGroupBox('Mesh Export')
+        box2.setLayout(vbl1)
+
         vbl = QtGui.QVBoxLayout()
         vbl.addStretch(1)
         vbl.addWidget(box)
-        vbl.addStretch(15)
+        vbl.addStretch(1)
+        vbl.addWidget(box2)
+        vbl.addStretch(10)
 
-        item4 = QtGui.QWidget()
-        item4.setLayout(vbl)
+        self.item_msh = QtGui.QWidget()
+        self.item_msh.setLayout(vbl)
 
         button.clicked.connect(self.makeMesh)
+        button1.clicked.connect(self.exportMesh)
 
-        # ******************************************
-        # toolbox item5 --> viewing options (checkboxes)
-        # ******************************************
-        item5 = QtGui.QWidget()
+    def itemViewingOptions(self):
+
+        self.item_vo = QtGui.QWidget()
         layout = QtGui.QVBoxLayout()
-        item5.setLayout(layout)
+        self.item_vo.setLayout(layout)
         self.cb1 = QtGui.QCheckBox('Message window')
         self.cb1.setChecked(True)
         self.cb2 = QtGui.QCheckBox('Airfoil points')
@@ -257,9 +308,8 @@ class Toolbox(object):
         self.cb3.clicked.connect(self.toggleSpline)
         self.cb4.clicked.connect(self.toggleChord)
 
-        # ******************************************
-        # toolbox item6 --> contour modification
-        # ******************************************
+    def itemContourModification(self):
+
         form = QtGui.QFormLayout()
 
         label = QtGui.QLabel(u'Refinement tolerance (°)')
@@ -385,8 +435,8 @@ class Toolbox(object):
         vbl.addWidget(box2)
         vbl.addStretch(10)
 
-        item6 = QtGui.QWidget()
-        item6.setLayout(vbl)
+        self.item_cm = QtGui.QWidget()
+        self.item_cm.setLayout(vbl)
 
         button.clicked.connect(self.spline_and_refine)
         button1.clicked.connect(self.makeTrailingEdge)
@@ -394,26 +444,16 @@ class Toolbox(object):
         button1.clicked.connect(self.updatename)
         btn.clicked.connect(self.onBrowse)
 
-        # ******************************************
-        # toolbox item7 --> Bokeh test
-        # ******************************************
-        # layout = QtGui.QBoxLayout()
-        # layout.addWidget(webview)
-        # item7 = QtGui.QWidget()
-        # item7.setLayout(layout)
-
-        # ******************************************
-        # End of toolbox items
-        # ******************************************
+    def makeToolbox(self):
 
         # populate toolbox
-        self.tb1 = self.toolBox.addItem(item1, 'Airfoil Database')
-        self.tb2 = self.toolBox.addItem(item6,
+        self.tb1 = self.toolBox.addItem(self.item_fs, 'Airfoil Database')
+        self.tb2 = self.toolBox.addItem(self.item_cm,
                                         'Contour Splining and Refinement')
-        self.tb4 = self.toolBox.addItem(item4, 'Meshing')
-        self.tb5 = self.toolBox.addItem(item2, 'Aerodynamics')
-        self.tb3 = self.toolBox.addItem(item3, 'Contour Analysis')
-        self.tb6 = self.toolBox.addItem(item5, 'Viewing options')
+        self.tb4 = self.toolBox.addItem(self.item_msh, 'Meshing')
+        self.tb5 = self.toolBox.addItem(self.item_ap, 'Aerodynamics')
+        self.tb3 = self.toolBox.addItem(self.item_ca, 'Contour Analysis')
+        self.tb6 = self.toolBox.addItem(self.item_vo, 'Viewing options')
 
         self.toolBox.setItemToolTip(0, 'Airfoil database ' +
                                        '(browse filesystem)')
@@ -531,31 +571,48 @@ class Toolbox(object):
         for airfoil in self.parent.airfoils:
             if airfoil.contour_item.isSelected():
                 contour = airfoil.spline_data[0]
-                name = airfoil.name
                 break
 
         tunnel = PMeshing.Windtunnel()
-        block_airfoil = \
+        self.block_airfoil = \
             tunnel.AirfoilMesh(name='block_airfoil',
                                contour=contour,
                                divisions=self.points_n.value(),
                                ratio=self.ratio.value(),
                                thickness=self.normal_thickness.value()/100.0)
 
-        block_te = \
+        self.block_te = \
             tunnel.TrailingEdgeMesh(name='block_TE',
                                     te_divisions=self.te_div.value(),
                                     length=self.length_te.value()/100.0,
                                     divisions=self.points_te.value(),
                                     ratio=self.ratio_te.value())
 
-        block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
-        block_tunnel_back = tunnel.TunnelMeshBack(name='block_tunnel_back')
+        self.block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
+        self.block_tunnel_back = tunnel.TunnelMeshBack(name='block_tunnel_back')
 
-        block_airfoil.writeFLMA(airfoil=name, depth=0.2)
-        block_te.writeFLMA(airfoil=name, depth=0.2)
-        block_tunnel.writeFLMA(airfoil=name, depth=0.2)
-        block_tunnel_back.writeFLMA(airfoil=name, depth=0.2)
+    @QtCore.pyqtSlot()
+    def exportMesh(self):
+
+        for airfoil in self.parent.airfoils:
+            if airfoil.contour_item.isSelected():
+                name = airfoil.name
+                break
+
+        if self.check_FIRE.isChecked():
+            self.block_airfoil.writeFLMA(airfoil=name, depth=0.2)
+            self.block_te.writeFLMA(airfoil=name, depth=0.2)
+            self.block_tunnel.writeFLMA(airfoil=name, depth=0.2)
+            self.block_tunnel_back.writeFLMA(airfoil=name, depth=0.2)
+
+        if self.check_SU2.isChecked():
+            self.block_airfoil.writeSU2(airfoil=name)
+            self.block_te.writeSU2(airfoil=name)
+            self.block_tunnel.writeSU2(airfoil=name)
+            self.block_tunnel_back.writeSU2(airfoil=name)
+
+        if self.check_SU2.isChecked():
+            pass
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):

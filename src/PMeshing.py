@@ -4,6 +4,7 @@ import copy
 import numpy as np
 import scipy.interpolate as si
 
+import PyAero
 from PUtils import Utils as Utils
 from PSettings import OUTPUTDATA
 import PLogger as logger
@@ -686,11 +687,62 @@ class BlockMesh(object):
         filename = nameroot + '_' + self.name + '.su2'
         fullname = folder + filename
 
-        logger.log.info('Mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#FFAA0F', filename))
+        U, V = self.getDivUV()
+
+        # element type is quadrilateral
+        el_type = '9'
 
         with open(fullname, 'w') as f:
-            f.write('Try to make SU2')
+            f.write('%\n')
+            f.write('% Airfoil contour: ' + nameroot + ' \n')
+            f.write('%\n')
+            f.write('% File created with ' + PyAero.__appname__ + '.\n')
+            f.write('% Version: ' + PyAero.__version__ + '\n')
+            f.write('% Author: ' + PyAero.__author__ + '\n')
+            f.write('%\n')
+            # dimension of the problem
+            f.write('% Problem dimension\n')
+            f.write('%\n')
+            # number of interior elements
+            f.write('NDIME= 2\n')
+            f.write('%\n')
+            # element connectivity
+            f.write('% Inner element connectivity\n')
+            f.write('%\n')
+            # number of elements
+            f.write('NELEM= %s\n' % (U*V))
+
+            up = U + 1
+            vp = V + 1
+            k = -1
+            for i in range(U):
+                for j in range(V):
+                    # vertex number
+                    k += 1
+
+                    p1 = j * up + i
+                    p2 = p1 + 1
+                    p4 = p1 + up
+                    p3 = p4 + 1
+
+                    connectivity = el_type + ' ' + str(p1) + ' ' + str(p2) + \
+                        ' ' + str(p3) + ' ' + str(p4) + str(k) + '\n'
+
+                    f.write(connectivity)
+
+            # number of coordinates
+            f.write('NPOIN=%s\n' % (up*vp))
+
+            # x- and y-coordinates
+            node = -1
+            for uline in self.getULines():
+                for i in range(len(uline))[::-1]:
+                    node += 1
+                    x, y = uline[i][0], uline[i][1]
+                    f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
+
+        logger.log.info('Mesh <b><font color=%s> %s</b> saved to output folder'
+                        % ('#CC33FF', filename))
 
 
 class Smooth(object):
