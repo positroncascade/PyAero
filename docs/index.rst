@@ -76,7 +76,7 @@ Features
 
 Quickstart (for the impatient)
 ==============================
-
+:doc:`tutorial_quickstart.inc`
 
 Code repository
 ===============
