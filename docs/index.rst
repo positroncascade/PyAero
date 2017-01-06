@@ -9,10 +9,8 @@
 .. important::
    At the moment 4 mesh blocks and associated files are generated.
    These need to be connected first, to be able to get the full mesh.
-   An update shall come soon.
-
-.. important::
-   Meshes are not yet visualized in PyAero. Coming soon.
+   Meshes are not yet visualized in PyAero.
+   Coming soon.
 
 ********************
 PyAero documentation
