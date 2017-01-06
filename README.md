@@ -1,7 +1,6 @@
 ```diff
-+ FIRST RELEASE EXPECTED END OF DECEMBER 2016.
-+ The user interface is ready. Usability is satisfactory for me.
-- The meshing kernel is ready but not yet implemented in the GUI.
++ RELEASE 1.0 IS READY.
++ MESHES CAN BE GENERATED
 ```
 
 # PyAero
@@ -38,6 +37,10 @@ The [PyAero documentation](http://pyaero.readthedocs.io/en/latest) is hosted at 
 It is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
 
 ## Release History
+
+* 1.0
+    * Meshes can be generated now.
+    * Export available in AVL-FIRE format and SU2 format
 
 * 0.9
     * GUI is almost ready, at least ready to be able to do meaningful work
