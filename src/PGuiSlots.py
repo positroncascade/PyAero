@@ -1,5 +1,6 @@
 import sys
 import copy
+import webbrowser
 
 from PyQt4 import QtGui, QtCore
 
@@ -336,6 +337,10 @@ class Slots(object):
     @QtCore.pyqtSlot()
     def onHelp(self):
         pass
+
+    @QtCore.pyqtSlot()
+    def onHelpOnline(self):
+        webbrowser.open('http://pyaero.readthedocs.io/en/latest/')
 
     @QtCore.pyqtSlot()
     def onAbout(self):
