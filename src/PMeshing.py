@@ -620,7 +620,7 @@ class BlockMesh(object):
         filename = nameroot + '_' + self.name + '.flma'
         fullname = folder + filename
 
-        logger.log.info('Mesh <b><font color=%s> %s</b> saved to output folder'
+        logger.log.info('FIRE mesh <b><font color=%s> %s</b> saved to output folder'
                         % ('#099a53', filename))
 
         U, V = self.getDivUV()
@@ -688,8 +688,10 @@ class BlockMesh(object):
         fullname = folder + filename
 
         U, V = self.getDivUV()
+        up = U + 1
+        vp = V + 1
 
-        # element type is quadrilateral
+        # element type is SU2 quadrilateral
         el_type = '9'
 
         with open(fullname, 'w') as f:
@@ -711,9 +713,6 @@ class BlockMesh(object):
             f.write('%\n')
             # number of elements
             f.write('NELEM= %s\n' % (U*V))
-
-            up = U + 1
-            vp = V + 1
             k = -1
             for i in range(U):
                 for j in range(V):
@@ -730,7 +729,7 @@ class BlockMesh(object):
 
                     f.write(connectivity)
 
-            # number of coordinates
+            # number of vertices
             f.write('NPOIN=%s\n' % (up*vp))
 
             # x- and y-coordinates
@@ -741,8 +740,73 @@ class BlockMesh(object):
                     x, y = uline[i][0], uline[i][1]
                     f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
 
-        logger.log.info('Mesh <b><font color=%s> %s</b> saved to output folder'
+        logger.log.info('SU2 mesh <b><font color=%s> %s</b> saved to output folder'
                         % ('#CC33FF', filename))
+
+    def writeGMESH(self, airfoil=''):
+
+        folder = OUTPUTDATA + '/'
+        nameroot, extension = os.path.splitext(str(airfoil))
+        filename = nameroot + '_' + self.name + '.su2'
+        fullname = folder + filename
+
+        U, V = self.getDivUV()
+        up = U + 1
+        vp = V + 1
+
+        # element type is GMESH quadrilateral
+        el_type = '3'
+
+        with open(fullname, 'w') as f:
+
+            f.write('$Information')
+            f.write(' Airfoil contour: ' + nameroot + ' \n')
+            f.write('\n')
+            f.write(' File created with ' + PyAero.__appname__ + '.\n')
+            f.write(' Version: ' + PyAero.__version__ + '\n')
+            f.write(' Author: ' + PyAero.__author__ + '\n')
+            f.write('\n')
+            f.write('$EndInformation')
+
+            f.write(2*'\n')
+
+            f.write('$MeshFormat')
+            f.write('2.2 0 8')
+            f.write('$EndMeshFormat')
+
+            f.write('$Nodes')
+            f.write('%s' % (up*vp))
+            # x- and y-coordinates
+            node = 0
+            for uline in self.getULines():
+                for i in range(len(uline))[::-1]:
+                    node += 1
+                    x, y = uline[i][0], uline[i][1]
+                    f.write(' {:} {:24.16e} {:24.16e} 0.0\n'.format(node, x, y))
+            f.write('$EndNodes')
+
+            f.write('$Elements')
+            f.write('%s' % (U*V))
+            k = 0
+            for i in range(U):
+                for j in range(V):
+                    # vertex number
+                    k += 1
+
+                    p1 = j * up + i
+                    p2 = p1 + 1
+                    p4 = p1 + up
+                    p3 = p4 + 1
+
+                    connectivity = ' ' + str(k) + ' ' + el_type + ' ' + \
+                        str(p1) + ' ' + str(p2) + ' ' + str(p3) + ' ' + \
+                        str(p4) + '\n'
+
+                    f.write(connectivity)
+            f.write('$EndElements')
+
+        logger.log.info('GMESH mesh <b><font color=%s> %s</b> saved to output folder'
+                        % ('#01FF15', filename))
 
 
 class Smooth(object):

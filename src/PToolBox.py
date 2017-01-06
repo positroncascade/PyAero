@@ -247,19 +247,18 @@ class Toolbox(object):
         btn_group = QtGui.QButtonGroup()
         self.check_FIRE = QtGui.QCheckBox('AVL FIRE')
         self.check_SU2 = QtGui.QCheckBox('SU2')
-        self.check_GMSH = QtGui.QCheckBox('GMSH')
+        self.check_GMESH = QtGui.QCheckBox('GMESH')
         btn_group.addButton(self.check_FIRE)
         btn_group.addButton(self.check_SU2)
         self.check_FIRE.setChecked(True)
         self.check_SU2.setChecked(False)
-        self.check_GMSH.setChecked(False)
-        self.check_GMSH.setEnabled(False)
+        self.check_GMESH.setChecked(False)
         rdl.addStretch(5)
         rdl.addWidget(self.check_FIRE)
         rdl.addStretch(1)
         rdl.addWidget(self.check_SU2)
         rdl.addStretch(1)
-        rdl.addWidget(self.check_GMSH)
+        rdl.addWidget(self.check_GMESH)
         rdl.addStretch(5)
 
         vbl1 = QtGui.QVBoxLayout()
@@ -613,8 +612,11 @@ class Toolbox(object):
             self.block_tunnel.writeSU2(airfoil=name)
             self.block_tunnel_1.writeSU2(airfoil=name)
 
-        if self.check_SU2.isChecked():
-            pass
+        if self.check_GMESH.isChecked():
+            self.block_airfoil.writeGMESH(airfoil=name)
+            self.block_te.writeGMESH(airfoil=name)
+            self.block_tunnel.writeGMESH(airfoil=name)
+            self.block_tunnel_1.writeGMESH(airfoil=name)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
