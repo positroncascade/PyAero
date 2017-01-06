@@ -3,10 +3,14 @@
    <br />
 
 .. important::
-   The code is currently under heavy development. It is not usable yet.
-   Code will be productive with version 1.0.
-   This is expected end of December 2016.
+   VERSION 1.0 is released.
+   Meshes in AVL-FIRE and SU2 format can be generated now.
+   The documentation needs to be updated.
 
+.. important::
+   At the moment 4 mesh blocks and associated files are generated.
+   These need to be connected first, to be able to get the full mesh.
+   An update shall come soon.
 
 ********************
 PyAero documentation
