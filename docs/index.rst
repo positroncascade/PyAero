@@ -65,13 +65,13 @@ Features
  
  - Mesh export
  
-   - `AVL FIRE <http://www.avl.com/fire-m>`_, format specification *.flma
-   - `SU2 <http://su2.stanford.edu/>`_, format specification *.su2
-   - `GMESH <http://gmsh.info>`_, format specification *.msh
+   - `AVL FIRE <http://www.avl.com/fire-m>`_ (*.flma)
+   - `SU2 <http://su2.stanford.edu/>`_ (*.su2)
+   - `GMESH <http://gmsh.info>`_ (*.msh)
  
  - Simple aerodynamic analysis, i.e. panel methods
  
-   - Aeropython 
+   - `AeroPython <http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb>`_
 
 
 Quickstart (for the impatient)
