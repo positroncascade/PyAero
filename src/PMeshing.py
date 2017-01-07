@@ -15,6 +15,8 @@ class Windtunnel(object):
     def __init__(self):
         super(Windtunnel, self).__init__()
 
+        self.blocks = []
+
     def AirfoilMesh(self, name='', contour=None, divisions=15, ratio=3.0,
                     thickness=0.04):
 
@@ -32,8 +34,7 @@ class Windtunnel(object):
                                   divisions=divisions, ratio=ratio)
 
         self.block_airfoil = block_airfoil
-
-        return block_airfoil
+        self.blocks.append(block_airfoil)
 
     def TrailingEdgeMesh(self, name='', te_divisions=3,
                          length=0.04, divisions=6, ratio=3.0):
@@ -66,8 +67,7 @@ class Windtunnel(object):
         block_te.transfinite()
 
         self.block_te = block_te
-
-        return block_te
+        self.blocks.append(block_te)
 
     def TunnelMesh(self, name=''):
         block_tunnel = BlockMesh(name=name)
@@ -114,10 +114,8 @@ class Windtunnel(object):
         if qq == 1:
             t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
         else:
-            xx = np.linspace(-1.4, 1.4, len(block_tunnel.getULines()[0]))
-            t = np.tanh(xx)
-            t -= np.min(t)
-            t /= np.max(t)
+            xx = np.linspace(-3.0, 3.0, len(block_tunnel.getULines()[0]))
+            t = (np.tanh(xx) + 1.0) / 2.0
         line = si.splev(t, tck, der=0)
         line = zip(line[0].tolist(), line[1].tolist())
 
@@ -196,19 +194,18 @@ class Windtunnel(object):
                                          algorithm='laplace')
             ij = [1, 25, 1, len(block_tunnel.getULines())-2]
             nodes = smooth.selectNodes(domain='ij', ij=ij)
-            block_tunnel = smooth.smooth(nodes, iterations=2,
+            block_tunnel = smooth.smooth(nodes, iterations=3,
                                          algorithm='laplace')
             ij = [len(block_tunnel.getVLines())-27,
                   len(block_tunnel.getVLines())-2,
                   1,
                   len(block_tunnel.getULines())-2]
             nodes = smooth.selectNodes(domain='ij', ij=ij)
-            block_tunnel = smooth.smooth(nodes, iterations=2,
+            block_tunnel = smooth.smooth(nodes, iterations=3,
                                          algorithm='laplace')
 
         self.block_tunnel = block_tunnel
-
-        return block_tunnel
+        self.blocks.append(block_tunnel)
 
     def TunnelMeshBack(self, name=''):
         block_tunnel_back = BlockMesh(name=name)
@@ -240,10 +237,11 @@ class Windtunnel(object):
 
         smooth = Smooth(block_tunnel_back)
         nodes = smooth.selectNodes(domain='interior')
-        block_tunnel_back = smooth.smooth(nodes, iterations=1,
+        block_tunnel_back = smooth.smooth(nodes, iterations=3,
                                           algorithm='laplace')
 
-        return block_tunnel_back
+        self.block_tunnel_back = block_tunnel_back
+        self.blocks.append(block_tunnel_back)
 
 
 class BlockMesh(object):

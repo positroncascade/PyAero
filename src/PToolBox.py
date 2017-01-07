@@ -196,7 +196,7 @@ class Toolbox(object):
         self.points_te.setValue(6)
         form.addRow(label, self.points_te)
 
-        label = QtGui.QLabel('Length behing trailing edge (%)')
+        label = QtGui.QLabel('Length behind trailing edge (%)')
         label.setToolTip('The length is specified wrt to the unit chord')
         self.length_te = QtGui.QDoubleSpinBox()
         self.length_te.setSingleStep(0.1)
@@ -233,10 +233,10 @@ class Toolbox(object):
         name = ''
         hbox = QtGui.QHBoxLayout()
         lbl = QtGui.QLabel('Filename')
-        self.lineedit = QtGui.QLineEdit(name)
+        self.lineedit_mesh = QtGui.QLineEdit(name)
         btn = QtGui.QPushButton('Browse')
         hbox.addWidget(lbl)
-        hbox.addWidget(self.lineedit)
+        hbox.addWidget(self.lineedit_mesh)
         hbox.addWidget(btn)
 
         button1 = QtGui.QPushButton('Export Mesh')
@@ -349,7 +349,7 @@ class Toolbox(object):
 
         label = QtGui.QLabel('Number points on spline (-)')
         self.points = QtGui.QSpinBox()
-        self.ref_te.setSingleStep(10)
+        self.points.setSingleStep(10)
         self.points.setRange(50, 500)
         self.points.setValue(150)
         form.addRow(label, self.points)
@@ -587,35 +587,35 @@ class Toolbox(object):
                 contour = airfoil.spline_data[0]
                 break
 
-        tunnel = PMeshing.Windtunnel()
+        self.tunnel = PMeshing.Windtunnel()
 
-        self.block_airfoil = \
-            tunnel.AirfoilMesh(name='block_airfoil',
-                               contour=contour,
-                               divisions=self.points_n.value(),
-                               ratio=self.ratio.value(),
-                               thickness=self.normal_thickness.value()/100.0)
+        self.tunnel.AirfoilMesh(name='block_airfoil',
+                                contour=contour,
+                                divisions=self.points_n.value(),
+                                ratio=self.ratio.value(),
+                                thickness=self.normal_thickness.value()/100.0)
 
-        self.block_te = \
-            tunnel.TrailingEdgeMesh(name='block_TE',
-                                    te_divisions=self.te_div.value(),
-                                    length=self.length_te.value()/100.0,
-                                    divisions=self.points_te.value(),
-                                    ratio=self.ratio_te.value())
+        self.tunnel.TrailingEdgeMesh(name='block_TE',
+                                     te_divisions=self.te_div.value(),
+                                     length=self.length_te.value()/100.0,
+                                     divisions=self.points_te.value(),
+                                     ratio=self.ratio_te.value())
 
-        self.block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
-        self.block_tunnel_1 = tunnel.TunnelMeshBack(name='block_tunnel_back')
-
-        self.blocks = [self.block_airfoil, self.block_te,
-                       self.block_tunnel, self.block_tunnel_1]
+        self.tunnel.TunnelMesh(name='block_tunnel')
+        self.tunnel.TunnelMeshBack(name='block_tunnel_back')
 
         self.drawMesh(airfoil)
 
     def drawMesh(self, airfoil):
+
+        # delete old mesh if existing
+        if hasattr(airfoil, 'mesh'):
+            self.mainwindow.scene.removeItem(airfoil.mesh)
+
         airfoil.mesh = QtGui.QGraphicsItemGroup(parent=airfoil.contour_item,
                                                 scene=self.parent.scene)
 
-        for block in self.blocks:
+        for block in self.tunnel.blocks:
             for lines in [block.getULines(),
                           block.getVLines()]:
                 for line in lines:
@@ -627,7 +627,7 @@ class Toolbox(object):
                     contour.Polyline(QtGui.QPolygonF(points), '')
                     # set its properties
                     contour.pen.setColor(QtGui.QColor(0, 0, 0, 255))
-                    contour.pen.setWidth(0.01)
+                    contour.pen.setWidth(0.8)
                     contour.pen.setCosmetic(True)
                     contour.brush.setStyle(QtCore.Qt.NoBrush)
 
