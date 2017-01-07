@@ -61,7 +61,11 @@ class SplineRefine(object):
                 airfoil.contourspline_item.brush.setColor(color)
                 airfoil.markers.setZValue(100)
                 airfoil.chord.setZValue(99)
-                airfoil.markers.setVisible(False)
+
+                # switch off raw contour and toogle corresponding checkbox
+                self.mainwindow.centralwidget.tools.toggleRawPoints()
+                self.mainwindow.centralwidget.tools.cb2.setChecked(False)
+
                 airfoil.contour_item.brush.setStyle(QtCore.Qt.NoBrush)
                 airfoil.contour_item.pen.setStyle(QtCore.Qt.NoPen)
                 self.mainwindow.view.adjustMarkerSize()
