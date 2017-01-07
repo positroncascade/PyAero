@@ -82,6 +82,17 @@ class GraphicsCollection(object):
         self.name = name
         self.tooltip = name
 
+    def Polyline(self, polygon, name=None):
+        """Custom polyline graphics item pre-populated for PGraphicsItem
+
+        Args:
+            polygon (QPolygonF): x, y coordinates of points
+        """
+        self.rect = polygon.boundingRect()
+        self.shape.addPolygon(polygon)
+        self.method = 'drawPolyline'
+        self.args = [polygon]
+
     def Mesh(self, mesh):
         self.method = 'drawPath'
         self.args = []
