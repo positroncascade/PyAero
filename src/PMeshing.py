@@ -55,7 +55,7 @@ class Windtunnel(object):
         # trailing edge block mesh
         block_te = BlockMesh(name=name)
         block_te.addLine(line)
-        block_te.extrudeLine(line, length=length, direction=3,
+        block_te.extrudeLine(line, length=length, direction=4,
                              divisions=divisions, ratio=ratio)
 
         # equidistant point distribution
@@ -114,7 +114,7 @@ class Windtunnel(object):
         if qq == 1:
             t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
         else:
-            xx = np.linspace(-1.3, 1.3, len(block_tunnel.getULines()[0]))
+            xx = np.linspace(-1.4, 1.4, len(block_tunnel.getULines()[0]))
             t = np.tanh(xx)
             t -= np.min(t)
             t /= np.max(t)
@@ -179,31 +179,31 @@ class Windtunnel(object):
         for uline in ulines:
             block_tunnel.addLine(uline)
 
-        ij = [0, 15, 0, len(block_tunnel.getULines())-1]
+        ij = [0, 25, 0, len(block_tunnel.getULines())-1]
         block_tunnel.transfinite(ij=ij)
-        ij = [len(block_tunnel.getVLines())-16,
+        ij = [len(block_tunnel.getVLines())-26,
               len(block_tunnel.getVLines())-1,
               0,
               len(block_tunnel.getULines())-1]
         block_tunnel.transfinite(ij=ij)
 
-        sm = 0
+        sm = 1
         if sm == 1:
             smooth = Smooth(block_tunnel)
 
             nodes = smooth.selectNodes(domain='interior')
             block_tunnel = smooth.smooth(nodes, iterations=1,
                                          algorithm='laplace')
-            ij = [1, 15, 1, len(block_tunnel.getULines())-2]
+            ij = [1, 25, 1, len(block_tunnel.getULines())-2]
             nodes = smooth.selectNodes(domain='ij', ij=ij)
-            block_tunnel = smooth.smooth(nodes, iterations=100,
+            block_tunnel = smooth.smooth(nodes, iterations=2,
                                          algorithm='laplace')
-            ij = [len(block_tunnel.getVLines())-17,
+            ij = [len(block_tunnel.getVLines())-27,
                   len(block_tunnel.getVLines())-2,
                   1,
                   len(block_tunnel.getULines())-2]
             nodes = smooth.selectNodes(domain='ij', ij=ij)
-            block_tunnel = smooth.smooth(nodes, iterations=100,
+            block_tunnel = smooth.smooth(nodes, iterations=2,
                                          algorithm='laplace')
 
         self.block_tunnel = block_tunnel
@@ -237,6 +237,11 @@ class Windtunnel(object):
         block_tunnel_back.transfinite(boundary=boundary)
 
         self.block_tunnel_back = block_tunnel_back
+
+        smooth = Smooth(block_tunnel_back)
+        nodes = smooth.selectNodes(domain='interior')
+        block_tunnel_back = smooth.smooth(nodes, iterations=1,
+                                          algorithm='laplace')
 
         return block_tunnel_back
 
@@ -331,6 +336,18 @@ class BlockMesh(object):
                 yo = y + spacing[i] * normals[:, 1]
                 line = zip(xo.tolist(), yo.tolist())
                 self.addLine(line)
+        elif direction == 4:
+            spacing = self.spacing(divisions=divisions,
+                                   ratio=ratio,
+                                   thickness=length)
+            normals = self.curveNormals(x, y)
+            normalx = normals[:, 0].mean()
+            normaly = normals[:, 1].mean()
+            for i in range(1, len(spacing)):
+                xo = x + spacing[i] * normalx
+                yo = y + spacing[i] * normaly
+                line = zip(xo.tolist(), yo.tolist())
+                self.addLine(line)
 
     def distribute(self, direction='u', number=0, type='constant'):
 
@@ -364,29 +381,8 @@ class BlockMesh(object):
         line = zip(line[0].tolist(), line[1].tolist())
         self.getULines()[number] = line
 
-    def split(self, line_number, direction='u'):
-
-        dir = {'u': self.getULines(), 'v': self.getVLines()}
-        block_1 = list()
-        block_2 = list()
-
-        for i, line in enumerate(dir[direction]):
-            if i <= line_number:
-                block_1.append(line)
-            elif i >= line_number:
-                block_2.append(line)
-
-        return block_1, block_2
-
-    def connect(self, block_1, block_2, direction='u'):
-
-        del block_2[0]
-        lines = block_1 + block_2
-
-        if direction == 'v':
-            lines = self.makeUfromV(lines)
-
-        self.ULines = lines
+    def connect(self, block_1, block_2):
+        pass
 
     @staticmethod
     def spacing(divisions=10, ratio=1.0, thickness=1.0):
