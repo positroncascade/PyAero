@@ -6,6 +6,8 @@ from PyQt4 import QtGui, QtCore
 import PFileSystem
 import PIconProvider
 import PSvpMethod
+import PGraphicsItemsCollection as gc
+import PGraphicsItem
 import PSplineRefine
 import PTrailingEdge
 import PMeshing
@@ -287,25 +289,29 @@ class Toolbox(object):
         self.item_vo = QtGui.QWidget()
         layout = QtGui.QVBoxLayout()
         self.item_vo.setLayout(layout)
-        self.cb1 = QtGui.QCheckBox('Message window')
+        self.cb1 = QtGui.QCheckBox('Message Window')
         self.cb1.setChecked(True)
-        self.cb2 = QtGui.QCheckBox('Airfoil points')
+        self.cb2 = QtGui.QCheckBox('Airfoil Points')
         self.cb2.setChecked(True)
-        self.cb3 = QtGui.QCheckBox('Airfoil spline')
+        self.cb3 = QtGui.QCheckBox('Airfoil Spline Points')
         self.cb3.setChecked(True)
-        self.cb4 = QtGui.QCheckBox('Chord')
+        self.cb4 = QtGui.QCheckBox('Airfoil Spline Contour')
         self.cb4.setChecked(True)
+        self.cb5 = QtGui.QCheckBox('Airfoil Chord')
+        self.cb5.setChecked(True)
         layout.addWidget(self.cb1)
         layout.addWidget(self.cb2)
         layout.addWidget(self.cb3)
         layout.addWidget(self.cb4)
+        layout.addWidget(self.cb5)
         layout.setAlignment(QtCore.Qt.AlignTop)
 
         # connect signals to slots
         self.cb1.clicked.connect(self.parent.slots.toggleLogDock)
         self.cb2.clicked.connect(self.toggleRawPoints)
-        self.cb3.clicked.connect(self.toggleSpline)
-        self.cb4.clicked.connect(self.toggleChord)
+        self.cb3.clicked.connect(self.toggleSplinePoints)
+        self.cb4.clicked.connect(self.toggleSpline)
+        self.cb5.clicked.connect(self.toggleChord)
 
     def itemContourModification(self):
 
@@ -484,6 +490,14 @@ class Toolbox(object):
                 airfoil.markers.setVisible(not visible)
 
     @QtCore.pyqtSlot()
+    def toggleSplinePoints(self):
+        """Toggle points of raw airfoil contour (on/off)"""
+        for airfoil in self.parent.airfoils:
+            if hasattr(airfoil, 'markersSpline') and airfoil.contour_item.isSelected():
+                visible = airfoil.markersSpline.isVisible()
+                airfoil.markersSpline.setVisible(not visible)
+
+    @QtCore.pyqtSlot()
     def toggleSpline(self):
         for airfoil in self.parent.airfoils:
             if airfoil.contour_item.isSelected():
@@ -591,6 +605,42 @@ class Toolbox(object):
 
         self.block_tunnel = tunnel.TunnelMesh(name='block_tunnel')
         self.block_tunnel_1 = tunnel.TunnelMeshBack(name='block_tunnel_back')
+
+        self.blocks = [self.block_airfoil, self.block_te,
+                       self.block_tunnel, self.block_tunnel_1]
+
+        self.drawMesh(airfoil)
+
+    def drawMesh(self, airfoil):
+        airfoil.mesh = QtGui.QGraphicsItemGroup(parent=airfoil.contour_item,
+                                                scene=self.parent.scene)
+
+        for block in self.blocks:
+            for lines in [block.getULines(),
+                          block.getVLines()]:
+                for line in lines:
+
+                    # instantiate a graphics item
+                    contour = gc.GraphicsCollection()
+                    # make it polygon type and populate its points
+                    points = [QtCore.QPointF(x, y) for x, y in line]
+                    contour.Polyline(QtGui.QPolygonF(points), '')
+                    # set its properties
+                    contour.pen.setColor(QtGui.QColor(0, 0, 0, 255))
+                    contour.pen.setWidth(0.01)
+                    contour.pen.setCosmetic(True)
+                    contour.brush.setStyle(QtCore.Qt.NoBrush)
+
+                    # add contour as a GraphicsItem to the scene
+                    # these are the objects which are drawn in the GraphicsView
+                    meshline = PGraphicsItem.GraphicsItem(contour,
+                                                          self.parent.scene)
+
+                    airfoil.mesh.addToGroup(meshline)
+
+        airfoil.contour_group.addToGroup(airfoil.mesh)
+        # fit everything into the view
+        self.parent.slots.onViewAll()
 
     @QtCore.pyqtSlot()
     def exportMesh(self):
