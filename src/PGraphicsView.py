@@ -47,7 +47,6 @@ class GraphicsView(QtGui.QGraphicsView):
 
         # set QGraphicsView attributes
         self.setRenderHints(QtGui.QPainter.Antialiasing |
-                            QtGui.QPainter.HighQualityAntialiasing |
                             QtGui.QPainter.TextAntialiasing)
         self.setViewportUpdateMode(QtGui.QGraphicsView.FullViewportUpdate)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
