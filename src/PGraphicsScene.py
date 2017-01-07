@@ -20,7 +20,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
         self.parent = parent
 
         # set scene to large size so that scrollbars are small (if shown)
-        self.setSceneRect(-5000, -5000, 10000, 10000)
+        self.setSceneRect(-50, -50, 100, 100)
 
     def mousePressEvent(self, event):
         """Re-implement QGraphicsView's mousePressEvent handler"""
