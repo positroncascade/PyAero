@@ -132,6 +132,8 @@ class GraphicsItem(QtGui.QGraphicsItem):
         painter.setBrush(self.brush)
         painter.setPen(self.pen)
         painter.setFont(self.font)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        # QtGui.QPainter.HighQualityAntialiasing
 
         # care for difference between objects and text
         # i.e. normally y-coordinates go top down
