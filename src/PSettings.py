@@ -5,6 +5,9 @@
 # path to PyAero installation
 PYAEROPATH = '.'
 
+# path to menu data
+MENUDATA = '../data/Menus'
+
 # set locale
 # can be either 'C' or ''
 # if string is empty than system default locale is used
@@ -34,7 +37,7 @@ ICONS_L = ICONS + '24x24/'
 
 # path to data (e.g. airfoil coordinate files)
 # path can be absolute or relative (to position where starting PyAero)
-AIRFOILDATA = '../data'
+AIRFOILDATA = '../data/Airfoils'
 
 # modified contours and mesh folder
 OUTPUTDATA = '../OUTPUT'
