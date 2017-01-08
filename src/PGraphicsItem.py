@@ -132,8 +132,12 @@ class GraphicsItem(QtGui.QGraphicsItem):
         painter.setBrush(self.brush)
         painter.setPen(self.pen)
         painter.setFont(self.font)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        # QtGui.QPainter.HighQualityAntialiasing
+
+        # draw the gridline aliased, that makes them looking "sharper"
+        if self.method == 'drawPolyline':
+            painter.setRenderHint(QtGui.QPainter.Antialiasing, False)
+        else:
+            painter.setRenderHint(QtGui.QPainter.Antialiasing, True)
 
         # care for difference between objects and text
         # i.e. normally y-coordinates go top down
