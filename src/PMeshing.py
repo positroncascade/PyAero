@@ -607,15 +607,15 @@ class BlockMesh(object):
 
         return beta
 
-    def writeFLMA(self, airfoil='', depth=0.1):
+    def writeFLMA(self, name='', depth=0.1):
 
         folder = OUTPUTDATA + '/'
-        nameroot, extension = os.path.splitext(str(airfoil))
+        nameroot, extension = os.path.splitext(str(name))
         filename = nameroot + '_' + self.name + '.flma'
         fullname = folder + filename
 
         logger.log.info('FIRE mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#099a53', filename))
+                        % ('#005511', filename))
 
         U, V = self.getDivUV()
         points = (U + 1) * (V + 1)
@@ -674,10 +674,10 @@ class BlockMesh(object):
             # write FIRE selections to FLMA file
             f.write('0')
 
-    def writeSU2(self, airfoil=''):
+    def writeSU2(self, name=''):
 
         folder = OUTPUTDATA + '/'
-        nameroot, extension = os.path.splitext(str(airfoil))
+        nameroot, extension = os.path.splitext(str(name))
         filename = nameroot + '_' + self.name + '.su2'
         fullname = folder + filename
 
@@ -735,13 +735,13 @@ class BlockMesh(object):
                     f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
 
         logger.log.info('SU2 mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#CC33FF', filename))
+                        % ('#CC5511', filename))
 
-    def writeGMESH(self, airfoil=''):
+    def writeGMESH(self, name=''):
 
         folder = OUTPUTDATA + '/'
-        nameroot, extension = os.path.splitext(str(airfoil))
-        filename = nameroot + '_' + self.name + '.su2'
+        nameroot, extension = os.path.splitext(str(name))
+        filename = nameroot + '_' + self.name + '.msh'
         fullname = folder + filename
 
         U, V = self.getDivUV()
@@ -753,7 +753,7 @@ class BlockMesh(object):
 
         with open(fullname, 'w') as f:
 
-            f.write('$Information')
+            f.write('$Information\n')
             f.write(' Airfoil contour: ' + nameroot + ' \n')
             f.write('\n')
             f.write(' File created with ' + PyAero.__appname__ + '.\n')
@@ -764,23 +764,23 @@ class BlockMesh(object):
 
             f.write(2*'\n')
 
-            f.write('$MeshFormat')
-            f.write('2.2 0 8')
-            f.write('$EndMeshFormat')
+            f.write('$MeshFormat\n')
+            f.write('2.2 0 8\n')
+            f.write('$EndMeshFormat\n\n')
 
-            f.write('$Nodes')
-            f.write('%s' % (up*vp))
+            f.write('$Nodes\n')
+            f.write('%s\n' % (up*vp))
             # x- and y-coordinates
             node = 0
             for uline in self.getULines():
                 for i in range(len(uline))[::-1]:
                     node += 1
                     x, y = uline[i][0], uline[i][1]
-                    f.write(' {:} {:24.16e} {:24.16e} 0.0\n'.format(node, x, y))
+                    f.write(' {:} {:16.8} {:16.8} 0.0\n'.format(node, x, y))
             f.write('$EndNodes')
-
-            f.write('$Elements')
-            f.write('%s' % (U*V))
+            f.write('\n\n')
+            f.write('$Elements\n')
+            f.write('%s\n' % (U*V))
             k = 0
             for i in range(U):
                 for j in range(V):
@@ -797,10 +797,10 @@ class BlockMesh(object):
                         str(p4) + '\n'
 
                     f.write(connectivity)
-            f.write('$EndElements')
+            f.write('$EndElements\n')
 
         logger.log.info('GMESH mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#01FF15', filename))
+                        % ('#224CCC', filename))
 
 
 class Smooth(object):
