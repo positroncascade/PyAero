@@ -24,10 +24,19 @@
  - Advanced aerodynamic analysis, i.e. linking to open source CFD software
 
 ## Dependencies
-
- - PyQt4
- - PyVTK
- - numpy, scipy, matplotlib
+ - Releases in brackets refer to my current (January 8th 2017) installation
+ - Python (2.7.12)
+   - not tested with any version less than 2.7
+ - PyQt4 (4.11.4)
+ - numpy (1.11.2)
+ - scipy (0.15.1)
+ - matplotlib (1.5.3)
+   - not needed for meshing
+   - for contour analysis
+   - already implemented, but currently set to disabled
+ - PyVTK (6.1.0)
+   - not needed for meshing
+   - just implemented for playing around
 
 ## Documentation
 
