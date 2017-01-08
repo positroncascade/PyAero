@@ -133,6 +133,7 @@ class Airfoil(object):
         # remove spline from the contourgroup if any
         if self.contourspline_item:
             self.scene.removeItem(self.contourspline_item)
+            self.scene.removeItem(self.markersSpline)
             # self.contour_group.removeFromGroup(self.contourspline_item)
 
         # add contour as a GraphicsItem to the scene
