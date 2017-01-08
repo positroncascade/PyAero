@@ -66,15 +66,15 @@ Currently there are no binaries available. Therefore, the source code needs to b
 $ git clone https://github.com/chiefenne/PyAero.git
 ```
 
-Change to the folder "src" and type "./PyAero".
+Change to folder "src" and type "./PyAero".
 
-### Download a ZIP file:
+### Alternatively download a ZIP file:
 
-From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). 
+From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There is on the upper right side a green pull down menu "Clone or download". Click on it and then click "Download ZIP".
 
 Unzip it anywhere on your computer.
 
-Change to the folder "src" and type "./PyAero".
+Change to folder "src" and type "./PyAero".
 
 ## Release History
 
