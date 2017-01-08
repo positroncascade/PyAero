@@ -23,7 +23,10 @@
  - Mesh control
  - Mesh smoothing (to be improved)
  - NOT YET IMPLEMENTED: Automatic definition of boundary faces
- - Mesh export (AVL FIRE .flma, SU2 .su2, GMESH, .msh)
+ - Mesh export
+   - [AVL FIRE](http://www.avl.com/fire-m) (.flma)
+   - [SU2](http://su2.stanford.edu) (.su2)
+   - [GMESH](http://gmsh.info) (.msh)
  - Simple aerodynamic analysis using [AeroPython](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
  - NOT YET IMPLEMENTED: Advanced aerodynamic analysis
    - Linking to open source CFD software (e.g. SU2)
