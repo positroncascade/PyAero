@@ -44,6 +44,22 @@ class Toolbox(object):
 
         self.makeToolbox()
 
+        self.toolBox.currentChanged.connect(self.toolboxChanged)
+
+    def toolboxChanged(self):
+
+        if self.toolBox.currentIndex() == self.tb4:
+            self.updatePoints()
+
+    def updatePoints(self):
+
+        for airfoil in self.parent.airfoils or len(self.parent.airfoils) == 1:
+            if airfoil.contour_item.isSelected():
+                pts = len(airfoil.spline_data[0][0])
+                break
+
+        self.points_on_airfoil.setText(str(pts))
+
     def itemFileSystem(self):
 
         self.item_fs = QtGui.QWidget()
@@ -147,20 +163,21 @@ class Toolbox(object):
 
     def itemMeshing(self):
 
-        form = QtGui.QFormLayout()
+        self.form_mesh = QtGui.QFormLayout()
 
         label = QtGui.QLabel(u'Gridpoints along airfoil')
-        points_on_airfoil = 100
-        text = QtGui.QLineEdit(str(points_on_airfoil))
-        text.setEnabled(False)
-        form.addRow(label, text)
+        points = 0
+
+        self.points_on_airfoil = QtGui.QLineEdit(str(points))
+        self.points_on_airfoil.setEnabled(False)
+        self.form_mesh.addRow(label, self.points_on_airfoil)
 
         label = QtGui.QLabel(u'Gridpoints normal to airfoil')
         self.points_n = QtGui.QSpinBox()
         self.points_n.setSingleStep(1)
         self.points_n.setRange(1, 200)
         self.points_n.setValue(15)
-        form.addRow(label, self.points_n)
+        self.form_mesh.addRow(label, self.points_n)
 
         label = QtGui.QLabel('Thickness normal to Airfoil (%)')
         label.setToolTip('The thickness is specified wrt to the unit chord')
@@ -169,7 +186,7 @@ class Toolbox(object):
         self.normal_thickness.setRange(1., 10.)
         self.normal_thickness.setValue(4.0)
         self.normal_thickness.setDecimals(1)
-        form.addRow(label, self.normal_thickness)
+        self.form_mesh.addRow(label, self.normal_thickness)
 
         label = QtGui.QLabel('Cell Thickness ratio (-)')
         label.setToolTip('Thickness of the last cell vs. the first cell in ' +
@@ -180,21 +197,21 @@ class Toolbox(object):
         self.ratio.setRange(1., 10.)
         self.ratio.setValue(3.0)
         self.ratio.setDecimals(1)
-        form.addRow(label, self.ratio)
+        self.form_mesh.addRow(label, self.ratio)
 
         label = QtGui.QLabel(u'Gridpoints at trailing edge')
         self.te_div = QtGui.QSpinBox()
         self.te_div.setSingleStep(1)
         self.te_div.setRange(1, 20)
         self.te_div.setValue(3)
-        form.addRow(label, self.te_div)
+        self.form_mesh.addRow(label, self.te_div)
 
         label = QtGui.QLabel(u'Gridpoints downstream trailing edge')
         self.points_te = QtGui.QSpinBox()
         self.points_te.setSingleStep(1)
         self.points_te.setRange(1, 100)
         self.points_te.setValue(6)
-        form.addRow(label, self.points_te)
+        self.form_mesh.addRow(label, self.points_te)
 
         label = QtGui.QLabel('Length behind trailing edge (%)')
         label.setToolTip('The length is specified wrt to the unit chord')
@@ -203,7 +220,7 @@ class Toolbox(object):
         self.length_te.setRange(0.1, 30.)
         self.length_te.setValue(4.0)
         self.length_te.setDecimals(1)
-        form.addRow(label, self.length_te)
+        self.form_mesh.addRow(label, self.length_te)
 
         label = QtGui.QLabel('Cell Thickness ratio (-)')
         label.setToolTip('Thickness of the last cell vs. the first cell in ' +
@@ -215,7 +232,7 @@ class Toolbox(object):
         self.ratio_te.setRange(1., 10.)
         self.ratio_te.setValue(3.0)
         self.ratio_te.setDecimals(1)
-        form.addRow(label, self.ratio_te)
+        self.form_mesh.addRow(label, self.ratio_te)
 
         button = QtGui.QPushButton('Create Mesh')
         hbl = QtGui.QHBoxLayout()
@@ -224,7 +241,7 @@ class Toolbox(object):
         hbl.addStretch(stretch=1)
 
         vbox = QtGui.QVBoxLayout()
-        vbox.addLayout(form)
+        vbox.addLayout(self.form_mesh)
         vbox.addLayout(hbl)
         box = QtGui.QGroupBox('Airfoil contour meshing')
         box.setLayout(vbox)
@@ -323,7 +340,7 @@ class Toolbox(object):
         self.tolerance.setSingleStep(0.1)
         self.tolerance.setDecimals(1)
         self.tolerance.setRange(140.0, 175.0)
-        self.tolerance.setValue(169.0)
+        self.tolerance.setValue(171.0)
         form.addRow(label, self.tolerance)
 
         label = QtGui.QLabel(u'Refine trailing edge (old segments)')
@@ -352,7 +369,7 @@ class Toolbox(object):
         self.points = QtGui.QSpinBox()
         self.points.setSingleStep(10)
         self.points.setRange(50, 500)
-        self.points.setValue(150)
+        self.points.setValue(200)
         form.addRow(label, self.points)
 
         button = QtGui.QPushButton('Spline and Refine')
@@ -616,7 +633,7 @@ class Toolbox(object):
 
         # delete old mesh if existing
         if hasattr(airfoil, 'mesh'):
-            self.mainwindow.scene.removeItem(airfoil.mesh)
+            self.parent.scene.removeItem(airfoil.mesh)
 
         airfoil.mesh = QtGui.QGraphicsItemGroup(parent=airfoil.contour_item,
                                                 scene=self.parent.scene)
@@ -645,9 +662,10 @@ class Toolbox(object):
                     airfoil.mesh.addToGroup(meshline)
 
         airfoil.contour_group.addToGroup(airfoil.mesh)
+
         # fit everything into the view
         # self.parent.slots.onViewAll()
-        self.parent.slots.fitAirfoilInView()
+        # self.parent.slots.fitAirfoilInView()
 
     @QtCore.pyqtSlot()
     def exportMesh(self):
