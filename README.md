@@ -80,7 +80,7 @@ Change to folder "src" and type "./PyAero".
 
 * 1.0
     * Meshes can be generated now.
-    * Export available in AVL-FIRE format and SU2 format
+    * Export available in AVL-FIRE, SU2 and GMESH formats
 
 * 0.9
     * GUI is almost ready, at least ready to be able to do meaningful work
