@@ -130,7 +130,7 @@ class Airfoil(object):
         # add the pline polygon without filling
         contour.brush.setStyle(QtCore.Qt.NoBrush)
 
-        # remove any previous spline from the contourgroup if any
+        # remove spline from the contourgroup if any
         if self.contourspline_item:
             self.scene.removeItem(self.contourspline_item)
             # self.contour_group.removeFromGroup(self.contourspline_item)
