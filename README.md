@@ -28,7 +28,6 @@
  - PyQt4
  - PyVTK
  - numpy, scipy, matplotlib
- - lxml (will be removed)
 
 ## Documentation
 
