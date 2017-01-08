@@ -1,6 +1,8 @@
 ```diff
 + RELEASE 1.0 IS READY.
 + MESHES CAN BE GENERATED
+- SU2 and GMESH formats not tested
+- 4 individual mesh blocks around the airfoil are created and need to be connected (will be fixed soon)
 ```
 
 # PyAero
@@ -14,14 +16,17 @@
 
 ## Features
 
- - Airfoil contour analysis, refining and splining
- - Trailing edge generation
+ - Airfoil splining and refining
+ - Airfoil contour analysis (implemented, but disabled at the moment)
+ - Trailing edge generation, i.e. blunt trailing edge instead of sharp trailing edge
  - Automatic generation of block-strcuctured meshes for airfoils
- - Mesh control and smoothing
- - Automatic definition of boundary faces
- - Mesh export (AVL FIRE .flm, SU2 .su2)
- - Simple aerodynamic analysis, i.e. panel methods
- - Advanced aerodynamic analysis, i.e. linking to open source CFD software
+ - Mesh control
+ - Mesh smoothing (to be improved)
+ - NOT YET IMPLEMENTED: Automatic definition of boundary faces
+ - Mesh export (AVL FIRE .flma, SU2 .su2, GMESH, .msh)
+ - Simple aerodynamic analysis using [AeroPython](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
+ - NOT YET IMPLEMENTED: Advanced aerodynamic analysis
+   - Linking to open source CFD software (e.g. SU2)
 
 ## Dependencies
  - Releases in brackets refer to my current (January 8th 2017) installation
@@ -42,7 +47,9 @@
 
 The [PyAero documentation](http://pyaero.readthedocs.io/en/latest) is hosted at [Read the Docs](https://readthedocs.org/).
 
-It is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
+An introductory [PyAero tutorial video](https://www.youtube.com/watch?v=RBrBEyHAAss) can be found on YouTube.
+
+The documentation is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
 
 ## Release History
 
