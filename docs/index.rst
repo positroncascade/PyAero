@@ -74,8 +74,8 @@ Features
    - `AeroPython <http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb>`_
 
 
-Quickstart (for the impatient)
-==============================
+Quickstart
+==========
 
 Follow `THIS <https://www.youtube.com/watch?v=YHSXszaFTiM&t=6s>`_ YouTube video to get the minimum necessary introduction to `PyAero <index.html>`_.
 
