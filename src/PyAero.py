@@ -59,7 +59,7 @@ __copyright__ = '2014-' + str(datetime.date.today().strftime("%Y")) + \
 __license__ = 'MIT'
 __version__ = '1.0'
 __email__ = 'andreas.ennemoser@aon.at'
-__status__ = 'Prototype'
+__status__ = 'Release'
 
 
 class MainWindow(QtGui.QMainWindow):
