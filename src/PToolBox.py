@@ -339,8 +339,8 @@ class Toolbox(object):
         self.tolerance = QtGui.QDoubleSpinBox()
         self.tolerance.setSingleStep(0.1)
         self.tolerance.setDecimals(1)
-        self.tolerance.setRange(140.0, 175.0)
-        self.tolerance.setValue(171.0)
+        self.tolerance.setRange(00.0, 177.0)
+        self.tolerance.setValue(172.0)
         form.addRow(label, self.tolerance)
 
         label = QtGui.QLabel(u'Refine trailing edge (old segments)')
