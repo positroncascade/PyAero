@@ -56,6 +56,18 @@ An introductory [PyAero tutorial video](https://www.youtube.com/watch?v=RBrBEyHA
 
 The documentation is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
 
+## Installation
+
+Currently there are no binaries available. Therefore, the source code needs to be copied to your computer.
+
+Using git:
+
+```bash
+$ git clone https://github.com/chiefenne/PyAero.git
+```
+
+Then change to the folder "src" and type "./PyAero".
+
 ## Release History
 
 * 1.0
