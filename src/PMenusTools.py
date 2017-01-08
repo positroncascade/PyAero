@@ -1,8 +1,9 @@
+import os
 import xml.etree.ElementTree as etree
 
 from PyQt4 import QtGui, QtCore
 
-from PSettings import ICONS_S, ICONS_L
+from PSettings import ICONS_S, ICONS_L, MENUDATA
 
 
 class MenusTools(object):
@@ -29,23 +30,13 @@ class MenusTools(object):
 
         menudata = list()
 
-        '''
-        doc = etree.parse('PMenu.xml')
-        menus = list(doc.getroot())
+        xml_file = os.path.join(MENUDATA, 'PMenu.xml')
+        xml = etree.parse(xml_file)
+        menu_structure = xml.getroot()
 
-        for menu in menus:
+        for menu in menu_structure.findall('Menubar'):
             mname = menu.attrib['name']
-            items = menu.getchildren()
-            pulldowns = self.getPullDownData(items)
-            menudata.append((mname, [s for s in pulldowns]))
-        '''
-
-        xml = etree.parse('PMenu.xml')
-        menus = xml.getroot()
-
-        for menu in menus:
-            mname = menu.attrib['name']
-            items = menu.getchildren()
+            items = menu.findall('Submenu')
             pulldowns = self.getPullDownData(items)
             menudata.append((mname, [s for s in pulldowns]))
 
@@ -102,19 +93,21 @@ class MenusTools(object):
     def getToolbarData(self):
         """get all menus and submenus from the external XML file"""
 
-        doc = etree.parse('PToolbar.xml')
-        toolbar = list(doc.getroot())[0]
-        tools = toolbar.getchildren()
+        xml_file = os.path.join(MENUDATA, 'PToolbar.xml')
+        xml = etree.parse(xml_file)
+        tool_structure = xml.getroot()
 
         tooldata = list()
-        for tool in tools:
-            if tool.attrib['handler'] == 'self.onPass':
-                tooldata.append(('', '', '', '', self.onPass))
-                continue
-            tip = tool.attrib['tip']
-            icon = tool.attrib['icon']
-            handler = tool.attrib['handler']
-            tooldata.append((tip, icon, handler))
+
+        for toolbar in tool_structure.findall('Toolbar'):
+            for tool in toolbar.findall('Tool'):
+                if tool.attrib['handler'] == 'self.onPass':
+                    tooldata.append(('', '', '', '', self.onPass))
+                    continue
+                tip = tool.attrib['tip']
+                icon = tool.attrib['icon']
+                handler = tool.attrib['handler']
+                tooldata.append((tip, icon, handler))
 
         return tuple(tooldata)
 
