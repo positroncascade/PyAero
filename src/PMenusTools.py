@@ -1,4 +1,4 @@
-from lxml import etree
+import xml.etree.ElementTree as etree
 
 from PyQt4 import QtGui, QtCore
 
@@ -28,8 +28,20 @@ class MenusTools(object):
         """get all menus and pulldowns from the external XML file"""
 
         menudata = list()
+
+        '''
         doc = etree.parse('PMenu.xml')
         menus = list(doc.getroot())
+
+        for menu in menus:
+            mname = menu.attrib['name']
+            items = menu.getchildren()
+            pulldowns = self.getPullDownData(items)
+            menudata.append((mname, [s for s in pulldowns]))
+        '''
+
+        xml = etree.parse('PMenu.xml')
+        menus = xml.getroot()
 
         for menu in menus:
             mname = menu.attrib['name']
