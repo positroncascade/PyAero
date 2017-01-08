@@ -60,13 +60,17 @@ The documentation is automatically generated using the files in the [docs](https
 
 Currently there are no binaries available. Therefore, the source code needs to be copied to your computer.
 
-Using git:
+### Using git:
 
 ```bash
 $ git clone https://github.com/chiefenne/PyAero.git
 ```
 
-Then change to the folder "src" and type "./PyAero".
+### Download a ZIP file:
+
+From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). 
+
+Unzip it anywhere on your computer, change to the folder "src" and type "./PyAero".
 
 ## Release History
 
