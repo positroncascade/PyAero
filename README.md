@@ -32,7 +32,9 @@
    - Linking to open source CFD software (e.g. SU2)
 
 ## Dependencies
- - Releases in brackets refer to my current (January 8th 2017) installation
+
+Releases in brackets refer to my current (January 8th 2017) installation
+
  - Python (2.7.12)
    - not tested with any version less than 2.7
  - PyQt4 (4.11.4)
