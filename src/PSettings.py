@@ -71,7 +71,7 @@ MAXZOOM = 100000.
 # i.e. width of zoom rectangle wrt to viewer window width
 # for smaller rectangles zoom is deactivated to avoid accidential zooms
 # valid values between 0.05 and 1.0
-RUBBERBANDSIZE = 0.08
+RUBBERBANDSIZE = 0.04
 
 # scale increment
 SCALEINC = 1.1
