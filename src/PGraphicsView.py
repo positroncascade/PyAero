@@ -5,7 +5,6 @@ from PyQt4 import QtGui, QtCore
 
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM, \
                       MARKERSIZE, MARKERPENWIDTH, RUBBERBANDSIZE
-import PLogger as logger
 
 # put constraints on rubberband zoom ( relative rectangle wdith)
 RUBBERBANDSIZE = min(RUBBERBANDSIZE, 1.0)
