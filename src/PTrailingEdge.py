@@ -6,8 +6,6 @@ from PyQt4 import QtGui, QtCore
 from PUtils import Utils
 import PContourAnalysis as pca
 
-import PLogger as logger
-
 
 class TrailingEdge(object):
 
@@ -18,7 +16,7 @@ class TrailingEdge(object):
         # get MainWindow instance here (overcomes handling parents)
         self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
 
-        # add spline data to airfoil object
+        # get spline data from airfoil object
         self.spline_data = self.mainwindow.airfoils[self.id].spline_data
 
         # contour analysis instance (no canvas/drawing needed)
@@ -79,13 +77,10 @@ class TrailingEdge(object):
         # add splined and refined contour to the airfoil contour_group
         for airfoil in self.mainwindow.airfoils:
             if airfoil.contour_item.isSelected():
-                if airfoil.contourspline_item:
-                    self.mainwindow.scene.removeItem(airfoil.contourspline_item)
-                if hasattr(airfoil, 'markersSpline'):
-                    self.mainwindow.scene.removeItem(airfoil.markersSpline)
                 airfoil.addContourSpline(self.spline_data[0])
                 airfoil.addMarkersSpline()
-                airfoil.contourspline_item.brush.setStyle(QtCore.Qt.SolidPattern)
+                airfoil.contourspline_item.brush.setStyle(
+                    QtCore.Qt.SolidPattern)
                 color = QtGui.QColor()
                 color.setNamedColor('#7c8696')
                 airfoil.contourspline_item.brush.setColor(color)

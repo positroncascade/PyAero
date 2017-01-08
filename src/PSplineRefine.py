@@ -49,13 +49,10 @@ class SplineRefine(object):
         # add splined and refined contour to the airfoil contour_group
         for airfoil in self.mainwindow.airfoils:
             if airfoil.contour_item.isSelected():
-                if airfoil.contourspline_item:
-                    self.mainwindow.scene.removeItem(airfoil.contourspline_item)
-                if hasattr(airfoil, 'markersSpline'):
-                    self.mainwindow.scene.removeItem(airfoil.markersSpline)
                 airfoil.addContourSpline(self.spline_data[0])
                 airfoil.addMarkersSpline()
-                airfoil.contourspline_item.brush.setStyle(QtCore.Qt.SolidPattern)
+                airfoil.contourspline_item.brush.setStyle(
+                    QtCore.Qt.SolidPattern)
                 color = QtGui.QColor()
                 color.setNamedColor('#7c8696')
                 airfoil.contourspline_item.brush.setColor(color)
