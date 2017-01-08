@@ -268,14 +268,15 @@ class Toolbox(object):
         vbl1.addLayout(hbox)
         vbl1.addLayout(hbl)
 
-        box2 = QtGui.QGroupBox('Mesh Export')
-        box2.setLayout(vbl1)
+        self.box_meshexport = QtGui.QGroupBox('Mesh Export')
+        self.box_meshexport.setLayout(vbl1)
+        self.box_meshexport.setEnabled(False)
 
         vbl = QtGui.QVBoxLayout()
         vbl.addStretch(1)
         vbl.addWidget(box)
         vbl.addStretch(1)
-        vbl.addWidget(box2)
+        vbl.addWidget(self.box_meshexport)
         vbl.addStretch(10)
 
         self.item_msh = QtGui.QWidget()
@@ -606,6 +607,11 @@ class Toolbox(object):
 
         self.drawMesh(airfoil)
 
+        # enable mesh export and set filename
+        self.box_meshexport.setEnabled(True)
+        nameroot, extension = os.path.splitext(str(airfoil.name))
+        self.lineedit_mesh.setText(nameroot + '_mesh')
+
     def drawMesh(self, airfoil):
 
         # delete old mesh if existing
@@ -640,33 +646,24 @@ class Toolbox(object):
 
         airfoil.contour_group.addToGroup(airfoil.mesh)
         # fit everything into the view
-        self.parent.slots.onViewAll()
+        # self.parent.slots.onViewAll()
+        self.parent.slots.fitAirfoilInView()
 
     @QtCore.pyqtSlot()
     def exportMesh(self):
 
-        for airfoil in self.parent.airfoils:
-            if airfoil.contour_item.isSelected():
-                name = airfoil.name
-                break
+        name = self.lineedit_mesh.text()
 
-        if self.check_FIRE.isChecked():
-            self.block_airfoil.writeFLMA(airfoil=name, depth=0.2)
-            self.block_te.writeFLMA(airfoil=name, depth=0.2)
-            self.block_tunnel.writeFLMA(airfoil=name, depth=0.2)
-            self.block_tunnel_1.writeFLMA(airfoil=name, depth=0.2)
+        for block in self.tunnel.blocks:
 
-        if self.check_SU2.isChecked():
-            self.block_airfoil.writeSU2(airfoil=name)
-            self.block_te.writeSU2(airfoil=name)
-            self.block_tunnel.writeSU2(airfoil=name)
-            self.block_tunnel_1.writeSU2(airfoil=name)
+            if self.check_FIRE.isChecked():
+                block.writeFLMA(name=name, depth=0.2)
 
-        if self.check_GMESH.isChecked():
-            self.block_airfoil.writeGMESH(airfoil=name)
-            self.block_te.writeGMESH(airfoil=name)
-            self.block_tunnel.writeGMESH(airfoil=name)
-            self.block_tunnel_1.writeGMESH(airfoil=name)
+            if self.check_SU2.isChecked():
+                block.writeSU2(name=name)
+
+            if self.check_GMESH.isChecked():
+                block.writeGMESH(name=name)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
