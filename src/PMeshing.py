@@ -114,7 +114,7 @@ class Windtunnel(object):
         if qq == 1:
             t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
         else:
-            xx = np.linspace(-3.0, 3.0, len(block_tunnel.getULines()[0]))
+            xx = np.linspace(-1.2, 1.2, len(block_tunnel.getULines()[0]))
             t = (np.tanh(xx) + 1.0) / 2.0
         line = si.splev(t, tck, der=0)
         line = zip(line[0].tolist(), line[1].tolist())
