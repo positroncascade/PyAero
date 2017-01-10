@@ -96,14 +96,15 @@ class Windtunnel(object):
             p = p1 + t * vec
             line.append(p.tolist())
         del line[-1]
+
         # front half circle of wind tunnel
-        r = 2.0
-        for phi in np.linspace(90.0, 270.0, 200):
+        for phi in np.linspace(90.0, 270.0, 400):
             phir = np.radians(phi)
-            x = r * np.cos(phir)
-            y = r * np.sin(phir)
+            x = tunnel_height * np.cos(phir)
+            y = tunnel_height * np.sin(phir)
             line.append((x, y))
         del line[-1]
+
         # lower line of wind tunnel
         vec = p4 - p3
         for t in np.linspace(0.0, 1.0, 100):
@@ -112,12 +113,11 @@ class Windtunnel(object):
 
         line = np.array(line)
         tck, u = si.splprep(line.T, s=0, k=1)
-        qq = 0
-        if qq == 1:
-            t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
-        else:
-            xx = np.linspace(-1.3, 1.3, len(block_tunnel.getULines()[0]))
-            t = (np.tanh(xx) + 1.0) / 2.0
+
+        # point distribution on upper, front and lower part
+        xx = np.linspace(-1.3, 1.3, len(block_tunnel.getULines()[0]))
+        t = (np.tanh(xx) + 1.0) / 2.0
+
         line = si.splev(t, tck, der=0)
         line = zip(line[0].tolist(), line[1].tolist())
 
