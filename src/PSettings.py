@@ -2,11 +2,14 @@
 # PyAero settings
 # ****************
 
+import os
+
 # path to PyAero installation
-PYAEROPATH = '.'
+DEFAULTPATH = '.'
+PYAEROPATH = os.getenv('PYAERO_PATH', DEFAULTPATH)
 
 # path to menu data
-MENUDATA = '../data/Menus'
+MENUDATA = PYAEROPATH + '/data/Menus'
 
 # set locale
 # can be either 'C' or ''
@@ -31,16 +34,16 @@ EXITONESCAPE = True
 CHORDLENGTH = 1.
 
 # path to icons
-ICONS = '../icons/'
+ICONS = PYAEROPATH + '/icons/'
 ICONS_S = ICONS + '16x16/'
 ICONS_L = ICONS + '24x24/'
 
 # path to data (e.g. airfoil coordinate files)
 # path can be absolute or relative (to position where starting PyAero)
-AIRFOILDATA = '../data/Airfoils'
+AIRFOILDATA = PYAEROPATH + '/data/Airfoils'
 
 # modified contours and mesh folder
-OUTPUTDATA = '../OUTPUT'
+OUTPUTDATA = PYAEROPATH + '/OUTPUT'
 
 # size of airfoil coordinate markers in pixels
 MARKERSIZE = 3
