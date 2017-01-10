@@ -84,10 +84,16 @@ After cloning from Git (or downloading and unzipping from Git) set the environme
 setenv PYAERO_PATH path_to_your_installation
 ```
 
+Run PyAero using:
+
+```bash
+python $PYAERO_PATH/src/PyAero.py
+```
+
 Then set an **alias** to any start command that you like.
 
 ```bash
-alias pyaero  $PYAERO_PATH/src/PyAero.py
+alias pyaero  "python $PYAERO_PATH/src/PyAero.py"
 ```
 
 Then start PyAero using simply:
@@ -95,7 +101,10 @@ Then start PyAero using simply:
 ```bash
 pyaero
 ```
-You might want to add PYAERO_PATH to your .login script (or equivalent Windows setup). Likewise the start command can be added to .cshrc or any *.bat file on Windows.
+
+You might want to add PYAERO_PATH to your .login script. Likewise the start command can be added to .cshrc.
+
+On Windows you can hit Win+Pause keys and then open the advanced tab to set the PYAERO_PATH environment variable.
 
 You should be good to go.
 
