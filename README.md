@@ -60,6 +60,8 @@ The documentation is automatically generated using the files in the [docs](https
 
 Currently there are no binaries available. Therefore, the source code needs to be copied to your computer.
 
+The instructions below have been tested on Windows (using a console terminal from Cygwin) and on Linux.
+
 ### Using Git:
 
 ```bash
