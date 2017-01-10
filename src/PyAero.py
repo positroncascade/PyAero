@@ -1,4 +1,4 @@
-#!c:/python27/python
+#! /bin/env python
 
 """
 PyAero is an airfoil CFD meshing (2D) and contour analysis tool.
