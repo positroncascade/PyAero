@@ -713,9 +713,11 @@ class Toolbox(object):
 
         name = self.lineedit_mesh.text()
 
+        # FIXME
+        # FIXME this works only if browsing in existing output folder
+        # FIXME
         if OUTPUTDATA[2:] in name:
             folder = ''
-            print '________i was here__________'
         else:
             folder = OUTPUTDATA + '/'
 
