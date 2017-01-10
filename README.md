@@ -85,12 +85,12 @@ After cloning from Git, or downloading and unzipping, set the environment variab
 
 ```bash
 $ setenv PYAERO_PATH path_to_your_installation
+```
 
 Run PyAero using:
 
 ```bash
 $ python $PYAERO_PATH/src/PyAero.py
-```
 ```
 
 To simplify the command, set an **alias**.
