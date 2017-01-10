@@ -95,9 +95,9 @@ Then start PyAero using simply:
 ```bash
 pyaero
 ```
-You might want to add PYAERO_PATH to your .login script (or equivalent Windows setup for). Likewise the start command can be added to .cshrc or any *.bat file on Windows.
+You might want to add PYAERO_PATH to your .login script (or equivalent Windows setup). Likewise the start command can be added to .cshrc or any *.bat file on Windows.
 
-You should be good.
+You should be good to go.
 
 ## Release History
 
