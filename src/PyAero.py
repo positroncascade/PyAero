@@ -31,25 +31,6 @@ from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
 import PLogger as logger
 import PShortCuts
 
-# qt darkstylesheet
-# https://github.com/ColinDuquesnoy/QDarkStyleSheet
-# installed via: pip install qdarkstyle
-try:
-    import qdarkstyle
-    darkstyle = True
-except:
-    darkstyle = False
-
-# qt aqua styleshhet
-# http://www.poketcode.com/pyqt4_demos.html
-# installed via manually copying the download content to
-# site-packages
-try:
-    from qaquastyle.qsshelper import QSSHelper
-    aquastyle = True
-except:
-    aquastyle = False
-
 
 __appname__ = 'PyAero'
 __author__ = 'Andreas Ennemoser'
@@ -216,15 +197,6 @@ def main():
     app_icon.addFile(ICONS+'app_image_256x256.png', QtCore.QSize(256, 256))
     app.setWindowIcon(app_icon)
 
-    # setup stylesheet
-    if darkstyle and STYLESPECIAL == 'Dark':
-        app.setStyleSheet(qdarkstyle.load_stylesheet(pyside=False))
-    elif aquastyle and STYLESPECIAL == 'Aqua':
-        # loads and sets the Qt stylesheet
-        site = 'c:/Python27/lib/site-packages/qaquastyle/'
-        qss = QSSHelper.open_qss(os.path.join(site, 'aqua.qss'))
-        app.setStyleSheet(qss)
-
     if LOCALE == 'C':
         # set default local to C, so that decimal separator is a
         # dot in spin boxes, etc.
@@ -240,6 +212,7 @@ def main():
     app.mainwindow = window
 
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
