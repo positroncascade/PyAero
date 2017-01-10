@@ -56,20 +56,18 @@ An introductory [PyAero tutorial video](https://www.youtube.com/watch?v=RBrBEyHA
 
 The documentation is automatically generated using the files in the [docs](https://github.com/chiefenne/PyAero/tree/master/docs) folder via [Sphinx](http://www.sphinx-doc.org/en/stable/index.html).
 
-## Installation
+## Download
 
 Currently there are no binaries available. Therefore, the source code needs to be copied to your computer.
 
-The instructions below have been tested on Windows (using a console terminal from Cygwin) and on Linux.
-
-### Using Git:
+### Option 1: Download using Git:
 
 ```bash
 cd anywhere_on_your_computer
 $ git clone https://github.com/chiefenne/PyAero.git
 ```
 
-### Alternatively download a ZIP file:
+### Option 2: Download a ZIP file:
 
 From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There is on the upper right side a green pull down menu "Clone or download". Click on it and then click "Download ZIP". You get a file "PyAero-master.zip" which you store anywhere on your computer.
 
@@ -78,19 +76,23 @@ cd anywhere_on_your_computer
 unzip PyAero-master.zip
 ```
 
-After cloning from Git (or downloading and unzipping from Git) set the environment variable for the PyAero installation path:
+## Installation
+
+After cloning from Git, or downloading and unzipping, set the environment variable for the PyAero installation path.
+
+### Linux and Cygwin
 
 ```bash
 setenv PYAERO_PATH path_to_your_installation
-```
 
 Run PyAero using:
 
 ```bash
 python $PYAERO_PATH/src/PyAero.py
 ```
+```
 
-Then set an **alias** to any start command that you like.
+To simplify the command, set an **alias**.
 
 ```bash
 alias pyaero  "python $PYAERO_PATH/src/PyAero.py"
@@ -104,7 +106,21 @@ pyaero
 
 You might want to add PYAERO_PATH to your .login script. Likewise the start command can be added to .cshrc.
 
-On Windows you can hit Win+Pause keys and then open the advanced tab to set the PYAERO_PATH environment variable.
+### Windows
+
+In a cmd shell type:
+
+```bash
+set PYAERO_PATH=D:/My_PyAero_Installation_Path
+```
+
+Since this stores the PYAERO_PATH variable only for the current seesion, you can aslo press the Win+Pause keys and then open the advanced tab to set the PYAERO_PATH environment variable their to keep it also after reboot.
+
+Run PyAero using from a cmd shell (if python is installed in "c:/python27"):
+
+```bash
+c:/python27/python.exe %PYAERO_PATH%/src/PyAero.py
+```
 
 You should be good to go.
 
