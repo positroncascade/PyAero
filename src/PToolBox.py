@@ -299,6 +299,7 @@ class Toolbox(object):
         self.item_msh = QtGui.QWidget()
         self.item_msh.setLayout(vbl)
 
+        btn.clicked.connect(self.onBrowse)
         button.clicked.connect(self.makeMesh)
         button1.clicked.connect(self.exportMesh)
 
