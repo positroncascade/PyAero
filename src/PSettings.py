@@ -8,6 +8,9 @@ import os
 DEFAULTPATH = '.'
 PYAEROPATH = os.getenv('PYAERO_PATH', DEFAULTPATH)
 
+# modified contours and mesh folder
+OUTPUTDATA = PYAEROPATH + '/OUTPUT'
+
 # path to menu data
 MENUDATA = PYAEROPATH + '/data/Menus'
 
@@ -41,9 +44,6 @@ ICONS_L = ICONS + '24x24/'
 # path to data (e.g. airfoil coordinate files)
 # path can be absolute or relative (to position where starting PyAero)
 AIRFOILDATA = PYAEROPATH + '/data/Airfoils'
-
-# modified contours and mesh folder
-OUTPUTDATA = PYAEROPATH + '/OUTPUT'
 
 # size of airfoil coordinate markers in pixels
 MARKERSIZE = 3
