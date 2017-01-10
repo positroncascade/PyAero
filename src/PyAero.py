@@ -1,4 +1,4 @@
-#! /bin/env python
+#! /usr/bin/env python
 
 """
 PyAero is an airfoil CFD meshing (2D) and contour analysis tool.
@@ -13,7 +13,6 @@ accurate input to the subsequent meshing process.
 """
 
 import sys
-import os
 import datetime
 
 from PyQt4 import QtGui, QtCore
