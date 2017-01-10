@@ -69,8 +69,10 @@ class Windtunnel(object):
         self.block_te = block_te
         self.blocks.append(block_te)
 
-    def TunnelMesh(self, name=''):
+    def TunnelMesh(self, name='', tunnel_height=2.0):
         block_tunnel = BlockMesh(name=name)
+
+        self.tunnel_height = tunnel_height
 
         # line composed of trailing edge and airfoil meshes
         line = self.block_te.getVLines()[-1]
@@ -82,10 +84,10 @@ class Windtunnel(object):
         block_tunnel.addLine(line)
 
         # line composed of upper, lower and front line segments
-        p1 = np.array((block_tunnel.getULines()[0][0][0], 2.0))
-        p2 = np.array((0.0, 2.0))
-        p3 = np.array((0.0, -2.0))
-        p4 = np.array((block_tunnel.getULines()[0][-1][0], -2.0))
+        p1 = np.array((block_tunnel.getULines()[0][0][0], tunnel_height))
+        p2 = np.array((0.0, tunnel_height))
+        p3 = np.array((0.0, -tunnel_height))
+        p4 = np.array((block_tunnel.getULines()[0][-1][0], -tunnel_height))
 
         # upper line of wind tunnel
         line = list()
@@ -114,7 +116,7 @@ class Windtunnel(object):
         if qq == 1:
             t = np.linspace(0.0, 1.0, num=len(block_tunnel.getULines()[0]))
         else:
-            xx = np.linspace(-1.2, 1.2, len(block_tunnel.getULines()[0]))
+            xx = np.linspace(-1.3, 1.3, len(block_tunnel.getULines()[0]))
             t = (np.tanh(xx) + 1.0) / 2.0
         line = si.splev(t, tck, der=0)
         line = zip(line[0].tolist(), line[1].tolist())
@@ -177,9 +179,9 @@ class Windtunnel(object):
         for uline in ulines:
             block_tunnel.addLine(uline)
 
-        ij = [0, 25, 0, len(block_tunnel.getULines())-1]
+        ij = [0, 30, 0, len(block_tunnel.getULines())-1]
         block_tunnel.transfinite(ij=ij)
-        ij = [len(block_tunnel.getVLines())-26,
+        ij = [len(block_tunnel.getVLines())-31,
               len(block_tunnel.getVLines())-1,
               0,
               len(block_tunnel.getULines())-1]
@@ -192,11 +194,11 @@ class Windtunnel(object):
             nodes = smooth.selectNodes(domain='interior')
             block_tunnel = smooth.smooth(nodes, iterations=1,
                                          algorithm='laplace')
-            ij = [1, 25, 1, len(block_tunnel.getULines())-2]
+            ij = [1, 30, 1, len(block_tunnel.getULines())-2]
             nodes = smooth.selectNodes(domain='ij', ij=ij)
-            block_tunnel = smooth.smooth(nodes, iterations=3,
+            block_tunnel = smooth.smooth(nodes, iterations=2,
                                          algorithm='laplace')
-            ij = [len(block_tunnel.getVLines())-27,
+            ij = [len(block_tunnel.getVLines())-31,
                   len(block_tunnel.getVLines())-2,
                   1,
                   len(block_tunnel.getULines())-2]
@@ -207,8 +209,9 @@ class Windtunnel(object):
         self.block_tunnel = block_tunnel
         self.blocks.append(block_tunnel)
 
-    def TunnelMeshBack(self, name=''):
-        block_tunnel_back = BlockMesh(name=name)
+    def TunnelMeshWake(self, name='', tunnel_wake=2.0,
+                       divisions=100, ratio=0.1):
+        block_tunnel_wake = BlockMesh(name=name)
 
         # line composed of trailing edge and block_tunnel meshes
         line = self.block_tunnel.getVLines()[-1]
@@ -217,31 +220,37 @@ class Windtunnel(object):
         line += self.block_te.getULines()[-1]
         del line[-1]
         line += self.block_tunnel.getVLines()[0]
-        block_tunnel_back.addLine(line)
+        block_tunnel_wake.addLine(line)
 
         #
-        p1 = np.array((0.0, 2.0))
-        p4 = np.array((0.0, -2.0))
-        p7 = np.array((5.0, 2.0))
-        p8 = np.array((5.0, -2.0))
+        p1 = np.array((0.0, self.tunnel_height))
+        p4 = np.array((0.0, -self.tunnel_height))
+        p7 = np.array((tunnel_wake, self.tunnel_height))
+        p8 = np.array((tunnel_wake, -self.tunnel_height))
 
-        upper = BlockMesh.makeLine(p7, p1, divisions=100, ratio=0.1)
-        lower = BlockMesh.makeLine(p8, p4, divisions=100, ratio=0.1)
+        upper = BlockMesh.makeLine(p7, p1, divisions=divisions, ratio=1.0/ratio)
+        lower = BlockMesh.makeLine(p8, p4, divisions=divisions, ratio=1.0/ratio)
         left = line
         right = BlockMesh.makeLine(p8, p7, divisions=len(left)-1, ratio=1.0)
 
         boundary = [upper, lower, right, left]
-        block_tunnel_back.transfinite(boundary=boundary)
+        block_tunnel_wake.transfinite(boundary=boundary)
 
-        self.block_tunnel_back = block_tunnel_back
+        self.block_tunnel_wake = block_tunnel_wake
 
-        smooth = Smooth(block_tunnel_back)
+        smooth = Smooth(block_tunnel_wake)
         nodes = smooth.selectNodes(domain='interior')
-        block_tunnel_back = smooth.smooth(nodes, iterations=3,
+        block_tunnel_wake = smooth.smooth(nodes, iterations=2,
                                           algorithm='laplace')
 
-        self.block_tunnel_back = block_tunnel_back
-        self.blocks.append(block_tunnel_back)
+        ij = [len(block_tunnel_wake.getVLines())-10,
+              len(block_tunnel_wake.getVLines())-1,
+              0,
+              len(block_tunnel_wake.getULines())-1]
+        block_tunnel_wake.transfinite(ij=ij)
+
+        self.block_tunnel_wake = block_tunnel_wake
+        self.blocks.append(block_tunnel_wake)
 
 
 class BlockMesh(object):
@@ -609,18 +618,14 @@ class BlockMesh(object):
 
     def writeFLMA(self, name='', depth=0.1):
 
-        folder = OUTPUTDATA + '/'
-        nameroot, extension = os.path.splitext(str(name))
+        basename = os.path.basename(name)
+        nameroot, extension = os.path.splitext(str(basename))
         filename = nameroot + '_' + self.name + '.flma'
-        fullname = folder + filename
-
-        logger.log.info('FIRE mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#005511', filename))
 
         U, V = self.getDivUV()
         points = (U + 1) * (V + 1)
 
-        with open(fullname, 'w') as f:
+        with open(name, 'w') as f:
 
             numvertex = '8'
 
@@ -674,6 +679,10 @@ class BlockMesh(object):
             # write FIRE selections to FLMA file
             f.write('0')
 
+            logger.log.info('Successfully exported FIRE mesh ' +
+                            '<b><font color=%s>%s</b>'
+                            % ('#005511', filename))
+
     def writeSU2(self, name=''):
 
         folder = OUTPUTDATA + '/'
@@ -692,7 +701,7 @@ class BlockMesh(object):
             f.write('%\n')
             f.write('% Airfoil contour: ' + nameroot + ' \n')
             f.write('%\n')
-            f.write('% File created with ' + PyAero.__appname__ + '.\n')
+            f.write('% File created with ' + PyAero.__appname__ + '\n')
             f.write('% Version: ' + PyAero.__version__ + '\n')
             f.write('% Author: ' + PyAero.__author__ + '\n')
             f.write('%\n')

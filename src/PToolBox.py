@@ -3,6 +3,8 @@
 import os
 
 from PyQt4 import QtGui, QtCore
+
+import PyAero
 import PFileSystem
 import PIconProvider
 import PSvpMethod
@@ -199,7 +201,8 @@ class Toolbox(object):
         self.ratio.setDecimals(1)
         self.form_mesh.addRow(label, self.ratio)
 
-        label = QtGui.QLabel(u'Gridpoints at trailing edge')
+        label = QtGui.QLabel(u'Divisions at trailing edge')
+        label.setToolTip('Number of subdivisions along the vertical part of the TE')
         self.te_div = QtGui.QSpinBox()
         self.te_div.setSingleStep(1)
         self.te_div.setRange(1, 20)
@@ -222,7 +225,7 @@ class Toolbox(object):
         self.length_te.setDecimals(1)
         self.form_mesh.addRow(label, self.length_te)
 
-        label = QtGui.QLabel('Cell Thickness ratio (-)')
+        label = QtGui.QLabel('Cell Thickness ratio TE (-)')
         label.setToolTip('Thickness of the last cell vs. the first cell in ' +
                          'the trailing edge mesh block' + '\n'
                          'The first cell is the one attached to the airfoil ' +
@@ -233,6 +236,41 @@ class Toolbox(object):
         self.ratio_te.setValue(3.0)
         self.ratio_te.setDecimals(1)
         self.form_mesh.addRow(label, self.ratio_te)
+
+        label = QtGui.QLabel('Windtunnel Height (chords)')
+        label.setToolTip('The height of the windtunnel in number of chord lengths')
+        self.tunnel_height = QtGui.QDoubleSpinBox()
+        self.tunnel_height.setSingleStep(0.1)
+        self.tunnel_height.setRange(1.0, 10.)
+        self.tunnel_height.setValue(2.0)
+        self.tunnel_height.setDecimals(1)
+        self.form_mesh.addRow(label, self.tunnel_height)
+
+        label = QtGui.QLabel('Windtunnel Wake (chords)')
+        label.setToolTip('The wake of the windtunnel in number of chord lengths')
+        self.tunnel_wake = QtGui.QDoubleSpinBox()
+        self.tunnel_wake.setSingleStep(0.1)
+        self.tunnel_wake.setRange(0.1, 20.)
+        self.tunnel_wake.setValue(5.0)
+        self.tunnel_wake.setDecimals(1)
+        self.form_mesh.addRow(label, self.tunnel_wake)
+
+        label = QtGui.QLabel(u'Divisions in the wake')
+        self.divisions_wake = QtGui.QSpinBox()
+        self.divisions_wake.setSingleStep(10)
+        self.divisions_wake.setRange(1, 1000)
+        self.divisions_wake.setValue(100)
+        self.form_mesh.addRow(label, self.divisions_wake)
+
+        label = QtGui.QLabel('Cell Thickness Ratio WAKE (-)')
+        label.setToolTip('Thickness of the last cell vs. the first cell in ' +
+                         'the wake mesh block')
+        self.ratio_wake = QtGui.QDoubleSpinBox()
+        self.ratio_wake.setSingleStep(0.1)
+        self.ratio_wake.setRange(1., 10.)
+        self.ratio_wake.setValue(3.0)
+        self.ratio_wake.setDecimals(1)
+        self.form_mesh.addRow(label, self.ratio_wake)
 
         button = QtGui.QPushButton('Create Mesh')
         hbl = QtGui.QHBoxLayout()
@@ -299,7 +337,7 @@ class Toolbox(object):
         self.item_msh = QtGui.QWidget()
         self.item_msh.setLayout(vbl)
 
-        btn.clicked.connect(self.onBrowse)
+        btn.clicked.connect(self.onBrowseMesh)
         button.clicked.connect(self.makeMesh)
         button1.clicked.connect(self.exportMesh)
 
@@ -605,6 +643,8 @@ class Toolbox(object):
             if airfoil.contour_item.isSelected():
                 contour = airfoil.spline_data[0]
                 break
+            else:
+                return
 
         self.tunnel = PMeshing.Windtunnel()
 
@@ -620,8 +660,12 @@ class Toolbox(object):
                                      divisions=self.points_te.value(),
                                      ratio=self.ratio_te.value())
 
-        self.tunnel.TunnelMesh(name='block_tunnel')
-        self.tunnel.TunnelMeshBack(name='block_tunnel_back')
+        self.tunnel.TunnelMesh(name='block_tunnel',
+                               tunnel_height=self.tunnel_height.value())
+        self.tunnel.TunnelMeshWake(name='block_tunnel_wake',
+                                   tunnel_wake=self.tunnel_wake.value(),
+                                   divisions=self.divisions_wake.value(),
+                                   ratio=self.ratio_wake.value())
 
         self.drawMesh(airfoil)
 
@@ -664,25 +708,32 @@ class Toolbox(object):
 
         airfoil.contour_group.addToGroup(airfoil.mesh)
 
-        # fit everything into the view
-        # self.parent.slots.onViewAll()
-        # self.parent.slots.fitAirfoilInView()
-
     @QtCore.pyqtSlot()
     def exportMesh(self):
 
         name = self.lineedit_mesh.text()
 
+        if OUTPUTDATA[2:] in name:
+            folder = ''
+            print '________i was here__________'
+        else:
+            folder = OUTPUTDATA + '/'
+
+        nameroot, extension = os.path.splitext(str(name))
+
         for block in self.tunnel.blocks:
 
             if self.check_FIRE.isChecked():
-                block.writeFLMA(name=name, depth=0.2)
+                fullname = folder + nameroot + '_' + block.name + '.flma'
+                block.writeFLMA(name=fullname, depth=0.2)
 
             if self.check_SU2.isChecked():
-                block.writeSU2(name=name)
+                fullname = folder + nameroot + '_' + block.name + '.flma'
+                block.writeSU2(name=fullname)
 
             if self.check_GMESH.isChecked():
-                block.writeGMESH(name=name)
+                fullname = folder + nameroot + '_' + block.name + '.flma'
+                block.writeGMESH(name=fullname)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):
@@ -740,6 +791,8 @@ class Toolbox(object):
 
     def onBrowse(self):
 
+        names = []
+
         dialog = QtGui.QFileDialog()
 
         provider = PIconProvider.IconProvider()
@@ -772,13 +825,52 @@ class Toolbox(object):
             if airfoil.contour_item.isSelected():
                 x, y = airfoil.spline_data[0]
 
+        # export modified contour
         with open(filename, 'w') as f:
             f.write('#\n')
-            f.write('# Derived from:     %s\n' % (str(airfoil.name)))
+            f.write('# File created with ' + PyAero.__appname__ + '\n')
+            f.write('# Version: ' + PyAero.__version__ + '\n')
+            f.write('# Author: ' + PyAero.__author__ + '\n')
+            f.write('#\n')
+            f.write('# Derived from: %s\n' % (str(airfoil.name).strip()))
             f.write('# Number of points: %s\n' % (len(x)))
             f.write('#\n')
             for i, xx in enumerate(x):
                 f.write(2*'{:10.6f}'.format(x[i], y[i]) + '\n')
+
+    def onBrowseMesh(self):
+
+        names = []
+
+        dialog = QtGui.QFileDialog()
+
+        provider = PIconProvider.IconProvider()
+        dialog.setIconProvider(provider)
+        dialog.setNameFilter(DIALOGFILTER)
+        dialog.setNameFilterDetailsVisible(True)
+        dialog.setDirectory(OUTPUTDATA)
+        # allow only to select one file
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile)
+        # display also size and date
+        dialog.setViewMode(QtGui.QFileDialog.Detail)
+        # make it a save dialog
+        dialog.setAcceptMode(QtGui.QFileDialog.AcceptSave)
+        # put default name in the save dialog
+        dialog.selectFile(self.lineedit_mesh.text())
+
+        # open custom file dialog using custom icons
+        if dialog.exec_():
+            names = dialog.selectedFiles()
+            # filter = dialog.selectedFilter()
+
+        if not names:
+            return
+
+        # names is a list of QStrings
+        filename = str(names[0])
+
+        self.lineedit_mesh.setText(filename)
+        self.exportMesh()
 
 
 class ListWidget(QtGui.QListWidget):
