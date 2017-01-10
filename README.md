@@ -63,14 +63,18 @@ Currently there are no binaries available. Therefore, the source code needs to b
 ### Using Git:
 
 ```bash
+cd anywhere_on_your_computer
 $ git clone https://github.com/chiefenne/PyAero.git
 ```
 
 ### Alternatively download a ZIP file:
 
-From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There is on the upper right side a green pull down menu "Clone or download". Click on it and then click "Download ZIP".
+From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There is on the upper right side a green pull down menu "Clone or download". Click on it and then click "Download ZIP". You get a file "PyAero-master.zip" which you store anywhere on your computer.
 
-Unzip it anywhere on your computer.
+```bash
+cd anywhere_on_your_computer
+unzip PyAero-master.zip
+```
 
 After cloning from Git (or downloading and unzipping from Git) set the environment variable for the PyAero installation path:
 
@@ -78,7 +82,7 @@ After cloning from Git (or downloading and unzipping from Git) set the environme
 setenv PYAERO_PATH path_to_your_installation
 ```
 
-The set an alias to any start command that you like.
+Then set an **alias** to any start command that you like.
 
 ```bash
 alias pyaero  $PYAERO_PATH/src/PyAero.py
@@ -89,6 +93,8 @@ Then start PyAero using simply:
 ```bash
 pyaero
 ```
+
+You should be good.
 
 ## Release History
 
