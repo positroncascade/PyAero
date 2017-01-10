@@ -93,7 +93,7 @@ Run PyAero using:
 $ python $PYAERO_PATH/src/PyAero.py
 ```
 
-To simplify the command, set an **alias**.
+To simplify the command, set an *alias*.
 
 ```bash
 $ alias pyaero  "python $PYAERO_PATH/src/PyAero.py"
@@ -105,17 +105,17 @@ Then start PyAero using simply:
 $ pyaero
 ```
 
-You might want to add PYAERO_PATH to your .login script. Likewise the start command can be added to .cshrc.
+To keep everything stored across session, you might want to add PYAERO_PATH to your *.login* script. Likewise the start command can be added to *.cshrc*.
 
 ### Windows
 
-In a cmd shell type:
+In a cmd shell type (if the installation is on drive *D:* in the folder *My_PyAero_Installation_Path*):
 
 ```bash
 $ set PYAERO_PATH=D:/My_PyAero_Installation_Path
 ```
 
-Since this stores the PYAERO_PATH variable only for the current seesion, you can aslo press the Win+Pause keys and then open the advanced tab to set the PYAERO_PATH environment variable their to keep it also after reboot.
+Since this stores the PYAERO_PATH variable only for the current seesion, you can aslo press the Win+Pause keys and then open the advanced tab to set the PYAERO_PATH environment variable there to keep it also after reboot.
 
 Run PyAero using from a cmd shell (if python is installed in "c:/python27"):
 
