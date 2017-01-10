@@ -23,13 +23,18 @@ import PGraphicsView
 import PGraphicsScene
 import PContourAnalysis
 import PGuiSlots
-import PVtkView
 # import PHtmlView
 import PToolBox
 from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
                       STYLESPECIAL
 import PLogger as logger
 import PShortCuts
+
+try:
+    import PVtkView
+    VTK_installed = True
+except ImportError:
+    VTK_installed = False
 
 
 __appname__ = 'PyAero'
@@ -78,7 +83,8 @@ class MainWindow(QtGui.QMainWindow):
         # prepare additional views for tabs in right splitter window
         self.contourview = PContourAnalysis.ContourAnalysis(self)
         self.meshingview = PGraphicsView.GraphicsView(self)
-        self.postview = PVtkView.VtkWindow(self)
+        if VTK_installed:
+            self.postview = PVtkView.VtkWindow(self)
         # self.htmlview = PHtmlView.HtmlView(self)
 
         # create slots (i.e. handlers or callbacks)
@@ -165,7 +171,8 @@ class CentralWidget(QtGui.QWidget):
         self.tabs.addTab(self.parent.view, 'Airfoil')
         self.tabs.addTab(self.parent.contourview, 'Contour Analysis')
         self.tabs.addTab(self.parent.meshingview, 'Meshing')
-        self.tabs.addTab(self.parent.postview, 'Post Processing')
+        if VTK_installed:
+            self.tabs.addTab(self.parent.postview, 'Post Processing')
         # self.tabs.addTab(self.parent.htmlview, 'HTML View')
 
         # connect tab changed signal to slot
