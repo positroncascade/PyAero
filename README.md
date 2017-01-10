@@ -60,13 +60,11 @@ The documentation is automatically generated using the files in the [docs](https
 
 Currently there are no binaries available. Therefore, the source code needs to be copied to your computer.
 
-### Using git:
+### Using Git:
 
 ```bash
 $ git clone https://github.com/chiefenne/PyAero.git
 ```
-
-Change to folder "src" and type "./PyAero".
 
 ### Alternatively download a ZIP file:
 
@@ -74,7 +72,23 @@ From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There 
 
 Unzip it anywhere on your computer.
 
-Change to folder "src" and type "./PyAero".
+After cloning from Git (or downloading and unzipping from Git) set the environment variable for the PyAero installation path:
+
+```bash
+setenv PYAERO_PATH path_to_your_installation
+```
+
+The set an alias to any start command that you like.
+
+```bash
+alias pyaero  $PYAERO_PATH/src/PyAero.py
+```
+
+Then start PyAero using simply:
+
+```bash
+pyaero
+```
 
 ## Release History
 
