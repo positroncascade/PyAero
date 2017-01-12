@@ -79,10 +79,9 @@ Features
 Quickstart
 ==========
 
-Follow the :ref:`tutorial_quickstart` tutorial to get a first impression of the key functionality:
+Follow the :ref:`tutorial_quickstart` tutorial to get a first impression of the key functionality.
 
-
-Follow `this PyAero tutorial on YouTube <https://www.youtube.com/watch?v=RBrBEyHAAss>`_ to get the minimum necessary introduction to `PyAero <index.html>`_.
+Or check this `PyAero tutorial on YouTube <https://www.youtube.com/watch?v=RBrBEyHAAss>`_ to get the minimum necessary introduction to `PyAero <index.html>`_.
 
 Code repository
 ===============
