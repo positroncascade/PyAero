@@ -9,7 +9,7 @@ DEFAULTPATH = '.'
 PYAEROPATH = os.getenv('PYAERO_PATH', DEFAULTPATH)
 
 # modified contours and mesh folder
-OUTPUTDATA = PYAEROPATH + '/OUTPUT'
+OUTPUTDATA = PYAEROPATH + 'data/OUTPUT'
 
 # path to menu data
 MENUDATA = PYAEROPATH + '/data/Menus'
