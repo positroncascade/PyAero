@@ -77,6 +77,12 @@ $ cd anywhere_on_your_computer
 $ git clone https://github.com/chiefenne/PyAero.git
 ```
 
+or for a specific version, e.g. for version 1.0.0:
+
+```bash
+git clone --branch v1.0.0 https://github.com/chiefenne/PyAero
+```
+
 ### Option 2: Download a ZIP file:
 
 From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There is on the upper right side a green pull down menu "Clone or download". Click on it and then click "Download ZIP". You get a file "PyAero-master.zip" which you store anywhere on your computer.
@@ -85,6 +91,8 @@ From the [PyAero GitHub repository](https://github.com/chiefenne/PyAero). There 
 $ cd anywhere_on_your_computer
 $ unzip PyAero-master.zip
 ```
+
+Or for a specific version, e.g. for version 1.0.0 [goto the release page](https://github.com/chiefenne/PyAero/releases) and download the file **Source code.zip** or click [here](https://github.com/chiefenne/PyAero/archive/v1.0.0.zip) for direct download..
 
 ## Installation
 
