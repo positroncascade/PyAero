@@ -3,11 +3,17 @@ Usage and Tutorials
 
 This section collects several tutorials explaing the functionality of `PyAero <index.html>`_.
 
+.. _tutorial_quickstart:
 .. include:: tutorial_quickstart.inc
+.. _tutorial_load:
 .. include:: tutorial_load.inc
 .. _tutorial_settings:
 .. include:: tutorial_settings.inc
+.. _tutorial_GUI:
 .. include:: tutorial_GUI.inc
+.. _tutorial_contour_analysis:
 .. include:: tutorial_contour_analysis.inc
+.. _tutorial_meshing:
 .. include:: tutorial_meshing.inc
+.. _tutorial_GUI_modification:
 .. include:: tutorial_GUI_modification.inc

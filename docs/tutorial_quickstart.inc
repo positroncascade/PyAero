@@ -17,19 +17,19 @@ The general steps for mesh generation in `PyAero <index.html>`_ can be explained
    - This is an important task, since the mesh around the airfoil is based on the point distribution which is generated right here
    - For first tests you can go with the default settings and just click the *Spline and Refine* Button
    - The contour will first be splined (constant distance between points) with the given number of points.
-   - In the same step the contour will be refined mainly around the leading edge. The refinment criterion is a minimum angle between two consecutive line segments made of thre adjacent points
+   - In the same step the contour will be refined mainly around the leading edge. The refinment criterion is a minimum angle between two consecutive line segments made of three adjacent points
 
 3. Make a trailing edge with finite thickness
 
-   - Since in real life the airfoil trailing edges has a finit thickness, this needs to be taken into account before meshing
-   - The defaults make you a trailing edge with a thickness of 0.4% relative to the unity chord length.
+   - Since in real life the airfoil trailing edge has a finit thickness, this needs to be taken into account before meshing
+   - The defaults make a trailing edge with a thickness of 0.4% relative to the unity chord length
 
 3. Mesh the refined airfoil contour
 
-   - Click on *Create Mesh* to create your first mesh.
+   - Click on *Create Mesh* to create your first mesh
 
 4. Export the mesh in the required format
 
-   - Click on *Export Mesh* to export the mesh in a specific format. Use the appropriate check box(es).
+   - Click on *Export Mesh* to export the mesh in a specific format. Use the appropriate check box(es)
 
 This is it.
