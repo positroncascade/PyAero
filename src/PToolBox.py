@@ -258,7 +258,7 @@ class Toolbox(object):
         self.ratio_height.setSingleStep(1.0)
         self.ratio_height.setRange(0.1, 50.)
         self.ratio_height.setValue(10.0)
-        self.v.setDecimals(1)
+        self.ratio_height.setDecimals(1)
         self.form_mesh.addRow(label, self.ratio_height)
 
         label = QtGui.QLabel('Windtunnel Wake (chords)')
