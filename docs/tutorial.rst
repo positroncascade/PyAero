@@ -3,7 +3,7 @@ Usage and Tutorials
 
 This section collects several tutorials explaing the functionality of `PyAero <index.html>`_.
 
-.. _tutorial_quickstart:
+.. _quickstart:
 .. include:: tutorial_quickstart.inc
 .. _tutorial_load:
 .. include:: tutorial_load.inc
