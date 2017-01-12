@@ -28,10 +28,31 @@ PyAero is open-source and distributed under the MIT license, see `LICENSE <licen
 
    PyAero user interface at a glance
 
+.. figure::  images/mesh.png
+   :align:   center
+   :target:  _images/mesh.png
+   :name: Mesh_HN1033
+
+   Example mesh around HN1033 airfoil
+
+.. figure::  images/LE_mesh.png
+   :align:   center
+   :target:  _images/LE_mesh.png
+   :name: Mesh_HN1033_LE
+
+   Example mesh around HN1033 airfoil - Leading Edge
+
+.. figure::  images/TE_mesh.png
+   :align:   center
+   :target:  _images/TE_mesh.png
+   :name: Mesh_HN1033_TE
+
+   Example mesh around HN1033 airfoil - Trailing Edge (with finite thickness)
+
 .. figure::  images/RG15_mesh_part.png
    :align:   center
    :target:  _images/RG15_mesh_part.png
-   :name: GUI
+   :name: Mesh_RG15
 
    Example mesh around RG15 airfoil (3rd mesh dimension 1 layer)
 
