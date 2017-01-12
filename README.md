@@ -92,7 +92,7 @@ $ cd anywhere_on_your_computer
 $ unzip PyAero-master.zip
 ```
 
-Or for a specific version, e.g. for version 1.0.0 [goto the release page](https://github.com/chiefenne/PyAero/releases) and download the file **Source code.zip** or click [here](https://github.com/chiefenne/PyAero/archive/v1.0.0.zip) for direct download..
+Or for a specific version, e.g. for version 1.0.0 [goto the release page](https://github.com/chiefenne/PyAero/releases) and download the file **Source code.zip** or click [here](https://github.com/chiefenne/PyAero/archive/v1.0.0.zip) for direct download of version v1.0.0.
 
 ## Installation
 
