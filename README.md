@@ -144,21 +144,9 @@ You should be good to go.
 
 ## Release History
 
-* 1.0
+* 1.0.0
     * Meshes can be generated now.
     * Export available in AVL-FIRE, SU2 and GMESH formats
-
-* 0.9
-    * GUI is almost ready, at least ready to be able to do meaningful work
-    * All preparations for mehing are done
-    * Airfoil contours can be loaded, splined and refined
-    * A trailing edge thickness can be added
-
-* 0.8
-    * Raw functionality of GUI available
-    * Zooming and moving works
-    * Airfoils can be loaded (also multiple airfoils is possible)
-
 
 Andreas Ennemoser – [@chiefenne](https://twitter.com/chiefenne) – andreas.ennemoser@aon.at
  
