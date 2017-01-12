@@ -18,7 +18,7 @@ The classical :menuselection:`File --> Open` menu is a standard way to load data
 
    *Open* menu to load an airfoil contour via the file browser
 
-Load  via the inline file browser
+Load via the inline file browser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As outlined above there are more ways to load airfoils. A very handy way to browse airfoils is to use the implemented file browser. This browser is restricted in terms of navigation. Only files and folders below a predefined root path are visible. The default root is  the :file:`data` subfolder from the standard installation.
