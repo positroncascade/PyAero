@@ -174,7 +174,7 @@ class Toolbox(object):
         self.points_on_airfoil.setEnabled(False)
         self.form_mesh.addRow(label, self.points_on_airfoil)
 
-        label = QtGui.QLabel(u'Gridpoints normal to airfoil')
+        label = QtGui.QLabel(u'Divisions normal to airfoil')
         self.points_n = QtGui.QSpinBox()
         self.points_n.setSingleStep(1)
         self.points_n.setRange(1, 200)
@@ -209,7 +209,7 @@ class Toolbox(object):
         self.te_div.setValue(3)
         self.form_mesh.addRow(label, self.te_div)
 
-        label = QtGui.QLabel(u'Gridpoints downstream trailing edge')
+        label = QtGui.QLabel(u'Divisions downstream trailing edge')
         self.points_te = QtGui.QSpinBox()
         self.points_te.setSingleStep(1)
         self.points_te.setRange(1, 100)
@@ -250,7 +250,7 @@ class Toolbox(object):
         self.divisions_height = QtGui.QSpinBox()
         self.divisions_height.setSingleStep(5)
         self.divisions_height.setRange(1, 1000)
-        self.divisions_height.setValue(50)
+        self.divisions_height.setValue(100)
         self.form_mesh.addRow(label, self.divisions_height)
 
         label = QtGui.QLabel('Cell Thickness Ratio Height (-)')
@@ -283,7 +283,7 @@ class Toolbox(object):
         self.ratio_wake = QtGui.QDoubleSpinBox()
         self.ratio_wake.setSingleStep(0.1)
         self.ratio_wake.setRange(1., 10.)
-        self.ratio_wake.setValue(3.0)
+        self.ratio_wake.setValue(10.0)
         self.ratio_wake.setDecimals(1)
         self.form_mesh.addRow(label, self.ratio_wake)
 
@@ -676,7 +676,9 @@ class Toolbox(object):
                                      ratio=self.ratio_te.value())
 
         self.tunnel.TunnelMesh(name='block_tunnel',
-                               tunnel_height=self.tunnel_height.value())
+                               tunnel_height=self.tunnel_height.value(),
+                               divisions_height=self.divisions_height.value(),
+                               ratio_height=self.ratio_height.value())
         self.tunnel.TunnelMeshWake(name='block_tunnel_wake',
                                    tunnel_wake=self.tunnel_wake.value(),
                                    divisions=self.divisions_wake.value(),
@@ -728,31 +730,28 @@ class Toolbox(object):
 
         name = self.lineedit_mesh.text()
 
-        folder = OUTPUTDATA + '/'
-
         nameroot, extension = os.path.splitext(str(name))
 
         for block in self.tunnel.blocks:
 
+            if from_browse_mesh:
+                fullname = name + block.name
+            else:
+                fullname = OUTPUTDATA + nameroot + '_' + block.name
+
             if self.check_FIRE.isChecked():
-                fullname = folder + nameroot + '_' + block.name + '.flma'
-                if from_browse_mesh:
-                    fullname = name
-                    if '.flma' not in name:
-                        fullname = name + '.flma'
-                print '______________FULLNAME______', fullname
+                if '.flma' not in fullname:
+                    fullname += '.flma'
                 block.writeFLMA(name=fullname, depth=0.2)
 
             if self.check_SU2.isChecked():
-                fullname = folder + nameroot + '_' + block.name + '.flma'
-                if from_browse_mesh:
-                    fullname = name
+                if '.su2' not in fullname:
+                    fullname += '.su2'
                 block.writeSU2(name=fullname)
 
             if self.check_GMESH.isChecked():
-                fullname = folder + nameroot + '_' + block.name + '.flma'
-                if from_browse_mesh:
-                    fullname = name
+                if '.msh' not in fullname:
+                    fullname += '.msh'
                 block.writeGMESH(name=fullname)
 
     @QtCore.pyqtSlot()

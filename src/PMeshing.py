@@ -69,7 +69,8 @@ class Windtunnel(object):
         self.block_te = block_te
         self.blocks.append(block_te)
 
-    def TunnelMesh(self, name='', tunnel_height=2.0):
+    def TunnelMesh(self, name='', tunnel_height=2.0, divisions_height=100,
+                   ratio_height=10.0):
         block_tunnel = BlockMesh(name=name)
 
         self.tunnel_height = tunnel_height
@@ -127,10 +128,12 @@ class Windtunnel(object):
         p6 = np.array(block_tunnel.getULines()[0][-1])
 
         # first vline
-        vline1 = BlockMesh.makeLine(p5, p1, divisions=50, ratio=10.0)
+        vline1 = BlockMesh.makeLine(p5, p1, divisions=divisions_height,
+                                    ratio=ratio_height)
 
         # last vline
-        vline2 = BlockMesh.makeLine(p6, p4, divisions=50, ratio=10.0)
+        vline2 = BlockMesh.makeLine(p6, p4, divisions=divisions_height,
+                                    ratio=ratio_height)
 
         boundary = [block_tunnel.getULines()[0],
                     block_tunnel.getULines()[-1],
@@ -618,7 +621,7 @@ class BlockMesh(object):
 
     def writeFLMA(self, name='', depth=0.1):
 
-        basename = os.path.basename(name)
+        basename = os.path.basename(str(name))
         nameroot, extension = os.path.splitext(str(basename))
         filename = nameroot + '_' + self.name + '.flma'
 
