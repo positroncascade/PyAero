@@ -724,17 +724,11 @@ class Toolbox(object):
         airfoil.contour_group.addToGroup(airfoil.mesh)
 
     @QtCore.pyqtSlot()
-    def exportMesh(self):
+    def exportMesh(self, from_browse_mesh=False):
 
         name = self.lineedit_mesh.text()
 
-        # FIXME
-        # FIXME this works only if browsing in existing output folder
-        # FIXME
-        if OUTPUTDATA[2:] in name:
-            folder = ''
-        else:
-            folder = OUTPUTDATA + '/'
+        folder = OUTPUTDATA + '/'
 
         nameroot, extension = os.path.splitext(str(name))
 
@@ -742,14 +736,20 @@ class Toolbox(object):
 
             if self.check_FIRE.isChecked():
                 fullname = folder + nameroot + '_' + block.name + '.flma'
+                if from_browse_mesh:
+                    fullname = name
                 block.writeFLMA(name=fullname, depth=0.2)
 
             if self.check_SU2.isChecked():
                 fullname = folder + nameroot + '_' + block.name + '.flma'
+                if from_browse_mesh:
+                    fullname = name
                 block.writeSU2(name=fullname)
 
             if self.check_GMESH.isChecked():
                 fullname = folder + nameroot + '_' + block.name + '.flma'
+                if from_browse_mesh:
+                    fullname = name
                 block.writeGMESH(name=fullname)
 
     @QtCore.pyqtSlot()
@@ -887,7 +887,8 @@ class Toolbox(object):
         filename = str(names[0])
 
         self.lineedit_mesh.setText(filename)
-        self.exportMesh()
+
+        self.exportMesh(from_browse_mesh=True)
 
 
 class ListWidget(QtGui.QListWidget):
