@@ -14,7 +14,6 @@ import PSplineRefine
 import PTrailingEdge
 import PMeshing
 from PSettings import ICONS_L, DIALOGFILTER, DIALOGFILTER_MESH, OUTPUTDATA
-import PLogger as logger
 
 
 class Toolbox(object):
