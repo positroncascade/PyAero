@@ -6,6 +6,7 @@ OLD_doc/
 PyAero.sublime-project
 PyAero.sublime-workspace
 PyInstaller/
+OUTPUT/*
 
 # Visual Studio Code
 src/.vscode

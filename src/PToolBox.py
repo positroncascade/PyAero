@@ -13,7 +13,7 @@ import PGraphicsItem
 import PSplineRefine
 import PTrailingEdge
 import PMeshing
-from PSettings import ICONS_L, DIALOGFILTER, OUTPUTDATA
+from PSettings import ICONS_L, DIALOGFILTER, DIALOGFILTER_MESH, OUTPUTDATA
 import PLogger as logger
 
 
@@ -738,6 +738,9 @@ class Toolbox(object):
                 fullname = folder + nameroot + '_' + block.name + '.flma'
                 if from_browse_mesh:
                     fullname = name
+                    if '.flma' not in name:
+                        fullname = name + '.flma'
+                print '______________FULLNAME______', fullname
                 block.writeFLMA(name=fullname, depth=0.2)
 
             if self.check_SU2.isChecked():
@@ -863,7 +866,7 @@ class Toolbox(object):
 
         provider = PIconProvider.IconProvider()
         dialog.setIconProvider(provider)
-        dialog.setNameFilter(DIALOGFILTER)
+        dialog.setNameFilter(DIALOGFILTER_MESH)
         dialog.setNameFilterDetailsVisible(True)
         dialog.setDirectory(OUTPUTDATA)
         # allow only to select one file

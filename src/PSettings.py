@@ -54,6 +54,7 @@ DEFAULT_CONTOUR = AIRFOILDATA + '/F1K/hn1033a.dat'
 
 # set the filter for files to be shown in dialogs
 DIALOGFILTER = 'Airfoil contour files (*.dat *.txt);;STL files (*.stl)'
+DIALOGFILTER_MESH = 'Mesh files FIRE(*.flma);;Mesh files SU2 (*.su2);;Mesh files GMESH (*.msh)'
 
 # set the filter for files to be shown in the airfoil browser
 FILEFILTER = ['*.dat', '*.txt', '*.msh']
