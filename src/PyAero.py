@@ -20,14 +20,19 @@ from PyQt4 import QtGui, QtCore
 import PMenusTools as GUI
 import PGraphicsView
 import PGraphicsScene
-import PContourAnalysis
 import PGuiSlots
-# import PHtmlView
+import PContourAnalysis
 import PToolBox
 from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
                       STYLESPECIAL
 import PLogger as logger
 import PShortCuts
+
+try:
+    import matplotlib
+    matplotlib_installed = True
+except ImportError:
+    matplotlib_installed = False
 
 try:
     import PVtkView
@@ -80,7 +85,8 @@ class MainWindow(QtGui.QMainWindow):
         self.view.setScene(self.scene)
 
         # prepare additional views for tabs in right splitter window
-        self.contourview = PContourAnalysis.ContourAnalysis(self)
+        if matplotlib_installed:
+            self.contourview = PContourAnalysis.ContourAnalysis(self)
         self.meshingview = PGraphicsView.GraphicsView(self)
         if VTK_installed:
             self.postview = PVtkView.VtkWindow(self)
@@ -168,7 +174,8 @@ class CentralWidget(QtGui.QWidget):
 
         self.tabs = QtGui.QTabWidget()
         self.tabs.addTab(self.parent.view, 'Airfoil')
-        self.tabs.addTab(self.parent.contourview, 'Contour Analysis')
+        if matplotlib_installed:
+            self.tabs.addTab(self.parent.contourview, 'Contour Analysis')
         self.tabs.addTab(self.parent.meshingview, 'Meshing')
         if VTK_installed:
             self.tabs.addTab(self.parent.postview, 'Post Processing')
