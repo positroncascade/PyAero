@@ -246,6 +246,21 @@ class Toolbox(object):
         self.tunnel_height.setDecimals(1)
         self.form_mesh.addRow(label, self.tunnel_height)
 
+        label = QtGui.QLabel(u'Divisions of Tunnel Height')
+        self.divisions_height = QtGui.QSpinBox()
+        self.divisions_height.setSingleStep(5)
+        self.divisions_height.setRange(1, 1000)
+        self.divisions_height.setValue(50)
+        self.form_mesh.addRow(label, self.divisions_height)
+
+        label = QtGui.QLabel('Cell Thickness Ratio Height (-)')
+        self.ratio_height = QtGui.QDoubleSpinBox()
+        self.ratio_height.setSingleStep(1.0)
+        self.ratio_height.setRange(0.1, 50.)
+        self.ratio_height.setValue(10.0)
+        self.v.setDecimals(1)
+        self.form_mesh.addRow(label, self.ratio_height)
+
         label = QtGui.QLabel('Windtunnel Wake (chords)')
         label.setToolTip('The wake of the windtunnel in number of chord lengths')
         self.tunnel_wake = QtGui.QDoubleSpinBox()
