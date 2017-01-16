@@ -8,7 +8,7 @@ class Export(object):
         super(Export, self).__init__()
         self.blocks = blocks
 
-    def getNearestNeighbours(set1, set2, radius):
+    def getNearestNeighbours(set1, set2, radius=0.001):
         """Nearest neighbour search. Get all indices of points in d1
         which are within distance radius to d2.
 
@@ -64,5 +64,15 @@ class Export(object):
                     connectivity.setdefault(block.name, []).append(
                         (p1, p2, p3, p4, p5, p6, p7, p8))
 
-        for block in len(self.blocks()):
+        for id, block in enumerate(self.blocks):
+            if id == len(self.blocks) - 2:
+                break
+            points_1 = self.getPoints(self.blocks[id])
+            points_2 = self.getPoints(self.blocks[id+1])
+            nn = self.getNearestNeighbours(points_1, points_2, radius=0.001)
 
+    def getPoints(self, block):
+        points = list()
+        for uline in block.getULines:
+            points.append(uline)
+        return points
