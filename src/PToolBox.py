@@ -281,8 +281,8 @@ class Toolbox(object):
                          'the wake mesh block')
         self.ratio_wake = QtGui.QDoubleSpinBox()
         self.ratio_wake.setSingleStep(0.1)
-        self.ratio_wake.setRange(1., 10.)
-        self.ratio_wake.setValue(10.0)
+        self.ratio_wake.setRange(0.01, 100.0)
+        self.ratio_wake.setValue(15.0)
         self.ratio_wake.setDecimals(1)
         self.form_mesh.addRow(label, self.ratio_wake)
 
