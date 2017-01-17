@@ -20,7 +20,9 @@
     <Menubar name='View'>
         <Submenu name='Fit airfoil in view' tip='Set view to selected airfoil' short='CTRL+f' icon='' handler='fitAirfoilInView'></Submenu>
         <Submenu name='Fit all in view' tip='Set view to all items visible' short='CTRL+SHIFT+f' icon='' handler='onViewAll'></Submenu>
+        <Submenu name='Separator' tip=' ' short=' ' icon=' ' handler=' '></Submenu>
         <Submenu name='Toggle background' tip='Toggle background color' short='CTRL+b' icon='' handler='onBackground'></Submenu>
+        <Submenu name='Toggle message window' tip='Toggle the message window to have more space for the viewer' short='CTRL+m' icon='' handler='toggleLogDock'></Submenu>
     </Menubar>
     <Menubar name='Tools'>
         <Submenu name='Calculator' tip='Start the internal calculator' short='CTRL+SHIFT+l' icon='Calculator.png' handler='onCalculator'></Submenu>
