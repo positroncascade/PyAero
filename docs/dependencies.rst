@@ -2,6 +2,6 @@ Dependencies
 ============
 
  - PyQt4
+ - Mumpy, Scipy
+ - Matplotlib
  - PyVTK
- - numpy, scipy, matplotlib
- - lmxl (to be removed)
