@@ -37,7 +37,7 @@ The menus in the menubar and the tools in the toolbar (see Toolbar) are coded in
 Toolbar
 -------
 
-The toolbar in `PyAero <index.html>`_ (see also:ref:`figure_main_screen`) allows fast access to actions which are otherwise triggered by menus. Each of the toolbar buttons launch a specific action. The toolbar can be customized by editing the file :file:`$PYAEROPATH/data/PToolBar.xml`.
+The toolbar in `PyAero <index.html>`_ (see also :ref:`figure_main_screen`) allows fast access to actions which are otherwise triggered by menus. Each of the toolbar buttons launch a specific action. The toolbar can be customized by editing the file :file:`$PYAEROPATH/data/PToolBar.xml`.
 
 .. figure::  images/toolbar_animated.gif
    :align:   center
