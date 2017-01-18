@@ -38,7 +38,7 @@ The file browser is located in the *toolbox* area on the left side of the applic
 Load via the *Toolbar*
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Another fast way to open the file dialog is to click on the :menuselection:`Open` icon (see image below) in the toolbar. The toolbar consists of a row of icons just below the menu bar. The toolbar can be configured by editing the file :file:`PToolBar.xml`.
+Another fast way to open the file dialog is to click on the :menuselection:`Open` icon (see image below) in the toolbar. The toolbar consists of a row of icons just below the menu bar. The toolbar can be customized by editing the file :file:`$PYAEROPATH/data/PToolBar.xml`.
 
 .. _figure_toolbar_open:
 .. figure::  images/toolbar_open.png
