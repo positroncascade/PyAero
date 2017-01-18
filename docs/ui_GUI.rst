@@ -42,7 +42,7 @@ The toolbar in `PyAero <index.html>`_ (see also :ref:`figure_main_screen`) allow
 .. figure::  images/toolbar_animated.gif
    :align:   center
    :target:  _images/toolbar_animated.gif
-   :name: menu_structure
+   :name: toolbar_animated
 
    Overview on toolbar options
 
@@ -53,16 +53,22 @@ The toolbox functions are arranged at the left border of the GUI (see also :ref:
 
 .. figure::  images/toolbox_animated.gif
    :align:   center
-   :target:  _images/toolbar_animated.gif
-   :name: menu_structure
+   :target:  _images/toolbox_animated.gif
+   :name: toolbox_animated
 
    Overview on toolbox options
 
 Tabbed Views
 ------------
 
-The graphics view in `PyAero <index.html>`_ (see also :ref:`figure_main_screen`) and a set of other views are arranged via a tab bar, e.g. for use in tabbed dialogs.
+The graphics view in `PyAero <index.html>`_ and a set of other views (see figure below) are arranged via a tab bar, e.g. for using tabbed views.
+
+.. figure::  images/tabbed_views_animated.gif
+   :align:   center
+   :target:  _images/tabbed_views_animated.gif
+   :name: tabbed_views_animated
+
+   Overview on tabbed views
 
 .. note::
    Currently there is only the *Airfoil* tab active, i.e. populated with content when working with PyAero.
-
