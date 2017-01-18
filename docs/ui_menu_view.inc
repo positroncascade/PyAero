@@ -1,7 +1,6 @@
 Menu *View*
 ^^^^^^^^^^^
 
-
 The :menuselection:`View` menu is used to dedicatedzoom levels or to toggle parameters of the view.
 
 All submenus of the :menuselection:`View` menu  can be activated by respective shortcuts or by using the right mouse button inside the graphics view (see also :ref:`figure_main_screen`).
