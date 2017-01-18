@@ -6,6 +6,7 @@ User Interface
 Main Screen
 -----------
 
+.. _figure_main_screen:
 .. figure::  images/main_screen.png
    :align:   center
    :target:  _images/main_screen.png
@@ -29,4 +30,5 @@ The menus in the menubar and the tools in the toolbar (see Toolbar) are coded in
 
 .. include:: ui_menu_file.inc
 .. include:: ui_menu_edit.inc
+.. include:: ui_menu_view.inc
 .. include:: ui_menu_help.inc
