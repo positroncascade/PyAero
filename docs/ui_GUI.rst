@@ -45,3 +45,24 @@ The toolbar in `PyAero <index.html>`_ (see also :ref:`figure_main_screen`) allow
    :name: menu_structure
 
    Overview on toolbar options
+
+Toolbox Functions
+-----------------
+
+The toolbox functions (see also :ref:`figure_main_screen`) carry the main dialogs carry the main dialogs for working with `PyAero <index.html>`_.
+
+.. figure::  images/toolbox_animated.gif
+   :align:   center
+   :target:  _images/toolbar_animated.gif
+   :name: menu_structure
+
+   Overview on toolbox options
+
+Tabbed Views
+------------
+
+The graphics view in `PyAero <index.html>`_ (see also :ref:`figure_main_screen`) and a set of other views are arranged via a tab bar, e.g. for use in tabbed dialogs.
+
+.. note::
+   Currently there is only the *Airfoil* tab active, i.e. populated with content when working with PyAero.
+
