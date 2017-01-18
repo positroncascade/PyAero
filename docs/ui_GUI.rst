@@ -49,7 +49,7 @@ The toolbar in `PyAero <index.html>`_ (see also :ref:`figure_main_screen`) allow
 Toolbox Functions
 -----------------
 
-The toolbox functions (see also :ref:`figure_main_screen`) carry the main dialogs carry the main dialogs for working with `PyAero <index.html>`_.
+The toolbox functions are arranged at the left border of the GUI (see also :ref:`figure_main_screen`) The toolbox is the main working area when generating meshes with `PyAero <index.html>`_. The complete functionality like splining, refining, contour analysis and meshing are operated there. See the animation below to get an overview on the options available in the toolbox.
 
 .. figure::  images/toolbox_animated.gif
    :align:   center
