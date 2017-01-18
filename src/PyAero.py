@@ -12,6 +12,7 @@ Functions allow splining, refinement, smoothing, etc. in order to provide
 accurate input to the subsequent meshing process.
 """
 
+import os
 import sys
 import datetime
 
@@ -24,7 +25,7 @@ import PGuiSlots
 import PContourAnalysis
 import PToolBox
 from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
-                      STYLESPECIAL
+                      STYLESPECIAL, OUTPUTDATA, MENUDATA
 import PLogger as logger
 import PShortCuts
 
@@ -58,6 +59,8 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, style, parent=None):
         # call constructor of QMainWindow
         super(MainWindow, self).__init__(parent)
+
+        self.checkEnvironment()
 
         self.parent = parent
 
@@ -133,6 +136,19 @@ class MainWindow(QtGui.QMainWindow):
 
         # show the GUI
         self.show()
+
+    def checkEnvironment(self):
+
+        # check if path is correct
+        if not os.path.exists(MENUDATA):
+            print ('\n PyAero ERROR: Folder %s does not exist.' % (MENUDATA))
+            print (' PyAero ERROR: Maybe you are starting PyAero from the wrong location.\n')
+            sys.exit()
+
+        # check if output folder does exist
+        if not os.path.exists(OUTPUTDATA):
+            os.mkdir(OUTPUTDATA, 0777)
+            print ('Folder %s created.' % (OUTPUTDATA))
 
     # ********************************
     # slots which are not in PGuiSlots
