@@ -12,3 +12,16 @@ The meshing process in `PyAero <index.html>`_ relies on the point distribution o
    :align:   center
    :target:  _images/splining_animated_new.gif
    :name: splining_animated_new
+
+   Airfoil contour before and after splining
+
+Two functions improve the contour before meshing. After clicking *Spline and Refine* in the respective toolbox function, the contour will at first be splined and in a second step refined. The splining is done using `B-splines` via the Scyipy function :code:`scipy.interpolate.splprep`.
+
+.. _figure_toolbox_spline_refine_1:
+.. figure::  images/toolbox_spline_refine_1.png
+   :align:   center
+   :target:  _images/toolbox_spline_refine_1.png
+   :name: toolbox_spline_refine_1
+
+   Toolbox function for specifying spline parameters
+
