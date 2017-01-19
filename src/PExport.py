@@ -70,6 +70,7 @@ class Export(object):
             points_1 = self.getPoints(self.blocks[id])
             points_2 = self.getPoints(self.blocks[id+1])
             nn = self.getNearestNeighbours(points_1, points_2, radius=0.001)
+            nnrev = self.getNearestNeighbours(points_2, points_1, radius=0.001)
 
     def getPoints(self, block):
         points = list()

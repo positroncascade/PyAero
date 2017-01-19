@@ -1,5 +1,5 @@
-Usage and Tutorials
-===================
+Tutorials
+=========
 
 This section collects several tutorials explaing the functionality of `PyAero <index.html>`_.
 
@@ -9,6 +9,8 @@ This section collects several tutorials explaing the functionality of `PyAero <i
 .. include:: tutorial_load.inc
 .. _tutorial_spline_refine:
 .. include:: tutorial_spline_refine.inc
+.. _tutorial_trailing_edge:
+.. include:: tutorial_trailing_edge.inc
 .. _tutorial_meshing:
 .. include:: tutorial_meshing.inc
 .. _tutorial_contour_analysis:
