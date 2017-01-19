@@ -23,12 +23,12 @@ Load via the inline file browser
 
 As outlined above there are more ways to load airfoils. A very handy way to browse airfoils is to use the implemented file browser. This browser is restricted in terms of navigation. Only files and folders below a predefined root path are visible. The default root is  the :file:`data` subfolder from the standard installation.
 
-The file browser is located in the *toolbox* area on the left side of the application. A *toolbox* is a GUI element that displays a column of tabs one above the other, with the current item displayed below the current tab.
+The file browser is located in the *toolbox* area on the left side of the application (see also :ref:`figure_main_screen`). A *toolbox* is a GUI element that displays a column of tabs one above the other, with the current item displayed below the current tab.
 
 .. _figure_toolbox_area:
-.. figure::  images/toolbox_area.png
+.. figure::  images/toolbox_area_1.png
    :align:   center
-   :target:  _images/toolbox_area.png
+   :target:  _images/toolbox_area_1.png
    :name: Toolbar_Open
 
    File browser integrated in the *Toolbox*.
