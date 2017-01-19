@@ -92,7 +92,7 @@ At the trailing edge again pronounced pressure gradients due to flow separation 
 
    Airfoil RG15: Contour after splining with 60 points, LE and TE refinements
 
-The trailing edge refinement algorithm is somewhat simpler. The user specifies the number of segments to be refinded at the trailing edge. If the number of `Refine trailinge edge (old segments)` is 3, both, at the upper and lower sides of the contour, the last 3 segments are selected for refinement. The number of segments is then changed to `Refine trailinge edge (new segments)`. If this number is 6 and the chosen compression rate ``Refine trailinge edge ratio` is 4, a distribution as depicted in figure :ref:`figure_refining_2` is created.
+The trailing edge refinement algorithm is somewhat simpler. The user specifies the number of segments to be refinded at the trailing edge. If the number of `Refine trailinge edge (old segments)` is 3, both, at the upper and lower sides of the contour, the last 3 segments are selected for refinement. The number of segments is then changed to `Refine trailinge edge (new segments)`. If this number is 6 and the chosen compression rate `Refine trailinge edge ratio` is 4, a distribution as depicted in figure :ref:`figure_refining_2` is created.
 
 .. _figure_refining_2:
 .. figure::  images/refining_2.png
