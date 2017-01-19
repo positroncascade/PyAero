@@ -54,7 +54,7 @@ The splining is done using B-splines via the Scyipy function :code:`scipy.interp
 
 Obviously, at the leading and trailing edges some more care is necessary to produce the required mesh resolution. At the leading edge it is required to resolve the big pressure gradients which are produced by the shape of the airfoil nose.
 
-The refinement algorithm is employed in a recursive way in order to resolve the contour until a certain criterion/threshold is matched. Figure :ref:`figure_refining_1` depicts the refinement algorithm. After the splining, as outlined before, equidistant arc length segments are created on the spline with respect to the prescribed number of points. During recursive refinement the algorthm checks each pair of line segments to match the refinment criterion. The latter is based on the angle included between the adjacent segments. If the angle is less than a threshold specified by the user via the `Refinement tolerance (°)` input, the algorithm adds two points. Each point is placed on a "background spline" with 500 points, half distance within each of the current segments. Then new segments are created and angles are checked over and over again, until no pair of segments exists which include angles less than the threshold. Angles between 170° and 173° already produce very well resolved leading edge contours.
+The refinement algorithm is employed in a recursive way in order to resolve the contour until a certain criterion/threshold is matched. Figure :ref:`figure_refining_1` depicts the algorithm. After the splining, as outlined before, equidistant arc length segments are created on the spline with respect to the prescribed number of points. During recursive refinement the algorthm checks each pair of line segments to match the criterion. The latter is based on the angle included between the adjacent segments. If the angle is less than a threshold specified by the user via the `Refinement tolerance (°)` input, the algorithm adds two points. Each point is placed on a "background spline" with 500 points, half distance within each of the current segments. Then new segments are created and angles are checked over and over again, until no pair of segments exists which include angles less than the threshold.
 
 .. _figure_refining_1:
 .. figure::  images/refining_1.png
@@ -63,6 +63,8 @@ The refinement algorithm is employed in a recursive way in order to resolve the 
    :name: refining_1
 
    Refinement algorithm
+
+Angles between 170° and 173° already produce very well resolved leading edge contours (see following figures).
 
 .. _figure_splining_60pts_ref170:
 .. figure::  images/splining_60pts_ref170.png
@@ -89,3 +91,14 @@ At the trailing edge again pronounced pressure gradients due to flow separation 
    :name: splining_60ptsplining_60pts_ref170_TE3s_ref170
 
    Airfoil RG15: Contour after splining with 60 points, LE and TE refinements
+
+The trailing edge refinement algorithm is somewhat simpler. The user specifies the number of segments to be refinded at the trailing edge. If The number of `Refine trailinge edge (old segments)` is 3, both, at the upper and lower sides of the contour, the last 3 segments are selected for refinement. The number of segments is then changed to `Refine trailinge edge (new segments)`. If this number is 6 and the chosen compression rate ``Refine trailinge edge ratio` is 4, a distribution as depicted in figure :ref:`figure_refining_2` is created.
+
+.. _figure_refining_2:
+.. figure::  images/refining_2.png
+   :align:   center
+   :target:  _images/refining_2.png
+   :name: refining_2
+
+   Airfoil RG15: Close-up, 60 points, LE refinement 3, 6, 4
+
