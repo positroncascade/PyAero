@@ -32,6 +32,7 @@ class Airfoil(object):
 
         self.scene = scene
         self.name = name
+        self.chord = None
         self.contour_item = None
         self.contourspline_item = None
         self.raw_coordinates = None
@@ -75,7 +76,15 @@ class Airfoil(object):
 
         # store airfoil coordinates as list of tuples
         self.raw_coordinates = np.array((x, y))
+
+        # normalize airfoil to unit chord
+        self.raw_coordinates[0] -= np.min(x)
+        divisor = np.max(self.raw_coordinates[0])
+        self.raw_coordinates[0] /= divisor
+        self.raw_coordinates[1] /= divisor
+
         self.offset = [np.min(y), np.max(y)]
+        self.chord = np.max(x) - np.min(x)
 
         return True
 
@@ -204,7 +213,8 @@ class Airfoil(object):
         line.pen.setStyle(QtCore.Qt.CustomDashLine)
         # pattern is 1px dash, 4px space, 7px dash, 4px
         line.pen.setDashPattern([1, 4, 10, 4])
-        line.Line(0.0, 0.0, 1.0, 0.0)
+        line.Line(np.min(self.raw_coordinates[0]), 0.0,
+                  np.max(self.raw_coordinates[0]), 0.0)
 
         self.chord = PGraphicsItem.GraphicsItem(line, self.scene)
         self.contour_group.addToGroup(self.chord)
