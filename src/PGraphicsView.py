@@ -6,7 +6,7 @@ from PyQt4 import QtGui, QtCore
 from PSettings import ZOOMANCHOR, SCROLLBARS, SCALEINC, MINZOOM, MAXZOOM, \
                       MARKERSIZE, MARKERPENWIDTH, RUBBERBANDSIZE
 
-# put constraints on rubberband zoom ( relative rectangle wdith)
+# put constraints on rubberband zoom (relative rectangle wdith)
 RUBBERBANDSIZE = min(RUBBERBANDSIZE, 1.0)
 RUBBERBANDSIZE = max(RUBBERBANDSIZE, 0.05)
 
@@ -33,6 +33,9 @@ class GraphicsView(QtGui.QGraphicsView):
 
         self.parent = parent
         self.ctrl = False
+
+        self._rightMousePressed = False
+        self._was_dragging = False
 
         # allow drops from drag and drop
         self.setAcceptDrops(True)
@@ -110,7 +113,6 @@ class GraphicsView(QtGui.QGraphicsView):
     def mousePressEvent(self, event):
         """Re-implement QGraphicsView's mousePressEvent handler"""
 
-        # call original implementation of QGraphicsView mousePressEvent handler
         if event.button() == QtCore.Qt.LeftButton:
             # do the standard operation only for left button click
             # e.g. for selection
@@ -132,18 +134,32 @@ class GraphicsView(QtGui.QGraphicsView):
             # show, even at zero size, allows to check later using isVisible()
             self.rubberband.show()
 
-        # returns the current state of the modifier keys on the keyboard
-        # modifiers = QtGui.QApplication.keyboardModifiers()
+        if event.button() == QtCore.Qt.RightButton:
+            self._rightMousePressed = True
+            self.setCursor(QtCore.Qt.OpenHandCursor)
+            self._dragPos = event.pos()
+
+        # call original implementation of QGraphicsView mousePressEvent handler
+        # super(GraphicsView, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
         """Re-implement QGraphicsView's mouseMoveEvent handler"""
 
-        # call original implementation of QGraphicsView mouseMoveEvent handler
-        super(GraphicsView, self).mouseMoveEvent(event)
-
         # if a mouse event happens in the graphics view
         # put the keyboard focus to the view as well
         self.setFocus()
+
+        # pan the view with the right mouse button
+        if self._rightMousePressed:
+            self._was_dragging = True
+            self.setCursor(QtCore.Qt.ClosedHandCursor)
+            newPos = event.pos()
+            diff = newPos - self._dragPos
+            self._dragPos = newPos
+            self.horizontalScrollBar().setValue(
+                self.horizontalScrollBar().value() - diff.x())
+            self.verticalScrollBar().setValue(
+                self.verticalScrollBar().value() - diff.y())
 
         if self.rubberband.isVisible():
 
@@ -171,8 +187,14 @@ class GraphicsView(QtGui.QGraphicsView):
             self.rubberband.setGeometry(
                 QtCore.QRect(self.origin, event.pos()).normalized())
 
+        # call original implementation of QGraphicsView mouseMoveEvent handler
+        super(GraphicsView, self).mouseMoveEvent(event)
+
     def mouseReleaseEvent(self, event):
         """Re-implement QGraphicsView's mouseReleaseEvent handler"""
+
+        self._rightMousePressed = False
+        self.setCursor(QtCore.Qt.ArrowCursor)
 
         # call original implementation of QGraphicsView
         # mouseReleaseEvent handler
@@ -202,6 +224,10 @@ class GraphicsView(QtGui.QGraphicsView):
 
             # reset to True, so that mouse wheel zoom anchor works
             self.setInteractive(True)
+
+        # reset ScrollHandDrag if it was active
+        if self.dragMode() == QtGui.QGraphicsView.ScrollHandDrag:
+            self.setDragMode(QtGui.QGraphicsView.NoDrag)
 
     def wheelEvent(self, event):
         """Re-implement QGraphicsView's wheelEvent handler"""
@@ -365,6 +391,10 @@ class GraphicsView(QtGui.QGraphicsView):
 
     def contextMenuEvent(self, event):
         """creates popup menu for the graphicsview"""
+
+        if self._was_dragging:
+            self._was_dragging = False
+            return
 
         menu = QtGui.QMenu(self)
 
