@@ -556,17 +556,21 @@ class Toolbox(object):
     def toggleRawPoints(self):
         """Toggle points of raw airfoil contour (on/off)"""
         for airfoil in self.parent.airfoils:
-            if hasattr(airfoil, 'markers') and airfoil.contour_item.isSelected():
+            if hasattr(airfoil, 'markers') and \
+              airfoil.contour_item.isSelected():
                 visible = airfoil.markers.isVisible()
                 airfoil.markers.setVisible(not visible)
+                self.cb2.setChecked(not self.cb2.isChecked())
 
     @QtCore.pyqtSlot()
     def toggleSplinePoints(self):
         """Toggle points of raw airfoil contour (on/off)"""
         for airfoil in self.parent.airfoils:
-            if hasattr(airfoil, 'markersSpline') and airfoil.contour_item.isSelected():
+            if hasattr(airfoil, 'markersSpline') and \
+              airfoil.contour_item.isSelected():
                 visible = airfoil.markersSpline.isVisible()
                 airfoil.markersSpline.setVisible(not visible)
+                self.cb3.setChecked(not self.cb3.isChecked())
 
     @QtCore.pyqtSlot()
     def toggleSpline(self):
@@ -574,6 +578,7 @@ class Toolbox(object):
             if airfoil.contour_item.isSelected():
                 visible = airfoil.contourspline_item.isVisible()
                 airfoil.contourspline_item.setVisible(not visible)
+                self.cb4.setChecked(not self.cb4.isChecked())
 
     @QtCore.pyqtSlot()
     def toggleChord(self):
@@ -582,6 +587,7 @@ class Toolbox(object):
             if hasattr(airfoil, 'chord') and airfoil.contour_item.isSelected():
                 visible = airfoil.chord.isVisible()
                 airfoil.chord.setVisible(not visible)
+                self.cb5.setChecked(not self.cb5.isChecked())
 
     @QtCore.pyqtSlot()
     def runPanelMethod(self):
@@ -691,6 +697,8 @@ class Toolbox(object):
         self.lineedit_mesh.setText(nameroot + '_mesh')
 
     def drawMesh(self, airfoil):
+
+        self.toggleSplinePoints()
 
         # delete old mesh if existing
         if hasattr(airfoil, 'mesh'):
