@@ -241,7 +241,7 @@ class Toolbox(object):
         self.tunnel_height = QtGui.QDoubleSpinBox()
         self.tunnel_height.setSingleStep(0.1)
         self.tunnel_height.setRange(1.0, 10.)
-        self.tunnel_height.setValue(2.0)
+        self.tunnel_height.setValue(3.5)
         self.tunnel_height.setDecimals(1)
         self.form_mesh.addRow(label, self.tunnel_height)
 
@@ -265,7 +265,7 @@ class Toolbox(object):
         self.tunnel_wake = QtGui.QDoubleSpinBox()
         self.tunnel_wake.setSingleStep(0.1)
         self.tunnel_wake.setRange(0.1, 20.)
-        self.tunnel_wake.setValue(5.0)
+        self.tunnel_wake.setValue(7.0)
         self.tunnel_wake.setDecimals(1)
         self.form_mesh.addRow(label, self.tunnel_wake)
 
@@ -666,28 +666,57 @@ class Toolbox(object):
             else:
                 return
 
+        progdialog = QtGui.QProgressDialog(
+            "", "Cancel", 0, 4, self.parent)
+        progdialog.setWindowTitle("Generating the CFD Mesh")
+        progdialog.setWindowModality(QtCore.Qt.WindowModal)
+        progdialog.show()
+
         self.tunnel = PMeshing.Windtunnel()
+
+        progdialog.setValue(0)
+        progdialog.setLabelText('making part 1/4')
 
         self.tunnel.AirfoilMesh(name='block_airfoil',
                                 contour=contour,
                                 divisions=self.points_n.value(),
                                 ratio=self.ratio.value(),
                                 thickness=self.normal_thickness.value()/100.0)
+        progdialog.setValue(1)
+
+        if progdialog.wasCanceled():
+            return
+        progdialog.setLabelText('making part 2/4')
 
         self.tunnel.TrailingEdgeMesh(name='block_TE',
                                      te_divisions=self.te_div.value(),
                                      length=self.length_te.value()/100.0,
                                      divisions=self.points_te.value(),
                                      ratio=self.ratio_te.value())
+        progdialog.setValue(2)
+
+        if progdialog.wasCanceled():
+            return
+        progdialog.setLabelText('making part 3/4')
 
         self.tunnel.TunnelMesh(name='block_tunnel',
                                tunnel_height=self.tunnel_height.value(),
                                divisions_height=self.divisions_height.value(),
                                ratio_height=self.ratio_height.value())
+        progdialog.setValue(3)
+
+        if progdialog.wasCanceled():
+            return
+        progdialog.setLabelText('making part 4/4')
+
         self.tunnel.TunnelMeshWake(name='block_tunnel_wake',
                                    tunnel_wake=self.tunnel_wake.value(),
                                    divisions=self.divisions_wake.value(),
                                    ratio=self.ratio_wake.value())
+        progdialog.setValue(4)
+
+        if progdialog.wasCanceled():
+            return
 
         self.drawMesh(airfoil)
 
@@ -800,10 +829,16 @@ class Toolbox(object):
 
     @QtCore.pyqtSlot()
     def updatename(self):
+
+        name = ' '
+
         for airfoil in self.parent.airfoils:
             if airfoil.contour_item.isSelected():
                 name = airfoil.name
                 break
+
+        if name == ' ':
+            return
 
         sending_button = self.parent.sender()
         nameroot, extension = os.path.splitext(str(name))
