@@ -93,13 +93,13 @@ class Windtunnel(object):
         # upper line of wind tunnel
         line = list()
         vec = p2 - p1
-        for t in np.linspace(0.0, 1.0, 100):
+        for t in np.linspace(0.0, 1.0, 10):
             p = p1 + t * vec
             line.append(p.tolist())
         del line[-1]
 
         # front half circle of wind tunnel
-        for phi in np.linspace(90.0, 270.0, 400):
+        for phi in np.linspace(90.0, 270.0, 200):
             phir = np.radians(phi)
             x = tunnel_height * np.cos(phir)
             y = tunnel_height * np.sin(phir)
@@ -108,7 +108,7 @@ class Windtunnel(object):
 
         # lower line of wind tunnel
         vec = p4 - p3
-        for t in np.linspace(0.0, 1.0, 100):
+        for t in np.linspace(0.0, 1.0, 10):
             p = p3 + t * vec
             line.append(p.tolist())
 
@@ -116,7 +116,7 @@ class Windtunnel(object):
         tck, u = si.splprep(line.T, s=0, k=1)
 
         # point distribution on upper, front and lower part
-        xx = np.linspace(-1.3, 1.3, len(block_tunnel.getULines()[0]))
+        xx = np.linspace(-1.2, 1.5, len(block_tunnel.getULines()[0]))
         t = (np.tanh(xx) + 1.0) / 2.0
 
         line = si.splev(t, tck, der=0)
@@ -231,8 +231,10 @@ class Windtunnel(object):
         p7 = np.array((tunnel_wake, self.tunnel_height))
         p8 = np.array((tunnel_wake, -self.tunnel_height))
 
-        upper = BlockMesh.makeLine(p7, p1, divisions=divisions, ratio=1.0/ratio)
-        lower = BlockMesh.makeLine(p8, p4, divisions=divisions, ratio=1.0/ratio)
+        upper = BlockMesh.makeLine(p7, p1, divisions=divisions,
+                                   ratio=1.0/ratio)
+        lower = BlockMesh.makeLine(p8, p4, divisions=divisions,
+                                   ratio=1.0/ratio)
         left = line
         right = BlockMesh.makeLine(p8, p7, divisions=len(left)-1, ratio=1.0)
 
@@ -442,7 +444,7 @@ class BlockMesh(object):
         iend = 0
         n = list()
 
-        for i, dummy in enumerate(x):
+        for i, _ in enumerate(x):
 
             if closed:
                 if i == len(x) - 1:
