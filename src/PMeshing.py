@@ -213,7 +213,10 @@ class Windtunnel(object):
         self.blocks.append(block_tunnel)
 
     def TunnelMeshWake(self, name='', tunnel_wake=2.0,
-                       divisions=100, ratio=0.1):
+                       divisions=100, ratio=0.1, spread=0.4):
+
+        chord = 1.0
+
         block_tunnel_wake = BlockMesh(name=name)
 
         # line composed of trailing edge and block_tunnel meshes
@@ -226,10 +229,12 @@ class Windtunnel(object):
         block_tunnel_wake.addLine(line)
 
         #
-        p1 = np.array((0.0, self.tunnel_height))
-        p4 = np.array((0.0, -self.tunnel_height))
-        p7 = np.array((tunnel_wake, self.tunnel_height))
-        p8 = np.array((tunnel_wake, -self.tunnel_height))
+        p1 = np.array((self.block_te.getULines()[-1][0][0],
+                      self.tunnel_height))
+        p4 = np.array((self.block_te.getULines()[-1][-1][0],
+                      -self.tunnel_height))
+        p7 = np.array((tunnel_wake+chord, self.tunnel_height))
+        p8 = np.array((tunnel_wake+chord, -self.tunnel_height))
 
         upper = BlockMesh.makeLine(p7, p1, divisions=divisions,
                                    ratio=1.0/ratio)
@@ -241,15 +246,24 @@ class Windtunnel(object):
         boundary = [upper, lower, right, left]
         block_tunnel_wake.transfinite(boundary=boundary)
 
-        self.block_tunnel_wake = block_tunnel_wake
+        # equalize division line in wake
+        for i, u in enumerate(block_tunnel_wake.getULines()[0]):
+            if u[0] < chord + tunnel_wake * spread:
+                ll = len(block_tunnel_wake.getULines()[0])
+                line_no = -ll + i
+                break
+        block_tunnel_wake.distribute(direction='v', number=line_no)
 
-        smooth = Smooth(block_tunnel_wake)
-        nodes = smooth.selectNodes(domain='interior')
-        block_tunnel_wake = smooth.smooth(nodes, iterations=2,
-                                          algorithm='laplace')
-
-        ij = [len(block_tunnel_wake.getVLines())-10,
+        # transfinite left of division line
+        ij = [len(block_tunnel_wake.getVLines())+line_no,
               len(block_tunnel_wake.getVLines())-1,
+              0,
+              len(block_tunnel_wake.getULines())-1]
+        block_tunnel_wake.transfinite(ij=ij)
+
+        # transfinite right of division line
+        ij = [0,
+              len(block_tunnel_wake.getVLines())+line_no,
               0,
               len(block_tunnel_wake.getULines())-1]
         block_tunnel_wake.transfinite(ij=ij)
@@ -391,7 +405,12 @@ class BlockMesh(object):
         # evaluate function at any parameter "0<=t<=1"
         line = si.splev(t, tck, der=0)
         line = zip(line[0].tolist(), line[1].tolist())
-        self.getULines()[number] = line
+
+        if direction == 'u':
+            self.getULines()[number] = line
+        elif direction == 'v':
+            for i, uline in enumerate(self.getULines()):
+                self.getULines()[i][number] = line[i]
 
     def connect(self, block_1, block_2):
         pass

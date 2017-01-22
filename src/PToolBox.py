@@ -164,21 +164,23 @@ class Toolbox(object):
 
     def itemMeshing(self):
 
-        self.form_mesh = QtGui.QFormLayout()
+        self.form_mesh_airfoil = QtGui.QFormLayout()
 
         label = QtGui.QLabel(u'Gridpoints along airfoil')
+        label.setToolTip('Number of points as derived from splining')
         points = 0
-
         self.points_on_airfoil = QtGui.QLineEdit(str(points))
         self.points_on_airfoil.setEnabled(False)
-        self.form_mesh.addRow(label, self.points_on_airfoil)
+        self.form_mesh_airfoil.addRow(label, self.points_on_airfoil)
 
         label = QtGui.QLabel(u'Divisions normal to airfoil')
+        label.setToolTip('Number of points in the mesh which is constructed ' +
+                         ' normal to the airfoil contour')
         self.points_n = QtGui.QSpinBox()
         self.points_n.setSingleStep(1)
         self.points_n.setRange(1, 200)
         self.points_n.setValue(15)
-        self.form_mesh.addRow(label, self.points_n)
+        self.form_mesh_airfoil.addRow(label, self.points_n)
 
         label = QtGui.QLabel('Thickness normal to Airfoil (%)')
         label.setToolTip('The thickness is specified wrt to the unit chord')
@@ -187,7 +189,7 @@ class Toolbox(object):
         self.normal_thickness.setRange(1., 10.)
         self.normal_thickness.setValue(4.0)
         self.normal_thickness.setDecimals(1)
-        self.form_mesh.addRow(label, self.normal_thickness)
+        self.form_mesh_airfoil.addRow(label, self.normal_thickness)
 
         label = QtGui.QLabel('Cell Thickness ratio (-)')
         label.setToolTip('Thickness of the last cell vs. the first cell in ' +
@@ -198,7 +200,9 @@ class Toolbox(object):
         self.ratio.setRange(1., 10.)
         self.ratio.setValue(3.0)
         self.ratio.setDecimals(1)
-        self.form_mesh.addRow(label, self.ratio)
+        self.form_mesh_airfoil.addRow(label, self.ratio)
+
+        self.form_mesh_TE = QtGui.QFormLayout()
 
         label = QtGui.QLabel(u'Divisions at trailing edge')
         label.setToolTip('Number of subdivisions along the vertical part of the TE')
@@ -206,14 +210,14 @@ class Toolbox(object):
         self.te_div.setSingleStep(1)
         self.te_div.setRange(1, 20)
         self.te_div.setValue(3)
-        self.form_mesh.addRow(label, self.te_div)
+        self.form_mesh_TE.addRow(label, self.te_div)
 
         label = QtGui.QLabel(u'Divisions downstream trailing edge')
         self.points_te = QtGui.QSpinBox()
         self.points_te.setSingleStep(1)
         self.points_te.setRange(1, 100)
         self.points_te.setValue(6)
-        self.form_mesh.addRow(label, self.points_te)
+        self.form_mesh_TE.addRow(label, self.points_te)
 
         label = QtGui.QLabel('Length behind trailing edge (%)')
         label.setToolTip('The length is specified wrt to the unit chord')
@@ -222,9 +226,9 @@ class Toolbox(object):
         self.length_te.setRange(0.1, 30.)
         self.length_te.setValue(4.0)
         self.length_te.setDecimals(1)
-        self.form_mesh.addRow(label, self.length_te)
+        self.form_mesh_TE.addRow(label, self.length_te)
 
-        label = QtGui.QLabel('Cell Thickness ratio TE (-)')
+        label = QtGui.QLabel('Cell Thickness ratio (-)')
         label.setToolTip('Thickness of the last cell vs. the first cell in ' +
                          'the trailing edge mesh block' + '\n'
                          'The first cell is the one attached to the airfoil ' +
@@ -234,49 +238,55 @@ class Toolbox(object):
         self.ratio_te.setRange(1., 10.)
         self.ratio_te.setValue(3.0)
         self.ratio_te.setDecimals(1)
-        self.form_mesh.addRow(label, self.ratio_te)
+        self.form_mesh_TE.addRow(label, self.ratio_te)
+
+        self.form_mesh_tunnel = QtGui.QFormLayout()
 
         label = QtGui.QLabel('Windtunnel Height (chords)')
-        label.setToolTip('The height of the windtunnel in number of chord lengths')
+        label.setToolTip('The height of the windtunnel in units ' +
+                         'of chord length')
         self.tunnel_height = QtGui.QDoubleSpinBox()
         self.tunnel_height.setSingleStep(0.1)
         self.tunnel_height.setRange(1.0, 10.)
         self.tunnel_height.setValue(3.5)
         self.tunnel_height.setDecimals(1)
-        self.form_mesh.addRow(label, self.tunnel_height)
+        self.form_mesh_tunnel.addRow(label, self.tunnel_height)
 
         label = QtGui.QLabel(u'Divisions of Tunnel Height')
         self.divisions_height = QtGui.QSpinBox()
-        self.divisions_height.setSingleStep(5)
+        self.divisions_height.setSingleStep(10)
         self.divisions_height.setRange(1, 1000)
         self.divisions_height.setValue(100)
-        self.form_mesh.addRow(label, self.divisions_height)
+        self.form_mesh_tunnel.addRow(label, self.divisions_height)
 
-        label = QtGui.QLabel('Cell Thickness Ratio Height (-)')
+        label = QtGui.QLabel('Cell Thickness ratio (-)')
         self.ratio_height = QtGui.QDoubleSpinBox()
         self.ratio_height.setSingleStep(1.0)
         self.ratio_height.setRange(0.1, 50.)
         self.ratio_height.setValue(10.0)
         self.ratio_height.setDecimals(1)
-        self.form_mesh.addRow(label, self.ratio_height)
+        self.form_mesh_tunnel.addRow(label, self.ratio_height)
+
+        self.form_mesh_wake = QtGui.QFormLayout()
 
         label = QtGui.QLabel('Windtunnel Wake (chords)')
-        label.setToolTip('The wake of the windtunnel in number of chord lengths')
+        label.setToolTip('The length of the wake of the windtunnel in ' +
+                         'units of chord length')
         self.tunnel_wake = QtGui.QDoubleSpinBox()
         self.tunnel_wake.setSingleStep(0.1)
         self.tunnel_wake.setRange(0.1, 20.)
         self.tunnel_wake.setValue(7.0)
         self.tunnel_wake.setDecimals(1)
-        self.form_mesh.addRow(label, self.tunnel_wake)
+        self.form_mesh_wake.addRow(label, self.tunnel_wake)
 
         label = QtGui.QLabel(u'Divisions in the wake')
         self.divisions_wake = QtGui.QSpinBox()
         self.divisions_wake.setSingleStep(10)
         self.divisions_wake.setRange(1, 1000)
         self.divisions_wake.setValue(100)
-        self.form_mesh.addRow(label, self.divisions_wake)
+        self.form_mesh_wake.addRow(label, self.divisions_wake)
 
-        label = QtGui.QLabel('Cell Thickness Ratio WAKE (-)')
+        label = QtGui.QLabel('Cell Thickness ratio (-)')
         label.setToolTip('Thickness of the last cell vs. the first cell in ' +
                          'the wake mesh block')
         self.ratio_wake = QtGui.QDoubleSpinBox()
@@ -284,19 +294,43 @@ class Toolbox(object):
         self.ratio_wake.setRange(0.01, 100.0)
         self.ratio_wake.setValue(15.0)
         self.ratio_wake.setDecimals(1)
-        self.form_mesh.addRow(label, self.ratio_wake)
+        self.form_mesh_wake.addRow(label, self.ratio_wake)
 
-        button = QtGui.QPushButton('Create Mesh')
-        hbl = QtGui.QHBoxLayout()
-        hbl.addStretch(stretch=1)
-        hbl.addWidget(button, stretch=4)
-        hbl.addStretch(stretch=1)
+        label = QtGui.QLabel('Equalize vertical wake line at (%)')
+        label.setToolTip('Equalize vertical the wake line. ' +
+                         'Homogeneous vertical distribution x% downstream')
+        self.spread = QtGui.QDoubleSpinBox()
+        self.spread.setSingleStep(5.0)
+        self.spread.setRange(10.0, 90.0)
+        self.spread.setValue(30.0)
+        self.spread.setDecimals(1)
+        self.form_mesh_wake.addRow(label, self.spread)
 
         vbox = QtGui.QVBoxLayout()
-        vbox.addLayout(self.form_mesh)
-        vbox.addLayout(hbl)
-        box = QtGui.QGroupBox('Airfoil contour meshing')
-        box.setLayout(vbox)
+        vbox.addLayout(self.form_mesh_airfoil)
+        box_airfoil = QtGui.QGroupBox('Airfoil contour mesh')
+        box_airfoil.setLayout(vbox)
+
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(self.form_mesh_TE)
+        box_TE = QtGui.QGroupBox('Airfoil trailing edge mesh')
+        box_TE.setLayout(vbox)
+
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(self.form_mesh_tunnel)
+        box_tunnel = QtGui.QGroupBox('Windtunnel mesh (around airfoil)')
+        box_tunnel.setLayout(vbox)
+
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(self.form_mesh_wake)
+        box_wake = QtGui.QGroupBox('Windtunnel mesh (wake)')
+        box_wake.setLayout(vbox)
+
+        button = QtGui.QPushButton('Create Mesh')
+        hbl_cm = QtGui.QHBoxLayout()
+        hbl_cm.addStretch(stretch=1)
+        hbl_cm.addWidget(button, stretch=4)
+        hbl_cm.addStretch(stretch=1)
 
         # export menu
         name = ''
@@ -343,7 +377,11 @@ class Toolbox(object):
 
         vbl = QtGui.QVBoxLayout()
         vbl.addStretch(1)
-        vbl.addWidget(box)
+        vbl.addWidget(box_airfoil)
+        vbl.addWidget(box_TE)
+        vbl.addWidget(box_tunnel)
+        vbl.addWidget(box_wake)
+        vbl.addLayout(hbl_cm)
         vbl.addStretch(1)
         vbl.addWidget(self.box_meshexport)
         vbl.addStretch(10)
@@ -712,7 +750,8 @@ class Toolbox(object):
         self.tunnel.TunnelMeshWake(name='block_tunnel_wake',
                                    tunnel_wake=self.tunnel_wake.value(),
                                    divisions=self.divisions_wake.value(),
-                                   ratio=self.ratio_wake.value())
+                                   ratio=self.ratio_wake.value(),
+                                   spread=self.spread.value()/100.0)
         progdialog.setValue(4)
 
         if progdialog.wasCanceled():
