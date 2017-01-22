@@ -482,8 +482,6 @@ class BlockMesh(object):
             lower = [(0.0, 0.0), (0.1, 0.3),  (0.5, 0.4)]
         """
 
-        self.ULines_Save = copy.deepcopy(self.getULines())
-
         if boundary:
             lower = boundary[0]
             upper = boundary[1]
@@ -522,37 +520,21 @@ class BlockMesh(object):
         tck_left, u_left = si.splprep(left.T, s=0, k=1)
         tck_right, u_right = si.splprep(right.T, s=0, k=1)
 
-        # evaluate function at any parameter "0<=t<=1"
-        def eta_left(t):
-            return np.array(si.splev(t, tck_left, der=0))
-
-        def eta_right(t):
-            return np.array(si.splev(t, tck_right, der=0))
-
-        def xi_lower(t):
-            return np.array(si.splev(t, tck_lower, der=0))
-
-        def xi_upper(t):
-            return np.array(si.splev(t, tck_upper, der=0))
-
-        nodes = np.zeros((len(u_left) * len(u_lower), 2))
+        nodes = np.zeros((len(left) * len(lower), 2))
 
         # corner points
-        c1 = xi_lower(0.0)
-        c2 = xi_upper(0.0)
-        c3 = xi_lower(1.0)
-        c4 = xi_upper(1.0)
+        c1 = lower[0]
+        c2 = upper[0]
+        c3 = lower[-1]
+        c4 = upper[-1]
 
         for i, xi in enumerate(u_lower):
-            xi_u = u_upper[i]
             for j, eta in enumerate(u_left):
-                eta_r = u_right[j]
 
                 node = i * len(u_left) + j
 
-                # formula for the transinite interpolation
-                point = (1.0 - xi) * eta_left(eta) + xi * eta_right(eta_r) + \
-                    (1.0 - eta) * xi_lower(xi) + eta * xi_upper(xi_u) - \
+                point = (1.0 - xi) * left[j] + xi * right[j] + \
+                    (1.0 - eta) * lower[i] + eta * upper[i] - \
                     ((1.0 - xi) * (1.0 - eta) * c1 + (1.0 - xi) * eta * c2 +
                      xi * (1.0 - eta) * c3 + xi * eta * c4)
 
