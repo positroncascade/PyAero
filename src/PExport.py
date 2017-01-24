@@ -31,52 +31,61 @@ class Export(object):
 
         return indices_1, indices_2
 
-    def connectBlocks(self, name='', depth=0.1):
-
-        vertices = 0
-        ulines = dict()
-        connectivity = dict()
-        I = 0
-        J = 0
-
-        # loop over all individual mesh blocks
-        for block in self.blocks:
-
-            U, V = block.getDivUV()
-            vertices += (U + 1) * (V + 1)
-            ulines.setdefault(block.name, []).append(block.getULines())
-
-            # cell connectivity
-            up = U + 1
-            vp = V + 1
-            for i in range(U):
-                for j in range(V):
-
-                    I += i
-                    J += j
-
-                    p1 = J * up + I + 1
-                    p2 = (vp + J) * up + I + 1
-                    p3 = p2 - 1
-                    p4 = p1 - 1
-                    p5 = (J + 1) * up + I + 1
-                    p6 = (vp + J + 1) * up + I + 1
-                    p7 = p6 - 1
-                    p8 = p5 - 1
-
-                    connectivity.setdefault(block.name, []).append(
-                        (p1, p2, p3, p4, p5, p6, p7, p8))
-
-        number_of_blocks = len(self.blocks)
-        for block in range(number_of_blocks-1):
-            points_1 = self.getPoints(self.blocks[block])
-            points_2 = self.getPoints(self.blocks[block+1])
-            # indices of points_1 within radius to points_2 and vice versa
-            nn_12, nn_21 = self.getNearestNeighbours(points_1, points_2,
-                                                     radius=0.001)
-
-    def getPoints(self, block):
-        points = list()
+    def getBlockVertices(self, block):
+        vertices = list()
         for uline in block.getULines:
-            points.append(uline)
-        return points
+            vertices.append(uline)
+        return vertices
+
+    def block2VC(self, block):
+
+        vertices = self.getBlockVertices(block)
+        connectivity = list()
+
+        U, V = block.getDivUV()
+        up = U + 1
+        vp = V + 1
+        for i in range(U):
+            for j in range(V):
+                p1 = j * up + i + 1
+                p2 = (vp + j) * up + i + 1
+                p3 = p2 - 1
+                p4 = p1 - 1
+                p5 = (j + 1) * up + i + 1
+                p6 = (vp + j + 1) * up + i + 1
+                p7 = p6 - 1
+                p8 = p5 - 1
+                connectivity.append((p1, p2, p3, p4, p5, p6, p7, p8))
+
+        return vertices, connectivity
+
+    def connectBlocks(self, block_1, block_2, radius=0.001):
+
+        vertices_1, connectivity_1 = block_1
+        vertices_2, connectivity_2 = block_2
+        vertices = vertices_1 + vertices_2
+        lv1 = len(vertices_1)
+
+        connectivity_2mod = list()
+        for cell in connectivity_2:
+            new_cell = [vertex+lv1 for vertex in cell]
+            connectivity_2mod.append(new_cell)
+
+        # indices of vertices_1 within radius to vertices_2 and vice versa
+        nn_12, nn_21 = self.getNearestNeighbours(vertices_1, vertices_2,
+                                                 radius=radius)
+        nn_21 = [n+lv1 for n in nn_21]
+
+        connectivity_2 = list()
+        for cell in connectivity_2mod:
+            new_cell = list()
+            for v in cell:
+                v_new = v
+                if v in nn_21:
+                    idx = nn_21.index(v)
+                    v_new = nn_12[idx]
+                new_cell.append(v_new)
+            connectivity_2.append(new_cell)
+
+        connectivity = connectivity_1 + connectivity_2
+        return vertices, connectivity
