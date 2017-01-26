@@ -13,6 +13,7 @@ import PGraphicsItem
 import PSplineRefine
 import PTrailingEdge
 import PMeshing
+import PConnect
 from PSettings import ICONS_L, DIALOGFILTER, DIALOGFILTER_MESH, OUTPUTDATA
 
 
@@ -756,6 +757,26 @@ class Toolbox(object):
 
         if progdialog.wasCanceled():
             return
+
+        # try connect meshes
+        connect = PConnect.Connect()
+        block_1 = self.tunnel.blocks[0]
+        block_2 = self.tunnel.blocks[1]
+        vcb1 = connect.block2VC(block_1)
+        vcb2 = connect.block2VC(block_2)
+        vertices, connectivity = connect.connectBlocks(vcb1, vcb2, radius=0.001)
+
+        TEST = False
+        if TEST:
+            with open('test_connectivity.txt', 'w') as f:
+                f.write('\n')
+                f.write('FIRE connectivity test')
+                f.write('\n')
+                for vertex in vertices:
+                    f.write(str(vertex)+' ')
+                f.write('\n')
+                for cell in connectivity:
+                    f.write(' '.join([str(v) for v in cell]) + '\n')
 
         self.drawMesh(airfoil)
 

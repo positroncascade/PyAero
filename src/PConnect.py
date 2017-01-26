@@ -2,13 +2,12 @@ import numpy as np
 import scipy.spatial as ssp
 
 
-class Export(object):
+class Connect(object):
     """docstring for Export"""
-    def __init__(self, blocks):
-        super(Export, self).__init__()
-        self.blocks = blocks
+    def __init__(self):
+        super(Connect, self).__init__()
 
-    def getNearestNeighbours(set1, set2, radius=0.001):
+    def getNearestNeighbours(self, set1, set2, radius=0.001):
         """Nearest neighbour search using KD-trees. Get all indices of
         points in set1 which are within distance radius to set2.
         And vice versa.
@@ -33,8 +32,8 @@ class Export(object):
 
     def getBlockVertices(self, block):
         vertices = list()
-        for uline in block.getULines:
-            vertices.append(uline)
+        for uline in block.getULines():
+            vertices += uline
         return vertices
 
     def block2VC(self, block):
@@ -57,7 +56,7 @@ class Export(object):
                 p8 = p5 - 1
                 connectivity.append((p1, p2, p3, p4, p5, p6, p7, p8))
 
-        return vertices, connectivity
+        return (vertices, connectivity)
 
     def connectBlocks(self, block_1, block_2, radius=0.001):
 
@@ -74,18 +73,18 @@ class Export(object):
         # indices of vertices_1 within radius to vertices_2 and vice versa
         nn_12, nn_21 = self.getNearestNeighbours(vertices_1, vertices_2,
                                                  radius=radius)
-        nn_21 = [n+lv1 for n in nn_21]
+        nn_21 = [vertex+lv1 for vertex in nn_21]
 
         connectivity_2 = list()
         for cell in connectivity_2mod:
             new_cell = list()
-            for v in cell:
-                v_new = v
-                if v in nn_21:
-                    idx = nn_21.index(v)
-                    v_new = nn_12[idx]
-                new_cell.append(v_new)
+            for vertex in cell:
+                new_vertex = vertex
+                if vertex in nn_21:
+                    idx = nn_21.index(vertex)
+                    new_vertex = nn_12[idx]
+                new_cell.append(new_vertex)
             connectivity_2.append(new_cell)
 
         connectivity = connectivity_1 + connectivity_2
-        return vertices, connectivity
+        return (vertices, connectivity)
