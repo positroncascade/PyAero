@@ -1,4 +1,3 @@
-import numpy as np
 import scipy.spatial as ssp
 
 
@@ -88,3 +87,47 @@ class Connect(object):
 
         connectivity = connectivity_1 + connectivity_2
         return (vertices, connectivity)
+
+    def writeFLMATest(self, vertices, connectivity):
+
+        with open('test_Connect.flma', 'w') as f:
+
+            depth = 0.1
+            numvertex = '8'
+
+            # write number of points to FLMA file (*2 for z-direction)
+            f.write(str(2 * len(vertices)) + '\n')
+
+            signum = -1.
+
+            # write x-, y- and z-coordinates to FLMA file
+            # loop 1D direction (symmetry)
+            for j in range(2):
+                for vertex in vertices:
+                    f.write(str(vertex[0]) + ' ' + str(vertex[1]) +
+                            ' ' + str(signum * depth / 2.0) + ' ')
+                signum = 1.
+
+            # write number of cells to FLMA file
+            cells = len(connectivity)
+            f.write('\n' + str(cells) + '\n')
+
+            # write cell connectivity to FLMA file
+            for cell in connectivity:
+                connectivity = str(cell[0]) + ' ' + str(cell[1]) + ' ' + \
+                    str(cell[2]) + ' ' + str(cell[3]) + ' ' + str(cell[4]) + \
+                    ' ' + str(cell[5]) + ' ' + str(cell[6]) + ' ' + \
+                    str(cell[7]) + '\n'
+
+                f.write(numvertex + '\n')
+                f.write(connectivity)
+
+            # write FIRE element type (FET) to FLMA file
+            fetHEX = '5'
+            f.write('\n' + str(cells) + '\n')
+            for i in range(cells):
+                f.write(fetHEX + ' ')
+            f.write('\n\n')
+
+            # write FIRE selections to FLMA file
+            f.write('0')
