@@ -179,7 +179,7 @@ class Toolbox(object):
                          ' normal to the airfoil contour')
         self.points_n = QtGui.QSpinBox()
         self.points_n.setSingleStep(1)
-        self.points_n.setRange(1, 200)
+        self.points_n.setRange(1, 500)
         self.points_n.setValue(15)
         self.form_mesh_airfoil.addRow(label, self.points_n)
 
@@ -263,7 +263,7 @@ class Toolbox(object):
         label = QtGui.QLabel('Cell Thickness ratio (-)')
         self.ratio_height = QtGui.QDoubleSpinBox()
         self.ratio_height.setSingleStep(1.0)
-        self.ratio_height.setRange(0.1, 50.)
+        self.ratio_height.setRange(0.1, 100.)
         self.ratio_height.setValue(10.0)
         self.ratio_height.setDecimals(1)
         self.form_mesh_tunnel.addRow(label, self.ratio_height)
@@ -275,7 +275,7 @@ class Toolbox(object):
                          'units of chord length')
         self.tunnel_wake = QtGui.QDoubleSpinBox()
         self.tunnel_wake.setSingleStep(0.1)
-        self.tunnel_wake.setRange(0.1, 20.)
+        self.tunnel_wake.setRange(0.1, 50.)
         self.tunnel_wake.setValue(7.0)
         self.tunnel_wake.setDecimals(1)
         self.form_mesh_wake.addRow(label, self.tunnel_wake)
@@ -431,7 +431,7 @@ class Toolbox(object):
         self.tolerance = QtGui.QDoubleSpinBox()
         self.tolerance.setSingleStep(0.1)
         self.tolerance.setDecimals(1)
-        self.tolerance.setRange(00.0, 177.0)
+        self.tolerance.setRange(50.0, 177.0)
         self.tolerance.setValue(172.0)
         form.addRow(label, self.tolerance)
 
@@ -460,7 +460,7 @@ class Toolbox(object):
         label = QtGui.QLabel('Number points on spline (-)')
         self.points = QtGui.QSpinBox()
         self.points.setSingleStep(10)
-        self.points.setRange(50, 500)
+        self.points.setRange(10, 1000)
         self.points.setValue(200)
         form.addRow(label, self.points)
 
@@ -764,8 +764,10 @@ class Toolbox(object):
         block_2 = self.tunnel.blocks[1]
         vcb1 = connect.block2VC(block_1)
         vcb2 = connect.block2VC(block_2)
-        vertices, connectivity = connect.connectBlocks(vcb1, vcb2, radius=0.001)
-        connect.writeFLMATest(vertices, connectivity)
+        vertices, connectivity = connect.connectBlocks(vcb1, vcb2,
+                                                       radius=0.001)
+        name = 'CONNECT_test.flma'
+        connect.writeFLMATest(name, vertices, connectivity)
 
         self.drawMesh(airfoil)
 
