@@ -3,16 +3,11 @@
    <br />
 
 .. important::
-   VERSION 1.0 is released.
+   VERSION 1.1 is released.
    Meshes in AVL-FIRE, SU2, and GMSH formats can be generated now.
 
-   SU2 and GMSH are not tested yet.
+   SU2 is not tested yet.
 
-.. important::
-   At the moment 4 mesh blocks and associated files are generated.
-   These need to be connected first, to be able to get the full mesh.
-   Meshes are not yet visualized in PyAero.
-   Coming soon.
 
 ********************
 PyAero documentation
