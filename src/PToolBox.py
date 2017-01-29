@@ -820,7 +820,7 @@ class Toolbox(object):
         mesh = self.tunnel.mesh
 
         if self.check_FIRE.isChecked():
-            PMeshing.BlockMesh.writeFLMA(mesh, name=fullname, depth=0.2)
+            PMeshing.BlockMesh.writeFLMA(mesh, name=fullname, depth=0.3)
 
         if self.check_SU2.isChecked():
             PMeshing.BlockMesh.writeSU2(mesh, name=fullname)

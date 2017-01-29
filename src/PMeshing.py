@@ -637,7 +637,6 @@ class BlockMesh(object):
 
             number_of_vertices_2D = len(vertices)
 
-            depth = 0.1
             numvertex = '8'
 
             # write number of points to FLMA file (*2 for z-direction)
@@ -671,15 +670,51 @@ class BlockMesh(object):
                 f.write(numvertex + '\n')
                 f.write(cell_connect)
 
-            # write FIRE element type (FET) to FLMA file
+            # FIRE element type (FET) for HEX element
             fetHEX = '5'
             f.write('\n' + str(cells) + '\n')
             for i in range(cells):
                 f.write(fetHEX + ' ')
             f.write('\n\n')
 
+            # FIRE element type (FET) for Quad element
+            fetQuad = '3\n'
+
             # write FIRE selections to FLMA file
-            f.write('0')
+            f.write('6\n')
+            f.write('right\n')
+            f.write(fetQuad)
+            f.write(str(2*len(connectivity))+'\n')
+            for i in range(len(connectivity)):
+                f.write(' %s 0' % (i))
+            f.write('\n')
+            f.write('\n')
+            f.write('left\n')
+            f.write(fetQuad)
+            f.write(str(2*len(connectivity))+'\n')
+            for i in range(len(connectivity)):
+                f.write(' %s 1' % (i))
+            f.write('\n')
+            f.write('\n')
+            f.write('bottom\n')
+            f.write(fetQuad)
+            f.write('2\n')
+            f.write('0 2\n')
+            f.write('\n')
+            f.write('top\n')
+            f.write(fetQuad)
+            f.write('2\n')
+            f.write('0 3\n')
+            f.write('\n')
+            f.write('back\n')
+            f.write(fetQuad)
+            f.write('2\n')
+            f.write('0 4\n')
+            f.write('\n')
+            f.write('front\n')
+            f.write(fetQuad)
+            f.write('2\n')
+            f.write('0 5\n')
 
             logger.log.info('FIRE mesh <b><font color=%s> %s</b> saved to folder %s'
                             % ('#005511', basename, OUTPUTDATA))
