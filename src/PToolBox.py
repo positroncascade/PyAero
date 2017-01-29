@@ -353,7 +353,7 @@ class Toolbox(object):
         btn_group = QtGui.QButtonGroup()
         self.check_FIRE = QtGui.QCheckBox('AVL FIRE')
         self.check_SU2 = QtGui.QCheckBox('SU2')
-        self.GMSH = QtGui.QCheckBox('GMSH')
+        self.check_GMSH = QtGui.QCheckBox('GMSH')
         btn_group.addButton(self.check_FIRE)
         btn_group.addButton(self.check_SU2)
         self.check_FIRE.setChecked(True)

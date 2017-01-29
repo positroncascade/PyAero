@@ -778,11 +778,11 @@ class BlockMesh(object):
 
             for cell_id, cell in enumerate(connectivity, start=1):
 
-                cell_connect = ' ' + str(cell_id) + ' ' + el_type + ' ' + \
-                    str(cell[0]) + ' ' + \
-                    str(cell[1]) + ' ' + \
-                    str(cell[2]) + ' ' + \
-                    str(cell[3]) + ' ' + '\n'
+                cell_connect = ' ' + str(cell_id) + ' ' + el_type + ' 3 0 1 0 ' + \
+                    str(cell[0]+1) + ' ' + \
+                    str(cell[1]+1) + ' ' + \
+                    str(cell[2]+1) + ' ' + \
+                    str(cell[3]+1) + ' ' + '\n'
 
                 f.write(cell_connect)
             f.write('$EndElements\n')
