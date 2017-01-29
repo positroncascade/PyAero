@@ -1,8 +1,7 @@
 ```diff
-+ RELEASE 1.0 IS READY.
++ RELEASE 1.1 IS READY.
 + MESHES CAN BE GENERATED
-- SU2 and GMSH formats not tested
-- 4 individual mesh blocks around the airfoil are created and need to be connected (will be fixed soon)
+- SU2 format not yet tested
 ```
 
 # PyAero
@@ -143,6 +142,10 @@ $ c:/python27/python.exe %PYAERO_PATH%/src/PyAero.py
 You should be good to go.
 
 ## Release History
+
+* 1.1.0
+    * FIRE and GMSH mesh can be generated and exported correctly.
+    * A single mesh is exported now; no need anymore to connect them later manually
 
 * 1.0.0
     * Meshes can be generated now.
