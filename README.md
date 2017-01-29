@@ -146,6 +146,7 @@ You should be good to go.
 * 1.1.0
     * FIRE and GMSH mesh can be generated and exported correctly.
     * A single mesh is exported now; no need anymore to connect them later manually
+    * Right mouse button (if dragged, i.e. press and move) moves geometry or mesh
 
 * 1.0.0
     * Meshes can be generated now.
