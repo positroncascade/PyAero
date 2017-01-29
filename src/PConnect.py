@@ -7,21 +7,14 @@ class Connect(object):
     def __init__(self):
         super(Connect, self).__init__()
 
-    def getNearestNeighbours(self, vertices, radius=0.001):
-        V = np.array(vertices)
-        tree = ssp.cKDTree(V)
-        pairs = tree.query_pairs(radius, p=2., eps=0)
-        return pairs
-
-    def getBlockVertices(self, block):
+    def getVertices(self, block):
         vertices = list()
         for uline in block.getULines():
             vertices += uline
         return vertices
 
-    def block2VC(self, block):
+    def getConnectivity(self, block):
 
-        vertices = self.getBlockVertices(block)
         connectivity = list()
 
         U, V = block.getDivUV()
@@ -34,12 +27,34 @@ class Connect(object):
                 p4 = p1 + 1
                 connectivity.append((p1, p2, p3, p4))
 
-        return (vertices, connectivity)
+        return connectivity
 
-    def connectBlocks(self, block_1, block_2, radius=0.001):
+    def getNearestNeighbours(self, vertices, radius=0.001):
+        V = np.array(vertices)
+        tree = ssp.cKDTree(V)
+        pairs = tree.query_pairs(radius, p=2., eps=0)
+        return pairs
 
-        vertices_1, connectivity_1 = block_1
-        vertices_2, connectivity_2 = block_2
+    def connectAllBlocks(self, blocks):
+        connected_1 = self.connectBlocks(blocks[0], blocks[1],
+                                         radius=0.0001, type_='block')
+        connected_2 = self.connectBlocks(blocks[2], blocks[3],
+                                         radius=0.0001, type_='block')
+        connected = self.connectBlocks(connected_1, connected_2,
+                                       radius=0.0001, type_='connected')
+        return connected
+
+    def connectBlocks(self, block_1, block_2, radius=0.001, type_='block'):
+
+        if type_ == 'block':
+            vertices_1 = self.getVertices(block_1)
+            vertices_2 = self.getVertices(block_2)
+            connectivity_1 = self.getConnectivity(block_1)
+            connectivity_2 = self.getConnectivity(block_2)
+        if type_ == 'connected':
+            vertices_1, connectivity_1 = block_1
+            vertices_2, connectivity_2 = block_2
+
         vertices = vertices_1 + vertices_2
         lv1 = len(vertices_1)
 
@@ -51,6 +66,14 @@ class Connect(object):
         pairs = self.getNearestNeighbours(vertices, radius=radius)
         pairs = list(pairs)
         I, J = zip(*pairs)
+
+        # this is dirty, but seems to work
+        # vertices which are not used need somehow to be
+        # "removed" without removing them
+        # so that they later can not be found again
+        for vertex_id in J:
+            vertices[vertex_id] = (15.+np.random.random_sample(),
+                                   15.+np.random.random_sample())
 
         connectivity_2_new = list()
         for cell in connectivity_2mod:
@@ -65,53 +88,3 @@ class Connect(object):
         connectivity = connectivity_1 + connectivity_2_new
 
         return (vertices, connectivity)
-
-    def writeFLMATest(self, name, vertices, connectivity):
-
-        with open(name, 'w') as f:
-
-            number_of_vertices_2D = len(vertices)
-
-            depth = 0.1
-            numvertex = '8'
-
-            # write number of points to FLMA file (*2 for z-direction)
-            f.write(str(2 * number_of_vertices_2D) + '\n')
-
-            signum = -1.
-
-            # write x-, y- and z-coordinates to FLMA file
-            # loop 1D direction (symmetry)
-            for _ in range(2):
-                for vertex in vertices:
-                    f.write(str(vertex[0]) + ' ' + str(vertex[1]) +
-                            ' ' + str(signum * depth / 2.0) + ' ')
-                signum = 1.
-
-            # write number of cells to FLMA file
-            cells = len(connectivity)
-            f.write('\n' + str(cells) + '\n')
-
-            # write cell connectivity to FLMA file
-            for cell in connectivity:
-                connectivity = str(cell[0]) + ' ' + \
-                               str(cell[1]) + ' ' + \
-                               str(cell[2]) + ' ' + \
-                               str(cell[3]) + ' ' + \
-                               str(cell[0]+number_of_vertices_2D) + ' ' + \
-                               str(cell[1]+number_of_vertices_2D) + ' ' + \
-                               str(cell[2]+number_of_vertices_2D) + ' ' + \
-                               str(cell[3]+number_of_vertices_2D) + '\n'
-
-                f.write(numvertex + '\n')
-                f.write(connectivity)
-
-            # write FIRE element type (FET) to FLMA file
-            fetHEX = '5'
-            f.write('\n' + str(cells) + '\n')
-            for i in range(cells):
-                f.write(fetHEX + ' ')
-            f.write('\n\n')
-
-            # write FIRE selections to FLMA file
-            f.write('0')

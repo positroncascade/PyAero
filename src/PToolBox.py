@@ -353,18 +353,18 @@ class Toolbox(object):
         btn_group = QtGui.QButtonGroup()
         self.check_FIRE = QtGui.QCheckBox('AVL FIRE')
         self.check_SU2 = QtGui.QCheckBox('SU2')
-        self.check_GMESH = QtGui.QCheckBox('GMESH')
+        self.GMSH = QtGui.QCheckBox('GMSH')
         btn_group.addButton(self.check_FIRE)
         btn_group.addButton(self.check_SU2)
         self.check_FIRE.setChecked(True)
         self.check_SU2.setChecked(False)
-        self.check_GMESH.setChecked(False)
+        self.check_GMSH.setChecked(False)
         rdl.addStretch(5)
         rdl.addWidget(self.check_FIRE)
         rdl.addStretch(1)
         rdl.addWidget(self.check_SU2)
         rdl.addStretch(1)
-        rdl.addWidget(self.check_GMESH)
+        rdl.addWidget(self.check_GMSH)
         rdl.addStretch(5)
 
         vbl1 = QtGui.QVBoxLayout()
@@ -758,16 +758,9 @@ class Toolbox(object):
         if progdialog.wasCanceled():
             return
 
-        # try connect meshes
+        # connect mesh blocks
         connect = PConnect.Connect()
-        block_1 = self.tunnel.blocks[0]
-        block_2 = self.tunnel.blocks[1]
-        vcb1 = connect.block2VC(block_1)
-        vcb2 = connect.block2VC(block_2)
-        vertices, connectivity = connect.connectBlocks(vcb1, vcb2,
-                                                       radius=0.001)
-        name = 'CONNECT_test.flma'
-        connect.writeFLMATest(name, vertices, connectivity)
+        self.tunnel.mesh = connect.connectAllBlocks(self.tunnel.blocks)
 
         self.drawMesh(airfoil)
 
@@ -819,27 +812,21 @@ class Toolbox(object):
 
         nameroot, extension = os.path.splitext(str(name))
 
-        for block in self.tunnel.blocks:
+        if from_browse_mesh:
+            fullname = name
+        else:
+            fullname = OUTPUTDATA + nameroot
 
-            if from_browse_mesh:
-                fullname = name + block.name
-            else:
-                fullname = OUTPUTDATA + nameroot + '_' + block.name
+        mesh = self.tunnel.mesh
 
-            if self.check_FIRE.isChecked():
-                if '.flma' not in fullname:
-                    fullname += '.flma'
-                block.writeFLMA(name=fullname, depth=0.2)
+        if self.check_FIRE.isChecked():
+            PMeshing.BlockMesh.writeFLMA(mesh, name=fullname, depth=0.2)
 
-            if self.check_SU2.isChecked():
-                if '.su2' not in fullname:
-                    fullname += '.su2'
-                block.writeSU2(name=fullname)
+        if self.check_SU2.isChecked():
+            PMeshing.BlockMesh.writeSU2(mesh, name=fullname)
 
-            if self.check_GMESH.isChecked():
-                if '.msh' not in fullname:
-                    fullname += '.msh'
-                block.writeGMESH(name=fullname)
+        if self.check_GMSH.isChecked():
+            PMeshing.BlockMesh.writeGMSH(mesh, name=fullname)
 
     @QtCore.pyqtSlot()
     def analyzeAirfoil(self):

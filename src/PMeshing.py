@@ -622,58 +622,54 @@ class BlockMesh(object):
 
         return beta
 
-    def writeFLMA(self, name='', depth=0.1):
+    @staticmethod
+    def writeFLMA(mesh, name='', depth=0.1):
+
+        if not name[-5:] == '.flma':
+            name += '.flma'
 
         basename = os.path.basename(str(name))
         nameroot, extension = os.path.splitext(str(basename))
-        filename = nameroot + '_' + self.name + '.flma'
 
-        U, V = self.getDivUV()
-        points = (U + 1) * (V + 1)
+        vertices, connectivity = mesh
 
         with open(name, 'w') as f:
 
+            number_of_vertices_2D = len(vertices)
+
+            depth = 0.1
             numvertex = '8'
 
             # write number of points to FLMA file (*2 for z-direction)
-            f.write(str(2 * points) + '\n')
+            f.write(str(2 * number_of_vertices_2D) + '\n')
 
             signum = -1.
 
             # write x-, y- and z-coordinates to FLMA file
             # loop 1D direction (symmetry)
-            for j in range(2):
-                for uline in self.getULines():
-                    for i in range(len(uline)):
-                        f.write(str(uline[i][0]) + ' ' + str(uline[i][1]) +
-                                ' ' + str(signum * depth / 2.0) + ' ')
+            for _ in range(2):
+                for vertex in vertices:
+                    f.write(str(vertex[0]) + ' ' + str(vertex[1]) +
+                            ' ' + str(signum * depth / 2.0) + ' ')
                 signum = 1.
 
             # write number of cells to FLMA file
-            cells = U * V
+            cells = len(connectivity)
             f.write('\n' + str(cells) + '\n')
 
             # write cell connectivity to FLMA file
-            up = U + 1
-            vp = V + 1
-            for i in range(U):
-                for j in range(V):
+            for cell in connectivity:
+                cell_connect = str(cell[0]) + ' ' + \
+                               str(cell[1]) + ' ' + \
+                               str(cell[2]) + ' ' + \
+                               str(cell[3]) + ' ' + \
+                               str(cell[0]+number_of_vertices_2D) + ' ' + \
+                               str(cell[1]+number_of_vertices_2D) + ' ' + \
+                               str(cell[2]+number_of_vertices_2D) + ' ' + \
+                               str(cell[3]+number_of_vertices_2D) + '\n'
 
-                    p1 = j * up + i + 1
-                    p2 = (vp + j) * up + i + 1
-                    p3 = p2 - 1
-                    p4 = p1 - 1
-                    p5 = (j + 1) * up + i + 1
-                    p6 = (vp + j + 1) * up + i + 1
-                    p7 = p6 - 1
-                    p8 = p5 - 1
-
-                    connectivity = str(p1) + ' ' + str(p2) + ' ' + str(p3) + \
-                        ' ' + str(p4) + ' ' + str(p5) + ' ' + str(p6) + \
-                        ' ' + str(p7) + ' ' + str(p8) + '\n'
-
-                    f.write(numvertex + '\n')
-                    f.write(connectivity)
+                f.write(numvertex + '\n')
+                f.write(cell_connect)
 
             # write FIRE element type (FET) to FLMA file
             fetHEX = '5'
@@ -685,25 +681,24 @@ class BlockMesh(object):
             # write FIRE selections to FLMA file
             f.write('0')
 
-            logger.log.info('Successfully exported FIRE mesh ' +
-                            '<b><font color=%s>%s</b>'
-                            % ('#005511', filename))
+            logger.log.info('FIRE mesh <b><font color=%s> %s</b> saved to folder %s'
+                            % ('#005511', basename, OUTPUTDATA))
 
-    def writeSU2(self, name=''):
+    @staticmethod
+    def writeSU2(mesh, name=''):
 
-        folder = OUTPUTDATA + '/'
-        nameroot, extension = os.path.splitext(str(name))
-        filename = nameroot + '_' + self.name + '.su2'
-        fullname = folder + filename
+        if not name[-4:] == '.su2':
+            name += '.su2'
 
-        U, V = self.getDivUV()
-        up = U + 1
-        vp = V + 1
+        basename = os.path.basename(str(name))
+        nameroot, extension = os.path.splitext(str(basename))
+
+        vertices, connectivity = mesh
 
         # element type is SU2 quadrilateral
         el_type = '9'
 
-        with open(fullname, 'w') as f:
+        with open(name, 'w') as f:
             f.write('%\n')
             f.write('% Airfoil contour: ' + nameroot + ' \n')
             f.write('%\n')
@@ -721,101 +716,79 @@ class BlockMesh(object):
             f.write('% Inner element connectivity\n')
             f.write('%\n')
             # number of elements
-            f.write('NELEM= %s\n' % (U*V))
-            k = -1
-            for i in range(U):
-                for j in range(V):
-                    # vertex number
-                    k += 1
+            f.write('NELEM= %s\n' % (len(connectivity)))
 
-                    p1 = j * up + i
-                    p2 = p1 + 1
-                    p4 = p1 + up
-                    p3 = p4 + 1
+            for cell_id, cell in enumerate(connectivity):
 
-                    connectivity = el_type + ' ' + str(p1) + ' ' + str(p2) + \
-                        ' ' + str(p3) + ' ' + str(p4) + str(k) + '\n'
+                cell_connect = el_type + ' ' + \
+                    str(cell[0]) + ' ' + \
+                    str(cell[1]) + ' ' + \
+                    str(cell[2]) + ' ' + \
+                    str(cell[3]) + ' ' + \
+                    str(cell_id) + '\n'
 
-                    f.write(connectivity)
+                f.write(cell_connect)
 
             # number of vertices
-            f.write('NPOIN=%s\n' % (up*vp))
+            f.write('NPOIN=%s\n' % (len(vertices)))
 
             # x- and y-coordinates
-            node = -1
-            for uline in self.getULines():
-                for i in range(len(uline))[::-1]:
-                    node += 1
-                    x, y = uline[i][0], uline[i][1]
-                    f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
+            for node, vertex in enumerate(vertices):
+                x, y = vertex[0], vertex[1]
+                f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
 
-        logger.log.info('SU2 mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#CC5511', filename))
+            logger.log.info('SU2 mesh <b><font color=%s> %s</b> saved to folder %s'
+                            % ('#CC5511', basename, OUTPUTDATA))
 
-    def writeGMESH(self, name=''):
+    @staticmethod
+    def writeGMSH(mesh, name=''):
 
-        folder = OUTPUTDATA + '/'
-        nameroot, extension = os.path.splitext(str(name))
-        filename = nameroot + '_' + self.name + '.msh'
-        fullname = folder + filename
+        if not name[-4:] == '.msh':
+            name += '.msh'
 
-        U, V = self.getDivUV()
-        up = U + 1
-        vp = V + 1
+        basename = os.path.basename(str(name))
+        nameroot, extension = os.path.splitext(str(basename))
 
-        # element type is GMESH quadrilateral
+        vertices, connectivity = mesh
+
+        # element type is GMSH quadrilateral
         el_type = '3'
 
-        with open(fullname, 'w') as f:
-
-            f.write('$Information\n')
-            f.write(' Airfoil contour: ' + nameroot + ' \n')
-            f.write('\n')
-            f.write(' File created with ' + PyAero.__appname__ + '.\n')
-            f.write(' Version: ' + PyAero.__version__ + '\n')
-            f.write(' Author: ' + PyAero.__author__ + '\n')
-            f.write('\n')
-            f.write('$EndInformation')
-
-            f.write(2*'\n')
+        with open(name, 'w') as f:
 
             f.write('$MeshFormat\n')
             f.write('2.2 0 8\n')
             f.write('$EndMeshFormat\n\n')
-
+            f.write('$Comments\n')
+            f.write(' Airfoil contour: ' + nameroot + ' \n')
+            f.write(' File created with ' + PyAero.__appname__ + '.\n')
+            f.write(' Version: ' + PyAero.__version__ + '\n')
+            f.write(' Author: ' + PyAero.__author__ + '\n')
+            f.write('$EndComments\n')
             f.write('$Nodes\n')
-            f.write('%s\n' % (up*vp))
+            f.write('%s\n' % (len(vertices)))
+
             # x- and y-coordinates
-            node = 0
-            for uline in self.getULines():
-                for i in range(len(uline))[::-1]:
-                    node += 1
-                    x, y = uline[i][0], uline[i][1]
-                    f.write(' {:} {:16.8} {:16.8} 0.0\n'.format(node, x, y))
-            f.write('$EndNodes')
-            f.write('\n\n')
+            for node, vertex in enumerate(vertices, start=1):
+                x, y = vertex[0], vertex[1]
+                f.write(' {:} {:16.8} {:16.8} 0.0\n'.format(node, x, y))
+            f.write('$EndNodes\n')
             f.write('$Elements\n')
-            f.write('%s\n' % (U*V))
-            k = 0
-            for i in range(U):
-                for j in range(V):
-                    # vertex number
-                    k += 1
+            f.write('%s\n' % (len(connectivity)))
 
-                    p1 = j * up + i
-                    p2 = p1 + 1
-                    p4 = p1 + up
-                    p3 = p4 + 1
+            for cell_id, cell in enumerate(connectivity, start=1):
 
-                    connectivity = ' ' + str(k) + ' ' + el_type + ' ' + \
-                        str(p1) + ' ' + str(p2) + ' ' + str(p3) + ' ' + \
-                        str(p4) + '\n'
+                cell_connect = ' ' + str(cell_id) + ' ' + el_type + ' ' + \
+                    str(cell[0]) + ' ' + \
+                    str(cell[1]) + ' ' + \
+                    str(cell[2]) + ' ' + \
+                    str(cell[3]) + ' ' + '\n'
 
-                    f.write(connectivity)
+                f.write(cell_connect)
             f.write('$EndElements\n')
 
-        logger.log.info('GMESH mesh <b><font color=%s> %s</b> saved to output folder'
-                        % ('#224CCC', filename))
+            logger.log.info('SU2 mesh <b><font color=%s> %s</b> saved to folder %s'
+                            % ('#224CCC', basename, OUTPUTDATA))
 
 
 class Smooth(object):
