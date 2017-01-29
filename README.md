@@ -1,7 +1,7 @@
 ```diff
 + RELEASE 1.0 IS READY.
 + MESHES CAN BE GENERATED
-- SU2 and GMESH formats not tested
+- SU2 and GMSH formats not tested
 - 4 individual mesh blocks around the airfoil are created and need to be connected (will be fixed soon)
 ```
 
@@ -35,7 +35,7 @@
  - Mesh export
    - [AVL FIRE](http://www.avl.com/fire-m) (.flma)
    - [SU2](http://su2.stanford.edu) (.su2)
-   - [GMESH](http://gmsh.info) (.msh)
+   - [GMSH](http://gmsh.info) (.msh)
  - Simple aerodynamic analysis using [AeroPython](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
  - NOT YET IMPLEMENTED: Advanced aerodynamic analysis
    - Linking to open source CFD software (e.g. SU2)
@@ -146,7 +146,7 @@ You should be good to go.
 
 * 1.0.0
     * Meshes can be generated now.
-    * Export available in AVL-FIRE, SU2 and GMESH formats
+    * Export available in AVL-FIRE, SU2 and GMSH formats
 
 Andreas Ennemoser – [@chiefenne](https://twitter.com/chiefenne) – andreas.ennemoser@aon.at
  

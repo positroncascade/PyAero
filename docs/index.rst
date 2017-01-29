@@ -4,9 +4,9 @@
 
 .. important::
    VERSION 1.0 is released.
-   Meshes in AVL-FIRE, SU2, and GMESH formats can be generated now.
+   Meshes in AVL-FIRE, SU2, and GMSH formats can be generated now.
 
-   SU2 and GMESH are not tested yet.
+   SU2 and GMSH are not tested yet.
 
 .. important::
    At the moment 4 mesh blocks and associated files are generated.
@@ -90,7 +90,7 @@ Features
  
    - `AVL FIRE <http://www.avl.com/fire-m>`_ (*.flma)
    - `SU2 <http://su2.stanford.edu/>`_ (*.su2)
-   - `GMESH <http://gmsh.info>`_ (*.msh)
+   - `GMSH <http://gmsh.info>`_ (*.msh)
  
  - Simple aerodynamic analysis, i.e. panel methods
  
