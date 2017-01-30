@@ -12,6 +12,7 @@ import PGraphicsItemsCollection as gc
 import PGraphicsItem
 import PSplineRefine
 import PTrailingEdge
+import PLogger as logger
 import PMeshing
 import PConnect
 from PSettings import ICONS_L, DIALOGFILTER, DIALOGFILTER_MESH, OUTPUTDATA
@@ -267,6 +268,12 @@ class Toolbox(object):
         self.ratio_height.setValue(10.0)
         self.ratio_height.setDecimals(1)
         self.form_mesh_tunnel.addRow(label, self.ratio_height)
+
+        label = QtGui.QLabel('Distribution biasing')
+        self.dist = QtGui.QComboBox()
+        self.dist.addItems(['symmetric', 'lower', 'upper'])
+        self.dist.setCurrentIndex(0)
+        self.form_mesh_tunnel.addRow(label, self.dist)
 
         self.form_mesh_wake = QtGui.QFormLayout()
 
@@ -707,7 +714,7 @@ class Toolbox(object):
 
         progdialog = QtGui.QProgressDialog(
             "", "Cancel", 0, 4, self.parent)
-        progdialog.setWindowTitle("Generating the CFD Mesh")
+        progdialog.setWindowTitle('Generating the CFD mesh')
         progdialog.setWindowModality(QtCore.Qt.WindowModal)
         progdialog.show()
 
@@ -741,7 +748,8 @@ class Toolbox(object):
         self.tunnel.TunnelMesh(name='block_tunnel',
                                tunnel_height=self.tunnel_height.value(),
                                divisions_height=self.divisions_height.value(),
-                               ratio_height=self.ratio_height.value())
+                               ratio_height=self.ratio_height.value(),
+                               dist=self.dist.currentText())
         progdialog.setValue(3)
 
         if progdialog.wasCanceled():
@@ -761,6 +769,10 @@ class Toolbox(object):
         # connect mesh blocks
         connect = PConnect.Connect()
         self.tunnel.mesh = connect.connectAllBlocks(self.tunnel.blocks)
+        vertices, connectivity = self.tunnel.mesh
+
+        logger.log.info('Mesh has %s vertices' % (len(vertices)))
+        logger.log.info('Mesh has %s cells' % (len(connectivity)))
 
         self.drawMesh(airfoil)
 

@@ -1,11 +1,16 @@
 import numpy as np
 import scipy.spatial as ssp
 
+from PyQt4 import QtGui, QtCore
+
 
 class Connect(object):
     """docstring for Export"""
     def __init__(self):
         super(Connect, self).__init__()
+
+        # get MainWindow instance here (overcomes handling parents)
+        self.mainwindow = QtCore.QCoreApplication.instance().mainwindow
 
     def getVertices(self, block):
         vertices = list()
@@ -36,12 +41,38 @@ class Connect(object):
         return pairs
 
     def connectAllBlocks(self, blocks):
+
+        progdialog = QtGui.QProgressDialog(
+            "", "Cancel", 0, 3, self.mainwindow)
+        progdialog.setWindowTitle('Connect mesh blocks')
+        progdialog.setWindowModality(QtCore.Qt.WindowModal)
+        progdialog.show()
+
+        progdialog.setValue(0)
+        progdialog.setLabelText('connecting part 1/3')
+
         connected_1 = self.connectBlocks(blocks[0], blocks[1],
                                          radius=0.0001, type_='block')
+        progdialog.setValue(1)
+
+        if progdialog.wasCanceled():
+            return
+        progdialog.setLabelText('connecting part 2/3')
+
         connected_2 = self.connectBlocks(blocks[2], blocks[3],
                                          radius=0.0001, type_='block')
+
+        progdialog.setValue(2)
+
+        if progdialog.wasCanceled():
+            return
+        progdialog.setLabelText('connecting part 3/3')
+
         connected = self.connectBlocks(connected_1, connected_2,
                                        radius=0.0001, type_='connected')
+
+        progdialog.setValue(3)
+
         return connected
 
     def connectBlocks(self, block_1, block_2, radius=0.001, type_='block'):

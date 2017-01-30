@@ -70,7 +70,7 @@ class Windtunnel(object):
         self.blocks.append(block_te)
 
     def TunnelMesh(self, name='', tunnel_height=2.0, divisions_height=100,
-                   ratio_height=10.0):
+                   ratio_height=10.0, dist='symmetric'):
         block_tunnel = BlockMesh(name=name)
 
         self.tunnel_height = tunnel_height
@@ -116,7 +116,16 @@ class Windtunnel(object):
         tck, u = si.splprep(line.T, s=0, k=1)
 
         # point distribution on upper, front and lower part
-        xx = np.linspace(-1.2, 1.5, len(block_tunnel.getULines()[0]))
+        if dist == 'symmetric':
+            ld = -1.3
+            ud = 1.3
+        if dist == 'lower':
+            ld = -1.2
+            ud = 1.5
+        if dist == 'upper':
+            ld = -1.5
+            ud = 1.2
+        xx = np.linspace(ld, ud, len(block_tunnel.getULines()[0]))
         t = (np.tanh(xx) + 1.0) / 2.0
 
         line = si.splev(t, tck, der=0)
