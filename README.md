@@ -12,6 +12,7 @@
 > PyAero is an open-source airfoil contour analysis and CFD meshing tool written in Python.
 
 ![](docs/images/gui_airfoil1.png)
+**PyAero GUI at a glance**
 <p align="center">PyAero GUI at a glance</p>
 
 ![](docs/images/mesh1.png)
