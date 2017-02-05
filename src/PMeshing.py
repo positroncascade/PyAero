@@ -34,6 +34,7 @@ class Windtunnel(object):
                                   divisions=divisions, ratio=ratio)
 
         self.block_airfoil = block_airfoil
+        # self.block_airfoil.boundary = self.block_airfoil.getULines()[0]
         self.blocks.append(block_airfoil)
 
     def TrailingEdgeMesh(self, name='', te_divisions=3,
@@ -51,6 +52,7 @@ class Windtunnel(object):
             p = last_reversed[-1] + float(i) / te_divisions * vec
             # p is type numpy.float, so convert it to float
             line.append((float(p[0]), float(p[1])))
+            # self.block_airfoil.boundary += [(float(p[0]), float(p[1]))]
         line += first
 
         # trailing edge block mesh
@@ -780,6 +782,45 @@ class BlockMesh(object):
             for node, vertex in enumerate(vertices):
                 x, y = vertex[0], vertex[1]
                 f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
+
+            # get marker edges
+            all_edges = list()
+            for i, cell in enumerate(connectivity):
+                edges = [set((cell[cell.index(v)], cell[(cell.index(v)+1) % 4])
+                             ) for v in cell]
+                all_edges += edges
+
+            all_edges = [frozenset(i) for i in all_edges]
+            all_edges = set(all_edges)
+
+            boundary_edges = list()
+            external = 0
+            internal = 0
+
+            for i, edge in enumerate(all_edges):
+                count = 0
+                for i, cell in enumerate(connectivity):
+                    if edge.issubset(set(cell)):
+                        count += 1
+                if count == 1:
+                    external += 1
+                    boundary_edges.append(edge)
+                if count == 2:
+                    internal += 1
+
+            print '____internal_edges_____', internal
+            print '____external_edges_____', external
+
+            # number of marks
+            f.write('NMARK= 2\n')
+            f.write('MARKER_TAG= airfoil\n')
+            f.write('MARKER_ELEMS= 2\n')
+            f.write('3 0 1\n')
+            f.write('3 1 2\n')
+            f.write('MARKER_TAG= farfield\n')
+            f.write('MARKER_ELEMS= 2\n')
+            f.write('3 2 5\n')
+            f.write('3 5 8\n')
 
             logger.log.info('SU2 mesh <b><font color=%s> %s</b> saved to folder %s'
                             % ('#CC5511', basename, OUTPUTDATA))
