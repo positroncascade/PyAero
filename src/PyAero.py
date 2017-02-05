@@ -29,11 +29,14 @@ from PSettings import VIEWSTYLE, ICONS, LOCALE, STYLE, EXITONESCAPE, \
 import PLogger as logger
 import PShortCuts
 
-try:
-    import matplotlib
-    matplotlib_installed = True
-except ImportError:
-    matplotlib_installed = False
+# try:
+#     import matplotlib
+#     matplotlib_installed = True
+# except ImportError:
+#     matplotlib_installed = False
+
+# this is an intermediate solution for making EXEs
+matplotlib_installed = False
 
 try:
     import PVtkView

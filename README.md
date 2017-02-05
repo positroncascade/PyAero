@@ -1,7 +1,11 @@
 ```diff
 + RELEASE 1.1 IS READY.
-+ MESHES CAN BE GENERATED
++ MESHES CAN BE GENERATED AND EXPORTED
+```
+
+```diff
 - SU2 format not yet tested
+- contour analysis to be refactored and enabled again
 ```
 
 # PyAero
@@ -10,7 +14,7 @@
 ![](docs/images/gui_airfoil.png)
 <p align="center">PyAero GUI at a glance</p>
 
-![](docs/images/mesh.png)
+![](docs/images/mesh1.png)
 <p align="center">Example mesh around HN1033 airfoil</p>
 
 ![](docs/images/LE_mesh.png)
