@@ -13,19 +13,18 @@
 
 ![](docs/images/gui_airfoil1.png)
 **PyAero GUI at a glance**
-<p align="center">PyAero GUI at a glance</p>
 
 ![](docs/images/mesh1.png)
-<p align="center">Example mesh around HN1033 airfoil</p>
+**Example mesh around HN1033 airfoil**
 
 ![](docs/images/LE_mesh.png)
-<p align="center">Example mesh around HN1033 airfoil - Leading Edge</p>
+**Example mesh around HN1033 airfoil - Leading Edge**
 
 ![](docs/images/TE_mesh.png)
-<p align="center">Example mesh around HN1033 airfoil - Trailing Edge (with finite thickness)</p>
+**Example mesh around HN1033 airfoil - Trailing Edge (with finite thickness)**
 
 ![](docs/images/RG15_mesh_part.png)
-<p align="center">Example mesh as used in the AVL-FIRE CFD code. Third mesh dimension in 2D is 1 cell layer.</p>
+**Example mesh as used in the AVL-FIRE CFD code. Third mesh dimension in 2D is 1 cell layer.**
 
 ## Features
 
