@@ -23,9 +23,9 @@ PyAero is open-source and distributed under the MIT license, see `LICENSE <licen
 
    PyAero user interface at a glance
 
-.. figure::  images/mesh.png
+.. figure::  images/mesh2.png
    :align:   center
-   :target:  _images/mesh.png
+   :target:  _images/mesh2.png
    :name: Mesh_HN1033
 
    Example mesh around HN1033 airfoil
