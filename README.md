@@ -13,7 +13,7 @@
 
 ![THE GUI](docs/images/gui_airfoil.png)
 <p align="center">PyAero GUI at a glance</p>
-<p> </p>
+<p>trara</p>
 
 ![](docs/images/mesh1.png)
 <p align="center">Example mesh around HN1033 airfoil</p>
