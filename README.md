@@ -23,7 +23,7 @@
 **Example mesh around HN1033 airfoil - Leading Edge**
 <br><br>
 
-![](docs/images/TE_mesh.png)
+![](docs/images/TE_mesh1.png)
 **Example mesh around HN1033 airfoil - Trailing Edge (with finite thickness)**
 <br><br>
 
