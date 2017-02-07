@@ -783,33 +783,35 @@ class BlockMesh(object):
                 x, y = vertex[0], vertex[1]
                 f.write(' {:24.16e} {:24.16e} {:} \n'.format(x, y, node))
 
-            # get marker edges
+            # get all edges in the mesh
             all_edges = list()
-            for i, cell in enumerate(connectivity):
+            for cell in connectivity:
+                # example:
+                # cell: [0, 1, 5, 4]
+                # edges: [(0,1), (1,5), (5,4), (4,0)]
                 edges = [set((cell[cell.index(v)], cell[(cell.index(v)+1) % 4])
                              ) for v in cell]
                 all_edges += edges
 
             all_edges = [frozenset(i) for i in all_edges]
-            all_edges = set(all_edges)
+            edges = set(all_edges)
 
             boundary_edges = list()
             external = 0
             internal = 0
 
-            for i, edge in enumerate(all_edges):
-                count = 0
-                for i, cell in enumerate(connectivity):
-                    if edge.issubset(set(cell)):
-                        count += 1
-                if count == 1:
-                    external += 1
-                    boundary_edges.append(edge)
-                if count == 2:
-                    internal += 1
+            # per number as dictionary key, list the tuples from list_1 that contain it
+            d = dict()
+            for cell in connectivity:
+                for vertex in cell:
+                    if vertex not in d:
+                        d[vertex] = set()
+                    d[vertex].add(cell)
 
-            print '____internal_edges_____', internal
-            print '____external_edges_____', external
+            # for each pair, take the intersection of
+            # the corresponding lists in d
+            result = [(edge, len(d[edge[0]].intersection(d[edge[1]])))
+                      for edge in edges]
 
             # number of marks
             f.write('NMARK= 2\n')
