@@ -19,9 +19,13 @@ The blunt trailing edge needs to be added to the original contour in a controlle
    :target:  _images/toolbox_spline_refine_2.png
    :name: toolbox_spline_refine_2
 
-   Toolbox function for specifying the blunt TE belnding parameters
+   Toolbox function for specifying the blunt TE blending parameters
 
-The trailing edge thickness itself can be specified relative to the unit chord. The thickenning is done perpendicular to the camber line at the trailing edge. In order to prevent aerodynamic artefacts due to the blunt TE, a smooth controlled blend from the blunt TE vertices into the original (raw) contour needs to be done. This is achieved by allowing to blend along a certain user specified length into the original contour. Furthermore, the degree of the curve can be specified. The blending length describes the fraction (in %) of the chord in which the blending is done. The polynomial exponent can be used to describe the blending curve degree. The blending can be controlled individually for the upper and lower sides of the contour. This is specifically useful for strongly camber airfoils. To better understand the TE blending options the following figure depicts a visually exaggerated TE blending (by clicking several times on the ). The upper side of the aifoil is blended over 50% of the chord with a linear blend, whereas the lower side is blended over 20% of the chord with a polynom of degree three.
+The trailing edge thickness itself can be specified relative to the unit chord. The thickenning is done perpendicular to the camber line at the trailing edge. In order to prevent aerodynamic artefacts due to the blunt TE, a smooth controlled blend from the blunt TE vertices into the original (raw) contour needs to be done.
+
+This is achieved by allowing to blend along a certain user specified length into the original contour. Furthermore, the degree of the blending curve can be specified. The blending length describes the fraction (in %) of the chord in which the blending is done. The polynomial exponent can be used to describe the blending curve degree. The blending can be controlled individually for the upper and lower sides of the contour. This is specifically useful for strongly camber airfoils.
+
+To better understand the TE blending options the following figure depicts a visually exaggerated TE blending (by clicking several times on the *Add Trailing Edge* button). The upper side of the aifoil is blended over 50% of the chord with a linear blend, whereas the lower side is blended over 20% of the chord with a polynom of degree three.
 
 .. _figure_TE_blending_options:
 .. figure::  images/TE_blending_options.png
