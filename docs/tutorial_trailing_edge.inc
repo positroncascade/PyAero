@@ -35,4 +35,6 @@ To better understand the TE blending options the following figure depicts a visu
 
    Exaggerated TE blending: 50% linear (upper), 30% 3rd order polynom (lower)
 
+Playing with the settings and finding the best setup for blending is always best viewed by clicking two or three times on the *Add Trailing Edge* button. A reset to the original curve can be achieved by simply clicking on the *Spline and Refine* button in the menu above (see :ref:`figure_toolbox_spline_refine_1`).
 
+When a satisfying result is achieved for the contour in terms of splining, refining and trailing edge, the meshing process can be started.
