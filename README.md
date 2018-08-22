@@ -1,6 +1,7 @@
 
 ```diff
-- THIS VERSION IS DEPRECATED IN FAVOR OF THE "Qt for Python" version
+- THIS VERSION IS DEPRECATED IN FAVOR OF THE "Qt for Python" version.
+- [PyAero-Qt-for-Python GitHub repository](https://github.com/chiefenne/PyAero-Qt-for-Python)
 ```
 
 # PyAero
