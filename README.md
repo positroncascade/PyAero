@@ -1,8 +1,8 @@
 
 ```diff
 - THIS VERSION IS DEPRECATED IN FAVOR OF THE "Qt for Python" version.
-- [PyAero-Qt-for-Python GitHub repository](https://github.com/chiefenne/PyAero-Qt-for-Python)
 ```
+[PyAero-Qt-for-Python GitHub repository](https://github.com/chiefenne/PyAero-Qt-for-Python)
 
 # PyAero
 > PyAero is an open-source airfoil contour analysis and CFD meshing tool written in Python.
